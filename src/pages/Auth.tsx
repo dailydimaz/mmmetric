@@ -62,6 +62,43 @@ export default function Auth() {
     navigate("/dashboard");
   };
 
+  const trackLogin = async (success: boolean) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      
+      const ua = navigator.userAgent;
+      let browser = "Unknown";
+      let os = "Unknown";
+      let deviceType = "desktop";
+
+      if (ua.includes("Firefox")) browser = "Firefox";
+      else if (ua.includes("Chrome") && !ua.includes("Edg")) browser = "Chrome";
+      else if (ua.includes("Safari") && !ua.includes("Chrome")) browser = "Safari";
+      else if (ua.includes("Edg")) browser = "Edge";
+
+      if (ua.includes("Windows")) os = "Windows";
+      else if (ua.includes("Mac OS")) os = "macOS";
+      else if (ua.includes("Linux")) os = "Linux";
+      else if (ua.includes("Android")) os = "Android";
+      else if (ua.includes("iPhone") || ua.includes("iPad")) os = "iOS";
+
+      if (ua.includes("Mobile")) deviceType = "mobile";
+      else if (ua.includes("Tablet") || ua.includes("iPad")) deviceType = "tablet";
+
+      await supabase.from("login_history").insert({
+        user_id: user.id,
+        user_agent: ua,
+        browser,
+        os,
+        device_type: deviceType,
+        success,
+      });
+    } catch (e) {
+      console.error("Failed to track login:", e);
+    }
+  };
+
   const validateForm = () => {
     try {
       authSchema.parse({ email, password, fullName: isSignUp ? fullName : undefined });
@@ -126,6 +163,9 @@ export default function Auth() {
         });
 
         if (error) {
+          // Track failed login attempt
+          await trackLogin(false);
+          
           if (error.message.includes("Invalid login credentials")) {
             toast({
               title: "Invalid credentials",
@@ -136,6 +176,8 @@ export default function Auth() {
             throw error;
           }
         } else if (data.session) {
+          // Track successful login
+          await trackLogin(true);
           await checkMfaRequired(data.session);
         }
       }

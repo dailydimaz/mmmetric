@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      backup_codes: {
+        Row: {
+          code_hash: string
+          created_at: string
+          id: string
+          used: boolean | null
+          used_at: string | null
+          user_id: string
+        }
+        Insert: {
+          code_hash: string
+          created_at?: string
+          id?: string
+          used?: boolean | null
+          used_at?: string | null
+          user_id: string
+        }
+        Update: {
+          code_hash?: string
+          created_at?: string
+          id?: string
+          used?: boolean | null
+          used_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       events: {
         Row: {
           browser: string | null
@@ -155,30 +182,81 @@ export type Database = {
           },
         ]
       }
+      login_history: {
+        Row: {
+          browser: string | null
+          city: string | null
+          country: string | null
+          created_at: string
+          device_type: string | null
+          id: string
+          ip_address: string | null
+          os: string | null
+          success: boolean | null
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          browser?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          device_type?: string | null
+          id?: string
+          ip_address?: string | null
+          os?: string | null
+          success?: boolean | null
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          browser?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          device_type?: string | null
+          id?: string
+          ip_address?: string | null
+          os?: string | null
+          success?: boolean | null
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
           created_at: string
           email: string | null
+          email_notifications: boolean | null
           full_name: string | null
           id: string
+          marketing_emails: boolean | null
           updated_at: string
+          weekly_digest: boolean | null
         }
         Insert: {
           avatar_url?: string | null
           created_at?: string
           email?: string | null
+          email_notifications?: boolean | null
           full_name?: string | null
           id: string
+          marketing_emails?: boolean | null
           updated_at?: string
+          weekly_digest?: boolean | null
         }
         Update: {
           avatar_url?: string | null
           created_at?: string
           email?: string | null
+          email_notifications?: boolean | null
           full_name?: string | null
           id?: string
+          marketing_emails?: boolean | null
           updated_at?: string
+          weekly_digest?: boolean | null
         }
         Relationships: []
       }

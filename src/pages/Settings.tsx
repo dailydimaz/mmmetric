@@ -4,13 +4,13 @@ import { useAuth } from "@/hooks/useAuth";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { User, Mail, Save, Lock, Trash2, Shield, Key, AlertTriangle } from "lucide-react";
+import { User, Mail, Save, Lock, Trash2, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Separator } from "@/components/ui/separator";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,6 +23,11 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { TwoFactorSetup } from "@/components/settings/TwoFactorSetup";
+import { BackupCodes } from "@/components/settings/BackupCodes";
+import { SessionManagement } from "@/components/settings/SessionManagement";
+import { EmailPreferences } from "@/components/settings/EmailPreferences";
+import { DataExport } from "@/components/settings/DataExport";
+import { LoginHistory } from "@/components/settings/LoginHistory";
 
 interface Profile {
   id: string;
@@ -184,19 +189,6 @@ export default function Settings() {
       setConfirmPassword("");
     }
     setChangingPassword(false);
-  };
-
-  const handleSignOutAllDevices = async () => {
-    const { error } = await supabase.auth.signOut({ scope: 'global' });
-    if (error) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    } else {
-      navigate("/auth");
-    }
   };
 
   const handleDeleteAccount = async () => {
@@ -422,51 +414,20 @@ export default function Settings() {
         {/* Two-Factor Authentication */}
         <TwoFactorSetup />
 
-        {/* Security Section */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Shield className="h-5 w-5" />
-              Security
-            </CardTitle>
-            <CardDescription>
-              Manage your account security settings
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-medium">Sign out all devices</p>
-                <p className="text-sm text-muted-foreground">
-                  This will sign you out from all devices including this one
-                </p>
-              </div>
-              <Button variant="outline" onClick={handleSignOutAllDevices}>
-                <Key className="h-4 w-4 mr-2" />
-                Sign Out All
-              </Button>
-            </div>
-            <Separator />
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-medium">Account ID</p>
-                <p className="text-sm text-muted-foreground font-mono">
-                  {user.id}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="font-medium">Last Sign In</p>
-                <p className="text-sm text-muted-foreground">
-                  {user.last_sign_in_at 
-                    ? new Date(user.last_sign_in_at).toLocaleString() 
-                    : 'Unknown'}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Backup Codes */}
+        <BackupCodes />
+
+        {/* Session Management */}
+        <SessionManagement />
+
+        {/* Login History */}
+        <LoginHistory />
+
+        {/* Email Preferences */}
+        <EmailPreferences />
+
+        {/* Data Export */}
+        <DataExport />
 
         {/* Danger Zone */}
         <Card className="border-destructive/50">
