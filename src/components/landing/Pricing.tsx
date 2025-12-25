@@ -71,7 +71,7 @@ export function Pricing() {
               Self-Hosted Mode
             </h2>
             <p className="mt-4 text-lg text-base-content/70">
-              You're running SimpleTrack on your own infrastructure with all features unlocked.
+              You're running Metric on your own infrastructure with all features unlocked.
             </p>
           </div>
 
@@ -106,7 +106,7 @@ export function Pricing() {
           </div>
 
           <p className="mt-12 text-center text-sm text-base-content/70">
-            Want managed hosting? Check out our <a href="https://simpletrack.io" className="link link-primary">cloud offering</a>.
+            Want managed hosting? Check out our <a href="#" className="link link-primary">cloud offering</a>.
           </p>
         </div>
       </section>
