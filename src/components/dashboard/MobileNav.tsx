@@ -7,18 +7,33 @@ import {
   Menu,
   X
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-const navItems = [
+const getNavItems = (siteId: string | null) => [
   { icon: LayoutDashboard, label: "Overview", href: "/dashboard" },
-  { icon: MousePointerClick, label: "Events", href: "/dashboard/events" },
-  { icon: GitBranch, label: "Funnels", href: "/dashboard/funnels" },
-  { icon: Users, label: "Retention", href: "/dashboard/retention" },
+  { icon: MousePointerClick, label: "Analytics", href: siteId ? `/dashboard/sites/${siteId}` : "/dashboard" },
+  { icon: GitBranch, label: "Funnels", href: siteId ? `/dashboard/sites/${siteId}` : "/dashboard" },
+  { icon: Users, label: "Retention", href: siteId ? `/dashboard/retention?siteId=${siteId}` : "/dashboard" },
 ];
 
 export function MobileNav() {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  
+  // Get selected site from localStorage
+  const [selectedSiteId, setSelectedSiteId] = useState<string | null>(() => {
+    return localStorage.getItem("selectedSiteId");
+  });
+
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setSelectedSiteId(localStorage.getItem("selectedSiteId"));
+    };
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
+
+  const navItems = getNavItems(selectedSiteId);
 
   return (
     <div className="md:hidden">
@@ -42,9 +57,9 @@ export function MobileNav() {
           <div className="fixed top-[65px] left-0 right-0 bg-base-100 border-b border-base-300 z-50 animate-in slide-in-from-top duration-200">
             <ul className="menu p-4">
               {navItems.map((item) => {
-                const isActive = location.pathname === item.href;
+                const isActive = location.pathname === item.href || location.pathname.startsWith(item.href.split('?')[0]);
                 return (
-                  <li key={item.href}>
+                  <li key={item.label}>
                     <Link 
                       to={item.href} 
                       className={`gap-3 ${isActive ? 'active' : ''}`}
