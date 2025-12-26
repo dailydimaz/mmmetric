@@ -10,8 +10,8 @@ interface TeamMember {
   invited_by: string | null;
   created_at: string;
   updated_at: string;
-  email?: string;
   full_name?: string;
+  avatar_url?: string;
 }
 
 interface TeamInvitation {
@@ -39,17 +39,19 @@ export function useTeam(siteId: string | undefined) {
         .from('team_members')
         .select(`
           *,
-          profiles:user_id (email, full_name)
+          profiles:user_id (full_name, avatar_url)
         `)
         .eq('site_id', siteId)
         .order('created_at', { ascending: true });
 
       if (error) throw error;
       
+      // Note: Email is intentionally NOT queried for team members to prevent privacy leakage
+      // Only the profile owner should see their own email
       return data.map((member: any) => ({
         ...member,
-        email: member.profiles?.email,
         full_name: member.profiles?.full_name,
+        avatar_url: member.profiles?.avatar_url,
       })) as TeamMember[];
     },
     enabled: !!siteId && !!user,

@@ -229,16 +229,16 @@ export function TeamCard() {
                     <div className="flex items-center gap-3">
                       <Avatar className="h-8 w-8">
                         <AvatarFallback className="text-xs">
-                          {member.full_name?.charAt(0) || member.email?.charAt(0) || '?'}
+                          {member.full_name?.charAt(0) || '?'}
                         </AvatarFallback>
                       </Avatar>
                       <div>
                         <div className="font-medium">
-                          {member.full_name || member.email}
+                          {member.full_name || 'Team Member'}
                         </div>
-                        {member.full_name && (
-                          <div className="text-sm text-muted-foreground">{member.email}</div>
-                        )}
+                        <div className="text-sm text-muted-foreground">
+                          {member.role}
+                        </div>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
