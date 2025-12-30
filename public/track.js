@@ -1,6 +1,8 @@
 /**
  * Metric Analytics - Lightweight Tracking Script
  * Privacy-focused, cookie-less analytics with UTM and outbound tracking
+ * 
+ * Usage: <script defer src="https://mmmetric.lovable.app/track.js" data-site="YOUR_TRACKING_ID"></script>
  */
 (function() {
   'use strict';
@@ -8,13 +10,17 @@
   // Configuration
   var script = document.currentScript;
   var siteId = script && script.getAttribute('data-site');
-  // Use custom API URL if provided, otherwise use the Edge Function URL
+  // Use custom API URL if provided, otherwise use the Metric Edge Function URL
   var apiUrl = script && script.getAttribute('data-api') || 'https://lckjlefupqlblfcwhbom.supabase.co/functions/v1/track';
-  // Allow bypassing origin check for testing (not recommended for production)
-  var skipOriginCheck = script && script.getAttribute('data-skip-origin') === 'true';
   
   if (!siteId) {
-    console.warn('Metric: Missing data-site attribute');
+    console.warn('Metric: Missing data-site attribute. Add data-site="YOUR_TRACKING_ID" to the script tag.');
+    return;
+  }
+
+  // Validate site ID format
+  if (typeof siteId !== 'string' || !siteId.startsWith('st_')) {
+    console.warn('Metric: Invalid site ID format. Expected format: st_xxxxxxxxxxxx');
     return;
   }
 

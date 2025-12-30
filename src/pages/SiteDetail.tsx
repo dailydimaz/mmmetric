@@ -132,17 +132,12 @@ export default function SiteDetail() {
 
   const copyScript = async () => {
     if (!site) return;
-    // Use the site's domain if configured, otherwise use a placeholder
-    const trackingDomain = site.domain 
-      ? `https://${site.domain.replace(/^(https?:\/\/)/i, '').replace(/^www\./i, '')}`
-      : 'https://YOUR_DOMAIN';
-    const script = `<script defer src="${trackingDomain}/track.js" data-site="${site.tracking_id}"></script>`;
+    // Always use Metric's hosted script URL
+    const script = `<script defer src="https://mmmetric.lovable.app/track.js" data-site="${site.tracking_id}"></script>`;
     await navigator.clipboard.writeText(script);
     toast({
       title: "Copied!",
-      description: site.domain 
-        ? "Tracking script copied to clipboard" 
-        : "Tracking script copied - replace YOUR_DOMAIN with your site's domain",
+      description: "Add this script to your website's <head> tag to start tracking.",
     });
   };
 
@@ -393,13 +388,11 @@ export default function SiteDetail() {
                   Add this script to your website's <code className="bg-base-300 px-1 rounded">&lt;head&gt;</code> tag:
                 </p>
                 <div className="mockup-code mt-2">
-                  <pre><code>{`<script defer src="${site.domain ? `https://${site.domain.replace(/^(https?:\/\/)/i, '').replace(/^www\./i, '')}` : 'https://YOUR_DOMAIN'}/track.js" data-site="${site.tracking_id}"></script>`}</code></pre>
+                  <pre><code>{`<script defer src="https://mmmetric.lovable.app/track.js" data-site="${site.tracking_id}"></script>`}</code></pre>
                 </div>
-                {!site.domain && (
-                  <p className="text-warning text-xs mt-1">
-                    ⚠️ Set your domain above to get the correct tracking script URL
-                  </p>
-                )}
+                <p className="text-base-content/60 text-xs mt-2">
+                  This lightweight script (~1KB) tracks page views, custom events, and UTM parameters while respecting user privacy.
+                </p>
                 <div className="flex justify-end gap-2 mt-2">
                   <button 
                     className={`btn btn-sm ${
