@@ -8,10 +8,13 @@
   'use strict';
 
   // Configuration
-  var script = document.currentScript;
+  var script = document.currentScript || document.querySelector('script[data-site]');
   var siteId = script && script.getAttribute('data-site');
   // Use custom API URL if provided, otherwise use the Metric Edge Function URL
   var apiUrl = script && script.getAttribute('data-api') || 'https://lckjlefupqlblfcwhbom.supabase.co/functions/v1/track';
+  
+  // Debug logging (can be removed in production)
+  console.log('Metric: Initializing with site ID:', siteId);
   
   if (!siteId) {
     console.warn('Metric: Missing data-site attribute. Add data-site="YOUR_TRACKING_ID" to the script tag.');
@@ -97,10 +100,13 @@
       properties: Object.keys(mergedProperties).length > 0 ? mergedProperties : {}
     };
 
+    console.log('Metric: Sending event:', eventName, 'to', apiUrl);
+
     // Use sendBeacon if available for reliability
     if (navigator.sendBeacon) {
       var blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
-      navigator.sendBeacon(apiUrl, blob);
+      var result = navigator.sendBeacon(apiUrl, blob);
+      console.log('Metric: sendBeacon result:', result);
     } else {
       // Fallback to fetch
       fetch(apiUrl, {
@@ -108,7 +114,11 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
         keepalive: true
-      }).catch(function() {});
+      }).then(function(res) {
+        console.log('Metric: fetch result:', res.status);
+      }).catch(function(err) {
+        console.error('Metric: fetch error:', err);
+      });
     }
   }
 
