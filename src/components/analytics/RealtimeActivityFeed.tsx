@@ -73,7 +73,7 @@ export function RealtimeActivityFeed({ siteId }: RealtimeActivityFeedProps) {
               {recentEvents.slice(0, MAX_DISPLAYED_EVENTS).map((event) => (
                 <div
                   key={event.id}
-                  className="group flex items-start gap-3 p-3 hover:bg-base-50 transition-all border-b border-base-100 last:border-0 animate-in fade-in slide-in-from-top-2 duration-300"
+                  className="group flex items-start gap-3 p-3 hover:bg-base-200 transition-all border-b border-base-100 last:border-0 animate-in fade-in slide-in-from-top-2 duration-300"
                 >
                   <div className={`mt-0.5 p-1.5 rounded-full bg-base-200 text-base-content/60 group-hover:bg-primary/10 group-hover:text-primary transition-colors`}>
                     {getEventIcon(event.event_name)}
@@ -104,7 +104,7 @@ export function RealtimeActivityFeed({ siteId }: RealtimeActivityFeedProps) {
                       </p>
                     )}
 
-                    {/* Details (Browser/OS) - Visible by default for better scanability */}
+                    {/* Details (Browser/OS) - Visible by default for better scannability */}
                     <div className="flex items-center gap-2 text-[10px] text-base-content/40">
                       {event.browser} • {event.device_type}
                     </div>
