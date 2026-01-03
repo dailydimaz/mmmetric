@@ -35,24 +35,49 @@ export function useTeam(siteId: string | undefined) {
     queryFn: async () => {
       if (!siteId) return [];
 
-      const { data, error } = await supabase
+      // First, get team members for this site
+      const { data: members, error: membersError } = await supabase
         .from('team_members')
-        .select(`
-          *,
-          profiles:user_id (full_name, avatar_url)
-        `)
+        .select('*')
         .eq('site_id', siteId)
         .order('created_at', { ascending: true });
 
-      if (error) throw error;
-      
-      // Note: Email is intentionally NOT queried for team members to prevent privacy leakage
-      // Only the profile owner should see their own email
-      return data.map((member: any) => ({
-        ...member,
-        full_name: member.profiles?.full_name,
-        avatar_url: member.profiles?.avatar_url,
-      })) as TeamMember[];
+      if (membersError) throw membersError;
+      if (!members || members.length === 0) return [];
+
+      // Use SECURITY DEFINER function to get only safe profile fields for teammates
+      // This prevents email exposure through direct database queries
+      const membersWithProfiles = await Promise.all(
+        members.map(async (member) => {
+          // If this is the current user, they can see their own profile directly
+          if (member.user_id === user?.id) {
+            const { data: ownProfile } = await supabase
+              .from('profiles')
+              .select('full_name, avatar_url')
+              .eq('id', member.user_id)
+              .single();
+            
+            return {
+              ...member,
+              full_name: ownProfile?.full_name,
+              avatar_url: ownProfile?.avatar_url,
+            };
+          }
+          
+          // For teammates, use the secure function that only returns safe fields
+          const { data: profile } = await supabase
+            .rpc('get_team_member_profile', { _user_id: member.user_id })
+            .single();
+          
+          return {
+            ...member,
+            full_name: profile?.full_name,
+            avatar_url: profile?.avatar_url,
+          };
+        })
+      );
+
+      return membersWithProfiles as TeamMember[];
     },
     enabled: !!siteId && !!user,
   });
