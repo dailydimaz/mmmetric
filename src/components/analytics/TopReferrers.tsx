@@ -59,7 +59,7 @@ export function TopReferrers({ referrers, isLoading }: TopReferrersProps) {
                           </span>
                           {ref.referrer !== 'Direct' && (
                             <a
-                              href={`https://${ref.referrer}`}
+                              href={`${ref.referrer.startsWith('http') ? '' : 'https://'}${ref.referrer}`}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="opacity-0 group-hover:opacity-100 text-base-content/40 hover:text-secondary transition-all"

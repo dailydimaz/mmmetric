@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MapPin, Building2, Map } from "lucide-react";
+import { MapPin, Building2, Map as MapIcon } from "lucide-react";
 import { GeoStat, CityStat } from "@/hooks/useAnalytics";
 
 interface GeoStatsProps {
@@ -39,7 +39,7 @@ export function GeoStats({ countries, cities, isLoading }: GeoStatsProps) {
         <div className="flex items-center justify-between p-4 border-b border-base-200">
           <div className="flex items-center gap-2">
             <div className="p-2 bg-info/10 rounded-lg text-info">
-              <Map className="h-4 w-4" />
+              <MapIcon className="h-4 w-4" />
             </div>
             <h3 className="font-semibold text-base">Locations</h3>
           </div>

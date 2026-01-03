@@ -47,38 +47,38 @@ export function VisitorChart({ data, isLoading }: VisitorChartProps) {
             <AreaChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
               <defs>
                 <linearGradient id="colorPageviews" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="hsl(var(--p))" stopOpacity={0.2} />
-                  <stop offset="95%" stopColor="hsl(var(--p))" stopOpacity={0} />
+                  <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.2} />
+                  <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
                 </linearGradient>
                 <linearGradient id="colorVisitors" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="hsl(var(--s))" stopOpacity={0.2} />
-                  <stop offset="95%" stopColor="hsl(var(--s))" stopOpacity={0} />
+                  <stop offset="5%" stopColor="hsl(var(--secondary))" stopOpacity={0.2} />
+                  <stop offset="95%" stopColor="hsl(var(--secondary))" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--b3))" opacity={0.5} />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" opacity={0.5} />
               <XAxis
                 dataKey="displayDate"
-                tick={{ fill: 'hsl(var(--bc))', fontSize: 12, opacity: 0.6 }}
+                tick={{ fill: 'hsl(var(--foreground))', fontSize: 12, opacity: 0.6 }}
                 tickLine={false}
                 axisLine={false}
                 dy={10}
               />
               <YAxis
-                tick={{ fill: 'hsl(var(--bc))', fontSize: 12, opacity: 0.6 }}
+                tick={{ fill: 'hsl(var(--foreground))', fontSize: 12, opacity: 0.6 }}
                 tickLine={false}
                 axisLine={false}
                 dx={-10}
               />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: 'hsl(var(--b1))',
-                  borderColor: 'hsl(var(--b3))',
+                  backgroundColor: 'hsl(var(--card))',
+                  borderColor: 'hsl(var(--border))',
                   borderRadius: '0.5rem',
                   boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
-                  color: 'hsl(var(--bc))'
+                  color: 'hsl(var(--foreground))'
                 }}
-                itemStyle={{ color: 'hsl(var(--bc))' }}
-                cursor={{ stroke: 'hsl(var(--bc))', strokeWidth: 1, opacity: 0.2 }}
+                itemStyle={{ color: 'hsl(var(--foreground))' }}
+                cursor={{ stroke: 'hsl(var(--foreground))', strokeWidth: 1, opacity: 0.2 }}
               />
               <Legend
                 verticalAlign="top"
@@ -90,7 +90,7 @@ export function VisitorChart({ data, isLoading }: VisitorChartProps) {
                 type="monotone"
                 dataKey="pageviews"
                 name="Pageviews"
-                stroke="hsl(var(--p))"
+                stroke="hsl(var(--primary))"
                 fillOpacity={1}
                 fill="url(#colorPageviews)"
                 strokeWidth={2}
@@ -100,7 +100,7 @@ export function VisitorChart({ data, isLoading }: VisitorChartProps) {
                 type="monotone"
                 dataKey="visitors"
                 name="Unique Visitors"
-                stroke="hsl(var(--s))"
+                stroke="hsl(var(--secondary))"
                 fillOpacity={1}
                 fill="url(#colorVisitors)"
                 strokeWidth={2}

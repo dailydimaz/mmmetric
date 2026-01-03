@@ -59,7 +59,7 @@ export function TopPages({ pages, isLoading }: TopPagesProps) {
                               {page.url}
                             </span>
                             <a
-                              href={`https://${page.url.startsWith('http') ? '' : ''}${page.url}`} // This assumes relative path or needs context of domain, but keeping simple
+                              href={`${page.url.startsWith('http') ? '' : 'https://'}${page.url}`}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="opacity-0 group-hover:opacity-100 text-base-content/40 hover:text-primary transition-all"

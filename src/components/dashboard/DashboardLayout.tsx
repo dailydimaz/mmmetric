@@ -164,7 +164,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
             <ul className="space-y-1">
               {navItems.map((item) => {
-                const isActive = location.pathname === item.href || location.pathname.startsWith(`${item.href}?`);
+                const isActive = location.pathname === item.href || location.pathname.startsWith(`${item.href}/`);
                 return (
                   <li key={item.label}>
                     <Link

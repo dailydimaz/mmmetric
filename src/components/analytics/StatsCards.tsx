@@ -16,7 +16,7 @@ interface StatCardProps {
 }
 
 function StatCard({ title, value, change, icon, desc, isLoading }: StatCardProps) {
-  const isPositive = change && change >= 0;
+  const isPositive = change !== undefined && change >= 0;
 
   return (
     <div className="stat bg-base-100 shadow-sm border border-base-200 rounded-2xl">

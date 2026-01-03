@@ -6,7 +6,7 @@ interface LanguageStatsProps {
   isLoading: boolean;
 }
 
-// Language code to name mapping (truncated for brevity in update, but would keep full list)
+// Language code to name mapping (Full language mapping below)
 const languageNames: Record<string, string> = {
   en: "English", es: "Spanish", fr: "French", de: "German", it: "Italian", pt: "Portuguese",
   ru: "Russian", zh: "Chinese", ja: "Japanese", ko: "Korean", ar: "Arabic", hi: "Hindi",
@@ -50,16 +50,18 @@ export function LanguageStats({ languages, isLoading }: LanguageStatsProps) {
               <tbody>
                 {languages.slice(0, 8).map((lang, index) => (
                   <tr key={index} className="hover:bg-base-50 group border-b border-base-100 last:border-0">
-                    <td className="w-full flex items-center gap-3">
-                      <span className="font-mono text-xs bg-base-200 px-1.5 py-0.5 rounded uppercase text-base-content/60 group-hover:bg-base-300 transition-colors">
-                        {lang.language}
-                      </span>
-                      <span className="font-medium text-sm">{getLanguageName(lang.language)}</span>
-                      <div className="relative flex-1 h-1.5 bg-base-200 rounded-full overflow-hidden max-w-[80px] ml-auto mr-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <div
-                          className="absolute inset-y-0 left-0 bg-success rounded-full"
-                          style={{ width: `${lang.percentage}%` }}
-                        />
+                    <td>
+                      <div className="flex items-center gap-3">
+                        <span className="font-mono text-xs bg-base-200 px-1.5 py-0.5 rounded uppercase text-base-content/60 group-hover:bg-base-300 transition-colors">
+                          {lang.language}
+                        </span>
+                        <span className="font-medium text-sm">{getLanguageName(lang.language)}</span>
+                        <div className="relative flex-1 h-1.5 bg-base-200 rounded-full overflow-hidden max-w-[80px] ml-auto mr-4">
+                          <div
+                            className="absolute inset-y-0 left-0 bg-success rounded-full"
+                            style={{ width: `${lang.percentage}%` }}
+                          />
+                        </div>
                       </div>
                     </td>
                     <td className="text-right font-medium">{lang.visits}</td>
@@ -68,6 +70,11 @@ export function LanguageStats({ languages, isLoading }: LanguageStatsProps) {
                 ))}
               </tbody>
             </table>
+            {languages.length > 8 && (
+              <div className="p-2 text-center text-xs text-base-content/40 border-t border-base-200 bg-base-50/50">
+                Showing top 8 of {languages.length} languages
+              </div>
+            )}
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-12 text-base-content/40">

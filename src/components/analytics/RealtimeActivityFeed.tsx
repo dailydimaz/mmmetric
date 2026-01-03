@@ -6,6 +6,8 @@ interface RealtimeActivityFeedProps {
   siteId: string;
 }
 
+const MAX_DISPLAYED_EVENTS = 20;
+
 function getEventIcon(eventName: string) {
   switch (eventName) {
     case "pageview":
@@ -68,7 +70,7 @@ export function RealtimeActivityFeed({ siteId }: RealtimeActivityFeedProps) {
             </div>
           ) : (
             <div className="flex flex-col">
-              {recentEvents.slice(0, 20).map((event) => (
+              {recentEvents.slice(0, MAX_DISPLAYED_EVENTS).map((event) => (
                 <div
                   key={event.id}
                   className="group flex items-start gap-3 p-3 hover:bg-base-50 transition-all border-b border-base-100 last:border-0 animate-in fade-in slide-in-from-top-2 duration-300"
@@ -102,7 +104,7 @@ export function RealtimeActivityFeed({ siteId }: RealtimeActivityFeedProps) {
                       </p>
                     )}
 
-                    {/* Details (Browser/OS) hidden by default, visible on hover often looks cleaner, keeps it minimal */}
+                    {/* Details (Browser/OS) - Visible by default for better scanability */}
                     <div className="flex items-center gap-2 text-[10px] text-base-content/40">
                       {event.browser} • {event.device_type}
                     </div>
