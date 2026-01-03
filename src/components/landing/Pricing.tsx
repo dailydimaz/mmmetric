@@ -75,13 +75,12 @@ export function Pricing() {
 
         <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
           {tiers.map((tier) => (
-            <div 
+            <div
               key={tier.name}
-              className={`card border ${
-                tier.highlighted 
-                  ? "border-primary bg-base-100 shadow-xl shadow-primary/10 scale-105 z-10" 
+              className={`card border ${tier.highlighted
+                  ? "border-primary bg-base-100 shadow-xl shadow-primary/10 scale-105 z-10"
                   : "bg-base-100 border-base-300"
-              }`}
+                }`}
             >
               {tier.highlighted && (
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2">
@@ -114,7 +113,7 @@ export function Pricing() {
                 </ul>
 
                 <div className="card-actions mt-6">
-                  <Link 
+                  <Link
                     to="/auth?mode=signup"
                     className={`btn w-full ${tier.highlighted ? "btn-primary" : "btn-outline"}`}
                   >
@@ -155,8 +154,8 @@ export function Pricing() {
                     <span className="font-semibold">Free forever</span>
                   </div>
                 </div>
-                <a 
-                  href="https://github.com/dailydimaz/metric" 
+                <a
+                  href="https://github.com/dailydimaz/mmmetric"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="btn btn-outline btn-sm"

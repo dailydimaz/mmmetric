@@ -15,9 +15,9 @@ export function OpenSource() {
             Powered by{" "}
             <span className="text-primary">open source</span>
           </h2>
-          
+
           <p className="mt-6 text-lg text-base-content/70 max-w-2xl mx-auto leading-relaxed">
-            mmmetric is proudly open source and MIT licensed. Thousands of developers 
+            mmmetric is proudly open source and MIT licensed. Thousands of developers
             worldwide can share and contribute to make analytics better for everyone.
           </p>
 
@@ -48,18 +48,18 @@ export function OpenSource() {
 
           {/* CTA */}
           <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <a 
-              href="https://github.com/dailydimaz/metric" 
-              target="_blank" 
+            <a
+              href="https://github.com/dailydimaz/mmmetric"
+              target="_blank"
               rel="noopener noreferrer"
               className="btn btn-outline gap-2"
             >
               <Github className="h-5 w-5" />
               View on GitHub
             </a>
-            <a 
-              href="https://github.com/dailydimaz/metric/blob/main/CONTRIBUTING.md"
-              target="_blank" 
+            <a
+              href="https://github.com/dailydimaz/mmmetric/blob/main/CONTRIBUTING.md"
+              target="_blank"
               rel="noopener noreferrer"
               className="btn btn-ghost gap-2"
             >
@@ -71,7 +71,7 @@ export function OpenSource() {
           {/* Quote */}
           <div className="mt-16 p-8 rounded-2xl bg-base-100 border border-base-300 max-w-2xl mx-auto">
             <blockquote className="text-lg italic text-base-content/80">
-              "Open source allows everyone to verify exactly how their data is handled. 
+              "Open source allows everyone to verify exactly how their data is handled.
               No black boxes, no hidden tracking, just transparent analytics."
             </blockquote>
             <p className="mt-4 text-sm text-base-content/60">

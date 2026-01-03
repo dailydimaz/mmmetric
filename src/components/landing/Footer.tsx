@@ -12,17 +12,17 @@ const footerLinks = {
   resources: [
     { label: "Documentation", href: "#" },
     { label: "API Reference", href: "#" },
-    { label: "GitHub", href: "https://github.com/dailydimaz/metric", external: true },
+    { label: "GitHub", href: "https://github.com/dailydimaz/mmmetric", external: true },
   ],
   community: [
-    { label: "Contributing", href: "https://github.com/dailydimaz/metric/blob/main/CONTRIBUTING.md", external: true },
-    { label: "Discussions", href: "https://github.com/dailydimaz/metric/discussions", external: true },
-    { label: "Issues", href: "https://github.com/dailydimaz/metric/issues", external: true },
+    { label: "Contributing", href: "https://github.com/dailydimaz/mmmetric/blob/main/CONTRIBUTING.md", external: true },
+    { label: "Discussions", href: "https://github.com/dailydimaz/mmmetric/discussions", external: true },
+    { label: "Issues", href: "https://github.com/dailydimaz/mmmetric/issues", external: true },
   ],
   legal: [
     { label: "Privacy Policy", href: "#" },
     { label: "Terms of Service", href: "#" },
-    { label: "MIT License", href: "https://github.com/dailydimaz/metric/blob/main/LICENSE", external: true },
+    { label: "MIT License", href: "https://github.com/dailydimaz/mmmetric/blob/main/LICENSE", external: true },
   ],
 };
 
@@ -33,7 +33,7 @@ export function Footer() {
     <footer className="relative overflow-hidden bg-base-200 border-t border-base-300">
       {/* Subtle gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-transparent to-base-300/30 pointer-events-none" />
-      
+
       <div className="container mx-auto px-4 lg:px-8 py-16 relative">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8">
           {/* Brand Section */}
@@ -42,29 +42,29 @@ export function Footer() {
               <img src={mmmetricLogo} alt="mmmetric" className="h-10 w-10 rounded-xl shadow-lg shadow-primary/25 transition-transform group-hover:scale-105" />
               <span className="font-display text-2xl font-bold">mmmetric</span>
             </Link>
-            
+
             <p className="mt-6 text-base-content/60 max-w-sm leading-relaxed">
               Privacy-first analytics that respects your users. No cookies, no tracking across sites, just the insights you need.
             </p>
-            
+
             {/* Social Links */}
             <div className="mt-8 flex items-center gap-3">
-              <a 
-                href="#" 
+              <a
+                href="#"
                 className="btn btn-circle btn-sm bg-base-300/50 border-0 hover:bg-primary hover:text-primary-content transition-all duration-300"
                 aria-label="Twitter"
               >
                 <Twitter className="h-4 w-4" />
               </a>
-              <a 
-                href="#" 
+              <a
+                href="#"
                 className="btn btn-circle btn-sm bg-base-300/50 border-0 hover:bg-primary hover:text-primary-content transition-all duration-300"
                 aria-label="GitHub"
               >
                 <Github className="h-4 w-4" />
               </a>
-              <a 
-                href="#" 
+              <a
+                href="#"
                 className="btn btn-circle btn-sm bg-base-300/50 border-0 hover:bg-primary hover:text-primary-content transition-all duration-300"
                 aria-label="Email"
               >
@@ -82,8 +82,8 @@ export function Footer() {
               <ul className="space-y-3">
                 {footerLinks.product.map((link) => (
                   <li key={link.label}>
-                    <a 
-                      href={link.href} 
+                    <a
+                      href={link.href}
                       className="text-base-content/70 hover:text-primary transition-colors inline-flex items-center gap-1 group"
                     >
                       {link.label}
@@ -100,8 +100,8 @@ export function Footer() {
               <ul className="space-y-3">
                 {footerLinks.resources.map((link) => (
                   <li key={link.label}>
-                    <a 
-                      href={link.href} 
+                    <a
+                      href={link.href}
                       className="text-base-content/70 hover:text-primary transition-colors inline-flex items-center gap-1 group"
                       {...(link.external && { target: "_blank", rel: "noopener noreferrer" })}
                     >
@@ -122,8 +122,8 @@ export function Footer() {
               <ul className="space-y-3">
                 {footerLinks.community.map((link) => (
                   <li key={link.label}>
-                    <a 
-                      href={link.href} 
+                    <a
+                      href={link.href}
                       className="text-base-content/70 hover:text-primary transition-colors inline-flex items-center gap-1 group"
                       {...(link.external && { target: "_blank", rel: "noopener noreferrer" })}
                     >
@@ -144,8 +144,8 @@ export function Footer() {
               <ul className="space-y-3">
                 {footerLinks.legal.map((link) => (
                   <li key={link.label}>
-                    <a 
-                      href={link.href} 
+                    <a
+                      href={link.href}
                       className="text-base-content/70 hover:text-primary transition-colors inline-flex items-center gap-1 group"
                       {...(link.external && { target: "_blank", rel: "noopener noreferrer" })}
                     >

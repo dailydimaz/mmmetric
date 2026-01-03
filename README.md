@@ -56,8 +56,8 @@ mmmetric can be self-hosted using Supabase as the backend.
 
 ```bash
 # Clone the repository
-git clone https://github.com/dailydimaz/metric.git
-cd metric
+git clone https://github.com/dailydimaz/mmmetric.git
+cd mmmetric
 
 # Install dependencies
 npm install

@@ -443,10 +443,9 @@ export default function Roadmap() {
                 className={`
                   relative group rounded-2xl border p-5 transition-all duration-300
                   bg-gradient-to-br ${categoryColors[feature.category]}
-                  ${
-                    feature.implemented
-                      ? "opacity-100 hover:scale-[1.02] hover:shadow-lg"
-                      : "opacity-70 hover:opacity-90"
+                  ${feature.implemented
+                    ? "opacity-100 hover:scale-[1.02] hover:shadow-lg"
+                    : "opacity-70 hover:opacity-90"
                   }
                 `}
               >
@@ -511,7 +510,7 @@ export default function Roadmap() {
           </p>
           <div className="flex items-center justify-center gap-4">
             <a
-              href="https://github.com/dailydimaz/metric"
+              href="https://github.com/dailydimaz/mmmetric"
               target="_blank"
               rel="noopener noreferrer"
               className="btn btn-primary"
