@@ -30,9 +30,9 @@ const App = () => (
           <Route path="/roadmap" element={<Roadmap />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/dashboard/sites/:id" element={<SiteDetail />} />
-          <Route path="/dashboard/funnels" element={<Funnels />} />
-          <Route path="/dashboard/funnels/:funnelId" element={<FunnelDetail />} />
-          <Route path="/dashboard/retention" element={<Retention />} />
+          <Route path="/dashboard/sites/:siteId/funnels" element={<Funnels />} />
+          <Route path="/dashboard/sites/:siteId/funnels/:funnelId" element={<FunnelDetail />} />
+          <Route path="/dashboard/sites/:siteId/retention" element={<Retention />} />
           <Route path="/dashboard/settings" element={<Settings />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

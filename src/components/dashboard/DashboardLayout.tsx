@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate, useLocation, useParams } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useSites } from "@/hooks/useSites";
 import { CreateSiteDialog } from "@/components/dashboard/CreateSiteDialog";
@@ -20,8 +20,8 @@ import {
 const getNavItems = (siteId: string | null) => [
   { icon: LayoutDashboard, label: "Overview", href: "/dashboard" },
   { icon: MousePointerClick, label: "Analytics", href: siteId ? `/dashboard/sites/${siteId}` : "/dashboard", siteSpecific: true },
-  { icon: GitBranch, label: "Funnels", href: siteId ? `/dashboard/funnels?siteId=${siteId}` : "/dashboard/funnels", siteSpecific: true },
-  { icon: Users, label: "Retention", href: siteId ? `/dashboard/retention?siteId=${siteId}` : "/dashboard/retention", siteSpecific: true },
+  { icon: GitBranch, label: "Funnels", href: siteId ? `/dashboard/sites/${siteId}/funnels` : "/dashboard", siteSpecific: true },
+  { icon: Users, label: "Retention", href: siteId ? `/dashboard/sites/${siteId}/retention` : "/dashboard", siteSpecific: true },
 ];
 
 interface DashboardLayoutProps {
@@ -35,23 +35,29 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const location = useLocation();
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
 
+  const params = useParams<{ siteId?: string; id?: string }>();
+  // Prefer siteId from params (new routes), fall back to id (SiteDetail), then localStorage
+  const urlSiteId = params.siteId || params.id;
+
   // Persist selected site in localStorage
   const [selectedSiteId, setSelectedSiteId] = useState<string | null>(() => {
-    return localStorage.getItem("selectedSiteId");
+    return urlSiteId || localStorage.getItem("selectedSiteId");
   });
 
+  // Sync state with URL params if they exist
   useEffect(() => {
-    if (selectedSiteId) {
-      localStorage.setItem("selectedSiteId", selectedSiteId);
+    if (urlSiteId) {
+      setSelectedSiteId(urlSiteId);
+      localStorage.setItem("selectedSiteId", urlSiteId);
     }
-  }, [selectedSiteId]);
+  }, [urlSiteId]);
 
-  // Auto-select first site if none selected
+  // Auto-select first site if none selected and no URL param
   useEffect(() => {
-    if (!selectedSiteId && sites.length > 0) {
+    if (!selectedSiteId && !urlSiteId && sites.length > 0) {
       setSelectedSiteId(sites[0].id);
     }
-  }, [sites, selectedSiteId]);
+  }, [sites, selectedSiteId, urlSiteId]);
 
   const selectedSite = sites.find((s) => s.id === selectedSiteId) ?? sites[0];
   const navItems = getNavItems(selectedSiteId);
@@ -95,7 +101,17 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                   {sites.map((site) => (
                     <li key={site.id}>
                       <a
-                        onClick={() => setSelectedSiteId(site.id)}
+                        onClick={() => {
+                          setSelectedSiteId(site.id);
+                          // Preserve current view context (analytics, funnels, retention)
+                          if (location.pathname.includes("/funnels")) {
+                            navigate(`/dashboard/sites/${site.id}/funnels`);
+                          } else if (location.pathname.includes("/retention")) {
+                            navigate(`/dashboard/sites/${site.id}/retention`);
+                          } else {
+                            navigate(`/dashboard/sites/${site.id}`); // Default to Analytics
+                          }
+                        }}
                         className={selectedSiteId === site.id ? "active" : ""}
                       >
                         <div className="flex flex-col gap-0.5">

@@ -21,7 +21,7 @@ import {
 import { DateRange } from "@/hooks/useAnalytics";
 
 export default function FunnelDetail() {
-  const { funnelId } = useParams<{ funnelId: string }>();
+  const { siteId, funnelId } = useParams<{ siteId: string; funnelId: string }>();
   const navigate = useNavigate();
   const [dateRange, setDateRange] = useState<DateRange>("30d");
   const [showBuilder, setShowBuilder] = useState(false);
@@ -32,11 +32,11 @@ export default function FunnelDetail() {
 
   const handleDelete = async () => {
     if (data?.funnel) {
-      await deleteFunnel.mutateAsync({ 
-        id: data.funnel.id, 
-        siteId: data.funnel.site_id 
+      await deleteFunnel.mutateAsync({
+        id: data.funnel.id,
+        siteId: data.funnel.site_id
       });
-      navigate(`/dashboard/sites/${data.funnel.site_id}`);
+      navigate(`/dashboard/sites/${siteId}/funnels`);
     }
   };
 
@@ -80,7 +80,7 @@ export default function FunnelDetail() {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => navigate(`/dashboard/sites/${funnel.site_id}`)}
+              onClick={() => navigate(`/dashboard/sites/${siteId}/funnels`)}
             >
               <ArrowLeft className="h-4 w-4" />
             </Button>

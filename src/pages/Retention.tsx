@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useParams, useNavigate, useSearchParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,9 +13,8 @@ import { DateRange } from "@/hooks/useAnalytics";
 
 export default function Retention() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const siteIdParam = searchParams.get("siteId");
-  
+  const { siteId: siteIdParam } = useParams<{ siteId: string }>();
+
   const { sites } = useSites();
   const [dateRange, setDateRange] = useState<DateRange>("30d");
 
@@ -25,6 +24,12 @@ export default function Retention() {
 
   const { data: cohortData, isLoading: cohortsLoading } = useRetentionCohorts(siteId, dateRange);
   const { data: trendData, isLoading: trendLoading } = useRetentionTrend(siteId, dateRange);
+
+  // Redirect if no site ID
+  if (!siteIdParam && sites.length > 0) {
+    navigate(`/dashboard/sites/${sites[0].id}/retention`, { replace: true });
+    return null;
+  }
 
   if (!siteId || !site) {
     return (

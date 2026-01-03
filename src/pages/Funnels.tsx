@@ -1,16 +1,16 @@
 import { useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { FunnelBuilder } from "@/components/analytics/FunnelBuilder";
 import { useFunnels, useFunnelAnalytics, Funnel } from "@/hooks/useFunnels";
 import { useSites } from "@/hooks/useSites";
-import { 
-  ArrowLeft, 
-  GitBranch, 
-  Plus, 
-  ChevronRight, 
+import {
+  ArrowLeft,
+  GitBranch,
+  Plus,
+  ChevronRight,
   TrendingDown,
   Users,
   Target
@@ -51,9 +51,8 @@ function FunnelQuickStats({ funnelId }: { funnelId: string }) {
 
 export default function Funnels() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const siteIdParam = searchParams.get("siteId");
-  
+  const { siteId: siteIdParam } = useParams<{ siteId: string }>();
+
   const { sites } = useSites();
   const [showBuilder, setShowBuilder] = useState(false);
 
@@ -62,6 +61,12 @@ export default function Funnels() {
   const site = sites.find(s => s.id === siteId);
 
   const { data: funnels, isLoading } = useFunnels(siteId);
+
+  // Redirect to dashboard if no site ID in URL
+  if (!siteIdParam && sites.length > 0) {
+    navigate(`/dashboard/sites/${sites[0].id}/funnels`, { replace: true });
+    return null;
+  }
 
   if (!siteId || !site) {
     return (
@@ -184,7 +189,7 @@ export default function Funnels() {
                 {funnels.map((funnel) => (
                   <Link
                     key={funnel.id}
-                    to={`/dashboard/funnels/${funnel.id}`}
+                    to={`/dashboard/sites/${siteId}/funnels/${funnel.id}`}
                     className="block"
                   >
                     <div className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-muted/50 transition-colors">
