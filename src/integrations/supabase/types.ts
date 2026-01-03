@@ -576,6 +576,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_team_member_profile: {
+        Args: { _user_id: string }
+        Returns: {
+          avatar_url: string
+          full_name: string
+          id: string
+        }[]
+      }
       is_site_owner: { Args: { _site_id: string }; Returns: boolean }
       is_team_member_of_same_site: {
         Args: { _profile_user_id: string }
