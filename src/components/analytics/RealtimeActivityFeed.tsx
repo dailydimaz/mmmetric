@@ -106,7 +106,7 @@ export function RealtimeActivityFeed({ siteId }: RealtimeActivityFeedProps) {
 
                     {/* Details (Browser/OS) - Visible by default for better scannability */}
                     <div className="flex items-center gap-2 text-[10px] text-base-content/40">
-                      {event.browser} • {event.device_type}
+                      {event.browser ?? 'Unknown browser'} • {event.device_type ?? 'Unknown device'}
                     </div>
                   </div>
                 </div>
