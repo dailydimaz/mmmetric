@@ -44,7 +44,7 @@ export function RetentionCard({ siteId, dateRange }: RetentionCardProps) {
           <Users className="h-5 w-5" />
           Retention
         </CardTitle>
-        <Link to={`/dashboard/retention?siteId=${siteId}`}>
+        <Link to={`/dashboard/sites/${siteId}/retention`}>
           <Button variant="ghost" size="sm">
             View Details
             <ChevronRight className="h-4 w-4 ml-1" />
@@ -73,7 +73,7 @@ export function RetentionCard({ siteId, dateRange }: RetentionCardProps) {
           <div className="flex items-center gap-2">
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
             <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
-              <div 
+              <div
                 className="h-full bg-primary rounded-full transition-all"
                 style={{ width: `${day7}%` }}
               />

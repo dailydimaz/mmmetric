@@ -30,7 +30,7 @@ interface FunnelListProps {
 export function FunnelList({ siteId }: FunnelListProps) {
   const { data: funnels, isLoading } = useFunnels(siteId);
   const deleteFunnel = useDeleteFunnel();
-  
+
   const [showBuilder, setShowBuilder] = useState(false);
   const [editingFunnel, setEditingFunnel] = useState<Funnel | undefined>();
   const [deletingFunnel, setDeletingFunnel] = useState<Funnel | undefined>();
@@ -105,7 +105,7 @@ export function FunnelList({ siteId }: FunnelListProps) {
                   className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-muted/50 transition-colors"
                 >
                   <Link
-                    to={`/dashboard/funnels/${funnel.id}`}
+                    to={`/dashboard/sites/${siteId}/funnels/${funnel.id}`}
                     className="flex-1 min-w-0"
                   >
                     <div className="flex items-center gap-3">
@@ -127,7 +127,7 @@ export function FunnelList({ siteId }: FunnelListProps) {
                     <span className="text-xs text-muted-foreground hidden sm:block">
                       {format(new Date(funnel.created_at), "MMM d, yyyy")}
                     </span>
-                    
+
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="icon">
@@ -149,7 +149,7 @@ export function FunnelList({ siteId }: FunnelListProps) {
                       </DropdownMenuContent>
                     </DropdownMenu>
 
-                    <Link to={`/dashboard/funnels/${funnel.id}`}>
+                    <Link to={`/dashboard/sites/${siteId}/funnels/${funnel.id}`}>
                       <Button variant="ghost" size="icon">
                         <ChevronRight className="h-4 w-4" />
                       </Button>
