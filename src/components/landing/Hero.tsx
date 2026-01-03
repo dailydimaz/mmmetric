@@ -1,6 +1,13 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, Shield, Zap, BarChart3, CheckCircle2 } from "lucide-react";
+import { ArrowRight, Shield, Zap, BarChart3, CheckCircle2, Eye, Users, MousePointerClick, TrendingUp, Clock, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
+import { AreaChart, Area, ResponsiveContainer, CartesianGrid, Tooltip } from "recharts";
+
+const mockChartData = Array.from({ length: 24 }).map((_, i) => ({
+  name: i.toString(),
+  visitors: Math.floor(Math.random() * 100) + 50,
+  pageviews: Math.floor(Math.random() * 150) + 80,
+}));
 
 export function Hero() {
   return (
@@ -72,62 +79,109 @@ export function Hero() {
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="mt-20 relative max-w-5xl mx-auto"
+          className="mt-20 relative max-w-6xl mx-auto"
         >
           <div className="absolute inset-0 bg-gradient-to-t from-base-100 via-transparent to-transparent z-10 pointer-events-none" />
 
           <div className="relative rounded-xl border border-base-content/10 bg-base-100 shadow-2xl overflow-hidden ring-1 ring-base-content/5">
-            {/* Window Controls */}
-            <div className="flex items-center gap-2 px-4 py-3 border-b border-base-content/10 bg-base-200/50 backdrop-blur-sm">
-              <div className="flex gap-1.5">
+            {/* Window Controls & Header - Mimicking Dashboard Header */}
+            <div className="flex items-center gap-4 px-4 py-3 border-b border-base-content/10 bg-base-200/50 backdrop-blur-sm">
+              <div className="flex gap-1.5 mr-4">
                 <div className="h-3 w-3 rounded-full bg-error/80" />
                 <div className="h-3 w-3 rounded-full bg-warning/80" />
                 <div className="h-3 w-3 rounded-full bg-success/80" />
               </div>
-              <div className="flex-1 text-center">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-base-100 border border-base-content/5 text-xs text-base-content/50 font-medium">
-                  <BarChart3 className="h-3 w-3" />
-                  metric.lovable.app
+
+              <div className="flex-1 flex items-center justify-between">
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-base-100 border border-base-content/5 text-sm font-medium">
+                  <div className="w-2 h-2 rounded-full bg-success animate-pulse" />
+                  mmmetric.lovable.app
+                </div>
+
+                {/* Mock Date Picker */}
+                <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg border border-base-content/10 bg-base-100 text-xs font-medium text-base-content/70">
+                  <Calendar className="h-3.5 w-3.5" />
+                  <span>Last 7 days</span>
                 </div>
               </div>
             </div>
 
-            {/* Content */}
+            {/* Dashboard Content */}
             <div className="p-6 bg-base-100/50 backdrop-blur-xl">
-              <div className="grid grid-cols-4 gap-4 mb-8">
+              {/* Stats Grid - Matching StatsCards.tsx style */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                 {[
-                  { label: "Unique Visitors", value: "12,847", change: "+12.5%", trend: "up" },
-                  { label: "Page Views", value: "48,291", change: "+8.2%", trend: "up" },
-                  { label: "Bounce Rate", value: "42.3%", change: "-3.1%", trend: "down" },
-                  { label: "Live Users", value: "24", change: "+4", trend: "up" },
+                  { title: "Total Views", value: "48.2k", change: 12.5, icon: Eye },
+                  { title: "Unique Visitors", value: "12.8k", change: 8.2, icon: Users },
+                  { title: "Bounce Rate", value: "42.3%", change: -3.1, icon: MousePointerClick, isInverse: true },
+                  { title: "Avg. Session", value: "2m 14s", change: 4.5, icon: Clock },
                 ].map((stat, i) => (
-                  <div key={i} className="p-4 rounded-xl border border-base-content/10 bg-base-100/50 hover:bg-base-100 transition-colors">
-                    <div className="text-sm text-base-content/60 mb-1">{stat.label}</div>
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-2xl font-bold">{stat.value}</span>
-                      <span className={`text-xs font-medium ${stat.trend === 'up' ? 'text-emerald-500' : 'text-rose-500'}`}>
-                        {stat.change}
-                      </span>
+                  <div key={i} className="bg-base-100 p-4 rounded-2xl border border-base-content/5 shadow-sm">
+                    <div className="flex justify-between items-start mb-2">
+                      <div className="p-2 bg-primary/10 rounded-xl text-primary">
+                        <stat.icon className="h-4 w-4" />
+                      </div>
+                      <div className={`flex items-center gap-1 text-xs font-medium ${(stat.isInverse ? stat.change < 0 : stat.change > 0) ? 'text-success' : 'text-error'
+                        }`}>
+                        <TrendingUp className="h-3 w-3" />
+                        {Math.abs(stat.change)}%
+                      </div>
                     </div>
+                    <div className="text-2xl font-bold tracking-tight mb-1">{stat.value}</div>
+                    <div className="text-xs text-base-content/50 font-medium">{stat.title}</div>
                   </div>
                 ))}
               </div>
 
-              {/* Fake Chart */}
-              <div className="relative h-64 w-full rounded-xl border border-base-content/10 bg-base-100/50 p-6 flex items-end gap-1 overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent" />
-                {Array.from({ length: 48 }).map((_, i) => {
-                  const height = 30 + Math.random() * 60;
-                  return (
-                    <motion.div
-                      key={i}
-                      initial={{ height: 0 }}
-                      animate={{ height: `${height}%` }}
-                      transition={{ duration: 1, delay: 0.5 + i * 0.02 }}
-                      className="flex-1 min-w-[4px] rounded-t-sm bg-primary/80"
-                    />
-                  );
-                })}
+              {/* Main Chart - Using Recharts to match VisitorChart.tsx */}
+              <div className="rounded-2xl border border-base-content/5 bg-base-100 shadow-sm overflow-hidden">
+                <div className="flex items-center gap-2 p-4 border-b border-base-content/5">
+                  <div className="p-2 bg-primary/10 rounded-lg text-primary">
+                    <BarChart3 className="h-4 w-4" />
+                  </div>
+                  <h3 className="font-semibold text-sm">Traffic Overview</h3>
+                </div>
+                <div className="p-4 h-[300px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={mockChartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                      <defs>
+                        <linearGradient id="colorPageviewsHero" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.2} />
+                          <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                        </linearGradient>
+                        <linearGradient id="colorVisitorsHero" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="hsl(var(--secondary))" stopOpacity={0.2} />
+                          <stop offset="95%" stopColor="hsl(var(--secondary))" stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" opacity={0.3} />
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: 'hsl(var(--card))',
+                          borderColor: 'hsl(var(--border))',
+                          borderRadius: '0.5rem',
+                          fontSize: '12px',
+                          boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+                        }}
+                        cursor={{ stroke: 'hsl(var(--foreground))', strokeWidth: 1, opacity: 0.1 }}
+                      />
+                      <Area
+                        type="monotone"
+                        dataKey="pageviews"
+                        stroke="hsl(var(--primary))"
+                        fill="url(#colorPageviewsHero)"
+                        strokeWidth={2}
+                      />
+                      <Area
+                        type="monotone"
+                        dataKey="visitors"
+                        stroke="hsl(var(--secondary))"
+                        fill="url(#colorVisitorsHero)"
+                        strokeWidth={2}
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
               </div>
             </div>
           </div>

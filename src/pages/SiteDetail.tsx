@@ -3,13 +3,13 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useSites } from "@/hooks/useSites";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
-import { 
-  ArrowLeft, 
-  Globe, 
-  Clock, 
-  Copy, 
-  Check, 
-  Trash2, 
+import {
+  ArrowLeft,
+  Globe,
+  Clock,
+  Copy,
+  Check,
+  Trash2,
   Settings,
   Code,
   Zap,
@@ -19,12 +19,12 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { 
-  StatsCards, 
-  VisitorChart, 
-  TopPages, 
-  TopReferrers, 
-  DeviceStats, 
+import {
+  StatsCards,
+  VisitorChart,
+  TopPages,
+  TopReferrers,
+  DeviceStats,
   GeoStats,
   LanguageStats,
   UTMStats,
@@ -38,17 +38,17 @@ import {
   FunnelList,
   RetentionCard,
 } from "@/components/analytics";
-import { 
-  useAnalyticsStats, 
-  useAnalyticsTimeSeries, 
-  useTopPages, 
-  useTopReferrers, 
-  useDeviceStats, 
+import {
+  useAnalyticsStats,
+  useAnalyticsTimeSeries,
+  useTopPages,
+  useTopReferrers,
+  useDeviceStats,
   useGeoStats,
   useCityStats,
   useLanguageStats,
   useUTMStats,
-  DateRange 
+  DateRange
 } from "@/hooks/useAnalytics";
 
 export default function SiteDetail() {
@@ -69,41 +69,41 @@ export default function SiteDetail() {
   const site = sites.find((s) => s.id === id);
 
   // Analytics hooks
-  const { data: stats, isLoading: statsLoading } = useAnalyticsStats({ 
-    siteId: id || "", 
-    dateRange 
+  const { data: stats, isLoading: statsLoading } = useAnalyticsStats({
+    siteId: id || "",
+    dateRange
   });
-  const { data: timeSeries, isLoading: timeSeriesLoading } = useAnalyticsTimeSeries({ 
-    siteId: id || "", 
-    dateRange 
+  const { data: timeSeries, isLoading: timeSeriesLoading } = useAnalyticsTimeSeries({
+    siteId: id || "",
+    dateRange
   });
-  const { data: topPages, isLoading: pagesLoading } = useTopPages({ 
-    siteId: id || "", 
-    dateRange 
+  const { data: topPages, isLoading: pagesLoading } = useTopPages({
+    siteId: id || "",
+    dateRange
   });
-  const { data: topReferrers, isLoading: referrersLoading } = useTopReferrers({ 
-    siteId: id || "", 
-    dateRange 
+  const { data: topReferrers, isLoading: referrersLoading } = useTopReferrers({
+    siteId: id || "",
+    dateRange
   });
-  const { data: deviceStats, isLoading: devicesLoading } = useDeviceStats({ 
-    siteId: id || "", 
-    dateRange 
+  const { data: deviceStats, isLoading: devicesLoading } = useDeviceStats({
+    siteId: id || "",
+    dateRange
   });
-  const { data: geoStats, isLoading: geoLoading } = useGeoStats({ 
-    siteId: id || "", 
-    dateRange 
+  const { data: geoStats, isLoading: geoLoading } = useGeoStats({
+    siteId: id || "",
+    dateRange
   });
-  const { data: cityStats, isLoading: citiesLoading } = useCityStats({ 
-    siteId: id || "", 
-    dateRange 
+  const { data: cityStats, isLoading: citiesLoading } = useCityStats({
+    siteId: id || "",
+    dateRange
   });
-  const { data: languageStats, isLoading: languagesLoading } = useLanguageStats({ 
-    siteId: id || "", 
-    dateRange 
+  const { data: languageStats, isLoading: languagesLoading } = useLanguageStats({
+    siteId: id || "",
+    dateRange
   });
-  const { data: utmStats, isLoading: utmLoading } = useUTMStats({ 
-    siteId: id || "", 
-    dateRange 
+  const { data: utmStats, isLoading: utmLoading } = useUTMStats({
+    siteId: id || "",
+    dateRange
   });
 
   useEffect(() => {
@@ -162,7 +162,7 @@ export default function SiteDetail() {
   const testConnection = async () => {
     if (!site) return;
     setTestStatus('testing');
-    
+
     try {
       // Send a test event directly to the track edge function
       const response = await supabase.functions.invoke('track', {
@@ -181,7 +181,7 @@ export default function SiteDetail() {
 
       // Wait a moment and check if the event was recorded
       await new Promise(resolve => setTimeout(resolve, 1500));
-      
+
       const { data: events, error: queryError } = await supabase
         .from('events')
         .select('id')
@@ -245,41 +245,43 @@ export default function SiteDetail() {
     <DashboardLayout>
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex items-center gap-4">
-          <button 
-            className="btn btn-ghost btn-sm btn-circle"
-            onClick={() => navigate("/dashboard")}
-          >
-            <ArrowLeft className="h-4 w-4" />
-          </button>
-          <div className="flex-1">
-            {isEditing ? (
-              <input
-                type="text"
-                className="input input-bordered text-2xl font-bold w-full max-w-xs"
-                value={editName}
-                onChange={(e) => setEditName(e.target.value)}
-                autoFocus
-              />
-            ) : (
-              <h1 className="text-2xl font-bold tracking-tight">{site.name}</h1>
-            )}
-            <p className="text-base-content/70 flex items-center gap-2">
-              <Globe className="h-4 w-4" />
+        <div className="flex flex-col md:flex-row md:items-center gap-4">
+          <div className="flex items-center gap-4 w-full md:w-auto">
+            <button
+              className="btn btn-ghost btn-sm btn-circle"
+              onClick={() => navigate("/dashboard")}
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </button>
+            <div className="flex-1">
               {isEditing ? (
                 <input
                   type="text"
-                  className="input input-bordered input-sm"
-                  value={editDomain}
-                  onChange={(e) => setEditDomain(e.target.value)}
-                  placeholder="example.com"
+                  className="input input-bordered text-2xl font-bold w-full max-w-xs"
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  autoFocus
                 />
               ) : (
-                site.domain || "No domain set"
+                <h1 className="text-2xl font-bold tracking-tight">{site.name}</h1>
               )}
-            </p>
+              <p className="text-base-content/70 flex items-center gap-2">
+                <Globe className="h-4 w-4" />
+                {isEditing ? (
+                  <input
+                    type="text"
+                    className="input input-bordered input-sm"
+                    value={editDomain}
+                    onChange={(e) => setEditDomain(e.target.value)}
+                    placeholder="example.com"
+                  />
+                ) : (
+                  site.domain || "No domain set"
+                )}
+              </p>
+            </div>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
             <ExportButton siteId={site.id} siteName={site.name} dateRange={dateRange} />
             <DateRangePicker value={dateRange} onChange={setDateRange} />
             {isEditing ? (
@@ -287,8 +289,8 @@ export default function SiteDetail() {
                 <button className="btn btn-ghost" onClick={() => setIsEditing(false)}>
                   Cancel
                 </button>
-                <button 
-                  className="btn btn-primary" 
+                <button
+                  className="btn btn-primary"
                   onClick={handleSave}
                   disabled={updateSite.isPending}
                 >
@@ -301,8 +303,8 @@ export default function SiteDetail() {
               </>
             ) : (
               <>
-                <button 
-                  className="btn btn-ghost" 
+                <button
+                  className="btn btn-ghost"
                   onClick={() => setShowSettings(!showSettings)}
                 >
                   <Settings className="h-4 w-4" />
@@ -323,8 +325,8 @@ export default function SiteDetail() {
                     <Settings className="h-4 w-4 mr-2" />
                     Edit
                   </button>
-                  <button 
-                    className="btn btn-error btn-outline btn-sm" 
+                  <button
+                    className="btn btn-error btn-outline btn-sm"
                     onClick={handleDelete}
                     disabled={deleteSite.isPending}
                   >
@@ -333,7 +335,7 @@ export default function SiteDetail() {
                   </button>
                 </div>
               </div>
-              
+
               {/* Site Info Cards */}
               <div className="grid gap-4 md:grid-cols-3 mt-4">
                 {/* Tracking ID */}
@@ -343,7 +345,7 @@ export default function SiteDetail() {
                     <code className="flex-1 font-mono text-sm bg-base-300 px-3 py-2 rounded-lg truncate">
                       {site.tracking_id}
                     </code>
-                    <button 
+                    <button
                       className="btn btn-ghost btn-sm btn-square"
                       onClick={copyTrackingId}
                     >
@@ -394,12 +396,11 @@ export default function SiteDetail() {
                   This lightweight script (~1KB) tracks page views, custom events, and UTM parameters while respecting user privacy.
                 </p>
                 <div className="flex justify-end gap-2 mt-2">
-                  <button 
-                    className={`btn btn-sm ${
-                      testStatus === 'success' ? 'btn-success' : 
-                      testStatus === 'error' ? 'btn-error' : 
-                      'btn-outline'
-                    }`}
+                  <button
+                    className={`btn btn-sm ${testStatus === 'success' ? 'btn-success' :
+                        testStatus === 'error' ? 'btn-error' :
+                          'btn-outline'
+                      }`}
                     onClick={testConnection}
                     disabled={testStatus === 'testing'}
                   >
@@ -460,17 +461,17 @@ export default function SiteDetail() {
 
           {/* Goals, Retention & Custom Events */}
           <div className="grid gap-6 lg:grid-cols-3">
-            <GoalsCard 
-              siteId={site.id} 
-              dateRange={dateRange} 
-              onCreateGoal={() => setShowGoalSetup(true)} 
+            <GoalsCard
+              siteId={site.id}
+              dateRange={dateRange}
+              onCreateGoal={() => setShowGoalSetup(true)}
             />
             <RetentionCard siteId={site.id} dateRange={dateRange} />
             <CustomEvents siteId={site.id} dateRange={dateRange} />
           </div>
 
           {/* Device Stats */}
-          <DeviceStats 
+          <DeviceStats
             browsers={deviceStats?.browsers}
             operatingSystems={deviceStats?.operatingSystems}
             devices={deviceStats?.devices}
@@ -482,14 +483,14 @@ export default function SiteDetail() {
 
           {/* Geo & Language Stats */}
           <div className="grid gap-6 lg:grid-cols-2">
-            <GeoStats 
-              countries={geoStats} 
-              cities={cityStats} 
-              isLoading={geoLoading || citiesLoading} 
+            <GeoStats
+              countries={geoStats}
+              cities={cityStats}
+              isLoading={geoLoading || citiesLoading}
             />
-            <LanguageStats 
-              languages={languageStats} 
-              isLoading={languagesLoading} 
+            <LanguageStats
+              languages={languageStats}
+              isLoading={languagesLoading}
             />
           </div>
         </div>
@@ -497,9 +498,9 @@ export default function SiteDetail() {
 
       {/* Goal Setup Modal */}
       {showGoalSetup && (
-        <GoalSetup 
-          siteId={site.id} 
-          onClose={() => setShowGoalSetup(false)} 
+        <GoalSetup
+          siteId={site.id}
+          onClose={() => setShowGoalSetup(false)}
         />
       )}
     </DashboardLayout>

@@ -17,21 +17,21 @@ const tabConfig: Record<UTMTab, { label: string; icon: typeof Target; emptyText:
 
 export function UTMStats({ utmStats, isLoading }: UTMStatsProps) {
   const [activeTab, setActiveTab] = useState<UTMTab>("sources");
-  
+
   const currentData = utmStats?.[activeTab] || [];
   const { icon: Icon, emptyText } = tabConfig[activeTab];
 
   return (
     <div className="card bg-base-200">
       <div className="card-body">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between flex-wrap gap-2">
           <div className="flex items-center gap-2">
             <Target className="h-4 w-4 text-base-content/70" />
             <h3 className="card-title text-sm font-medium">UTM Campaigns</h3>
           </div>
           <div className="tabs tabs-boxed tabs-sm">
             {(Object.keys(tabConfig) as UTMTab[]).map((tab) => (
-              <button 
+              <button
                 key={tab}
                 className={`tab ${activeTab === tab ? "tab-active" : ""}`}
                 onClick={() => setActiveTab(tab)}
@@ -41,7 +41,7 @@ export function UTMStats({ utmStats, isLoading }: UTMStatsProps) {
             ))}
           </div>
         </div>
-        
+
         {isLoading ? (
           <div className="space-y-3 mt-4">
             {[...Array(5)].map((_, i) => (
@@ -55,7 +55,7 @@ export function UTMStats({ utmStats, isLoading }: UTMStatsProps) {
           <div className="space-y-2 mt-4">
             {currentData.map((item, index) => (
               <div key={index} className="relative">
-                <div 
+                <div
                   className="absolute inset-0 bg-primary/10 rounded"
                   style={{ width: `${item.percentage}%` }}
                 />

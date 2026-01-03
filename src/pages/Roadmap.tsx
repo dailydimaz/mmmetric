@@ -34,6 +34,11 @@ import {
   Mail,
   ArrowLeft,
   Sparkles,
+  ShoppingBag,
+  Search,
+  Twitter,
+  Code2,
+  Globe2,
 } from "lucide-react";
 
 interface Feature {
@@ -320,6 +325,46 @@ const features: Feature[] = [
     implemented: false,
     difficulty: "hard",
     category: "cloud",
+  },
+  {
+    name: "Shopify Integration",
+    description: "Connect Shopify for automatic revenue tracking",
+    icon: ShoppingBag,
+    implemented: false,
+    difficulty: "hard",
+    category: "cloud",
+  },
+  {
+    name: "Google Search Console",
+    description: "Visualize SEO keywords and organic traffic",
+    icon: Search,
+    implemented: false,
+    difficulty: "medium",
+    category: "insights",
+  },
+  {
+    name: "X (Twitter) Analytics",
+    description: "Track mentions and link clicks from X",
+    icon: Twitter,
+    implemented: false,
+    difficulty: "medium",
+    category: "analytics",
+  },
+  {
+    name: "Public API",
+    description: "Access your data programmatically",
+    icon: Code2,
+    implemented: false,
+    difficulty: "medium",
+    category: "cloud",
+  },
+  {
+    name: "Cross-domain Tracking",
+    description: "Unified analytics across multiple domains",
+    icon: Globe2,
+    implemented: false,
+    difficulty: "hard",
+    category: "analytics",
   },
 ];
 
