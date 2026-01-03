@@ -167,7 +167,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       {/* Sidebar */}
       <div className="drawer-side z-40">
         <label htmlFor="dashboard-drawer" aria-label="close sidebar" className="drawer-overlay"></label>
-        <div className="menu p-4 w-72 min-h-full bg-base-50 text-base-content border-r border-base-200 flex flex-col justify-between">
+        <div className="menu p-4 w-72 min-h-full bg-base-100 text-base-content border-r border-base-200 flex flex-col justify-between">
           {/* Sidebar Top */}
           <div>
             <div className="flex items-center gap-3 px-2 mb-8 mt-2">
