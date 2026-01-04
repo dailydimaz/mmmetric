@@ -40,7 +40,7 @@ export function DateRangePicker({ value, onChange }: DateRangePickerProps) {
         <Calendar className="h-4 w-4" />
         <span>{options.find(o => o.value === value)?.label}</span>
       </label>
-      <ul tabIndex={0} className="dropdown-content menu p-2 shadow-lg bg-base-200 rounded-box w-52 z-50">
+      <ul tabIndex={0} className="dropdown-content menu p-2 shadow-lg bg-base-200 rounded-box w-52 z-[9999]">
         {options.map((option) => {
           const disabled = isOptionDisabled(option.value);
           return (
