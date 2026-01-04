@@ -50,14 +50,16 @@ export default function Dashboard() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-            <p className="text-muted-foreground mt-1">
-              Manage your sites and view analytics
-            </p>
+            <div className="flex items-center gap-2 text-muted-foreground mt-1">
+              <p>Manage your sites and view analytics</p>
+              <span>•</span>
+              <span className="text-xs bg-muted px-2 py-0.5 rounded-full">Last 30 Days</span>
+            </div>
           </div>
           <Button
             onClick={() => setCreateDialogOpen(true)}
             disabled={!canCreateSite}
-            className="shadow-sm"
+            className="shadow-sm gap-2"
           >
             {canCreateSite ? (
               <>
