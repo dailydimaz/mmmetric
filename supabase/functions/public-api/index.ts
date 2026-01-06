@@ -106,7 +106,13 @@ Deno.serve(async (req) => {
           .select('id, name, domain, tracking_id, timezone, created_at')
           .eq('user_id', keyData.user_id);
 
-        if (error) throw error;
+        if (error) {
+          console.error('Database query failed:', error);
+          return new Response(
+            JSON.stringify({ error: 'Failed to fetch sites' }),
+            { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
+          );
+        }
 
         return new Response(
           JSON.stringify({ data: sites }),
@@ -143,7 +149,13 @@ Deno.serve(async (req) => {
             .gte('created_at', startDate)
             .lte('created_at', endDate);
 
-          if (eventsError) throw eventsError;
+          if (eventsError) {
+            console.error('Database query failed:', eventsError);
+            return new Response(
+              JSON.stringify({ error: 'Failed to fetch stats' }),
+              { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
+            );
+          }
 
           const pageviews = events?.filter(e => e.event_name === 'pageview').length || 0;
           const uniqueVisitors = new Set(events?.map(e => e.visitor_id).filter(Boolean)).size;
@@ -193,7 +205,13 @@ Deno.serve(async (req) => {
             .order('created_at', { ascending: false })
             .range(offset, offset + limit - 1);
 
-          if (eventsError) throw eventsError;
+          if (eventsError) {
+            console.error('Database query failed:', eventsError);
+            return new Response(
+              JSON.stringify({ error: 'Failed to fetch events' }),
+              { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
+            );
+          }
 
           return new Response(
             JSON.stringify({
@@ -231,7 +249,13 @@ Deno.serve(async (req) => {
             .not('url', 'is', null)
             .limit(EVENTS_SAFETY_LIMIT);
 
-          if (error) throw error;
+          if (error) {
+            console.error('Database query failed:', error);
+            return new Response(
+              JSON.stringify({ error: 'Failed to fetch top pages' }),
+              { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
+            );
+          }
 
           // Count page views
           const pageCounts: Record<string, number> = {};
@@ -273,10 +297,10 @@ Deno.serve(async (req) => {
       JSON.stringify({ error: 'Endpoint not found' }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 404 }
     );
-  } catch (error: any) {
+  } catch (error) {
     console.error('API error:', error);
     return new Response(
-      JSON.stringify({ error: error?.message || 'Internal server error' }),
+      JSON.stringify({ error: 'Internal server error' }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
     );
   }
