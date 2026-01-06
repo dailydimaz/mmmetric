@@ -142,8 +142,8 @@ serve(async (req) => {
         });
 
     } catch (error) {
-        const message = error instanceof Error ? error.message : 'Unknown error';
-        return new Response(JSON.stringify({ error: message }), {
+        console.error('API error:', error);
+        return new Response(JSON.stringify({ error: 'Internal server error' }), {
             status: 500,
             headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
