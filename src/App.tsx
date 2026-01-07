@@ -20,6 +20,8 @@ import CompareGA from "./pages/CompareGA";
 import LiveDemo from "./pages/LiveDemo";
 import SelfHosting from "./pages/SelfHosting";
 import Privacy from "./pages/Privacy";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import Terms from "./pages/Terms";
 import Lightweight from "./pages/Lightweight";
 
 
@@ -42,6 +44,8 @@ const App = () => (
           <Route path="/live" element={<LiveDemo />} />
           <Route path="/resources/self-hosting" element={<SelfHosting />} />
           <Route path="/resources/privacy" element={<Privacy />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/resources/lightweight" element={<Lightweight />} />
 
 

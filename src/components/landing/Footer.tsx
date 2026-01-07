@@ -26,8 +26,8 @@ const footerLinks = {
     { label: "Issues", href: "https://github.com/dailydimaz/mmmetric/issues", external: true },
   ],
   legal: [
-    { label: "Privacy Policy", href: "#" },
-    { label: "Terms of Service", href: "#" },
+    { label: "Privacy Policy", href: "/privacy-policy" },
+    { label: "Terms of Service", href: "/terms" },
     { label: "MIT License", href: "https://github.com/dailydimaz/mmmetric/blob/main/LICENSE", external: true },
   ],
 };
