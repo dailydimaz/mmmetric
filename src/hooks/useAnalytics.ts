@@ -400,3 +400,42 @@ export function useUTMStats({ siteId, dateRange }: AnalyticsParams) {
     enabled: !!siteId,
   });
 }
+
+export interface RetentionCohort {
+  cohort_date: string;
+  cohort_size: number;
+  retention: {
+    day: number;
+    retained: number;
+    rate: number;
+  }[];
+}
+
+export interface RetentionData {
+  cohorts: RetentionCohort[];
+  summary: {
+    day: number;
+    average_rate: number;
+  }[];
+}
+
+// Fetch retention cohorts using RPC
+export function useRetentionCohorts({ siteId, dateRange }: AnalyticsParams) {
+  const { start, end } = getDateRangeFilter(dateRange);
+
+  return useQuery({
+    queryKey: ["retention-cohorts", siteId, dateRange],
+    queryFn: async (): Promise<RetentionData> => {
+      const { data, error } = await supabase.rpc('get_retention_cohorts', {
+        _site_id: siteId,
+        _start_date: start.toISOString(),
+        _end_date: end.toISOString(),
+      });
+
+      if (error) throw error;
+
+      return data as unknown as RetentionData;
+    },
+    enabled: !!siteId,
+  });
+}

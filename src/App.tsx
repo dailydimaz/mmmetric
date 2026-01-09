@@ -15,6 +15,7 @@ import Settings from "./pages/Settings";
 import Roadmap from "./pages/Roadmap";
 import InviteAccept from "./pages/InviteAccept";
 import PublicDashboard from "./pages/PublicDashboard";
+import Cohorts from "./pages/Cohorts";
 
 import NotFound from "./pages/NotFound";
 import CompareGA from "./pages/CompareGA";
@@ -56,6 +57,7 @@ const App = () => (
           <Route path="/dashboard/sites/:siteId/funnels" element={<Funnels />} />
           <Route path="/dashboard/sites/:siteId/funnels/:funnelId" element={<FunnelDetail />} />
           <Route path="/dashboard/sites/:siteId/retention" element={<Retention />} />
+          <Route path="/dashboard/sites/:siteId/cohorts" element={<Cohorts />} />
           <Route path="/dashboard/settings" element={<Settings />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
