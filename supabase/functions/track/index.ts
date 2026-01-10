@@ -1,6 +1,7 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { getLocationFromHeaders } from "./detect.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -90,30 +91,8 @@ async function generateVisitorId(ip: string, ua: string): Promise<string> {
   return hashArray.slice(0, 8).map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
-// Extract geo data from various proxy headers
-function extractGeoData(req: Request): { country: string | null; city: string | null } {
-  // Try multiple header sources for geo data
-  // Priority: Cloudflare > Vercel > Netlify > AWS CloudFront > Generic
+// Extract geo data from various proxy headers (Implementation moved to detect.ts)
 
-  const country =
-    req.headers.get('cf-ipcountry') ||           // Cloudflare
-    req.headers.get('x-vercel-ip-country') ||    // Vercel
-    req.headers.get('x-nf-country-code') ||      // Netlify
-    req.headers.get('cloudfront-viewer-country') || // AWS CloudFront
-    req.headers.get('x-country-code') ||         // Generic CDN
-    req.headers.get('x-country') ||              // Generic
-    null;
-
-  const city =
-    req.headers.get('cf-ipcity') ||              // Cloudflare
-    req.headers.get('x-vercel-ip-city') ||       // Vercel
-    req.headers.get('x-nf-city') ||              // Netlify (undocumented)
-    req.headers.get('cloudfront-viewer-city') || // AWS CloudFront
-    req.headers.get('x-city') ||                 // Generic
-    null;
-
-  return { country, city };
-}
 
 // Extract language from Accept-Language header
 function extractLanguage(req: Request): string | null {
@@ -188,7 +167,7 @@ serve(async (req) => {
       });
     }
 
-    const { site_id, url, referrer, event_name = 'pageview', properties = {}, skip_origin_check = false } = body;
+    const { site_id, url, referrer, event_name = 'pageview', properties = {}, skip_origin_check = false, language: bodyLanguage } = body;
 
     // Validate required fields
     if (!site_id) {
@@ -244,11 +223,14 @@ serve(async (req) => {
     // Get headers for geo and user agent
     const userAgent = req.headers.get('user-agent') || '';
 
-    // Extract geo data from multiple header sources
-    let { country: geoCountry, city: geoCity } = extractGeoData(req);
+    // Extract geo data from multiple header sources using helper
+    const location = getLocationFromHeaders(req.headers);
+    let geoCountry = location?.country || null;
+    let geoCity = location?.city || null;
 
-    // Extract language from Accept-Language header
-    const primaryLanguage = extractLanguage(req);
+    // Extract language: prefer client-side (navigator.language) then fallback to header
+    const headerLanguage = extractLanguage(req);
+    const primaryLanguage = bodyLanguage || headerLanguage;
 
     // If no geo data found (e.g. localhost or direct access), try fallback API
     // only if clientIp is available and not localhost/private

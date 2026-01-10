@@ -101,9 +101,15 @@
     var utm = getUtmParams();
     var mergedProperties = Object.assign({}, properties || {});
 
+
     // Include UTM params in properties if present
     if (utm) {
       mergedProperties.utm = utm;
+    }
+
+    // Add screen resolution to properties
+    if (window.screen) {
+      mergedProperties.screen = window.screen.width + 'x' + window.screen.height;
     }
 
     var payload = {
@@ -112,6 +118,7 @@
       url: getCurrentUrl(),
       referrer: getReferrer(),
       session_id: getSessionId(), // Ensure session ID is active/generated
+      language: navigator.language || navigator.userLanguage,
       properties: Object.keys(mergedProperties).length > 0 ? mergedProperties : {}
     };
 
