@@ -25,6 +25,7 @@ import Privacy from "./pages/Privacy";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Terms from "./pages/Terms";
 import Lightweight from "./pages/Lightweight";
+import CampaignBuilder from "./pages/CampaignBuilder";
 
 
 const queryClient = new QueryClient();
@@ -59,6 +60,7 @@ const App = () => (
           <Route path="/dashboard/sites/:siteId/retention" element={<Retention />} />
           <Route path="/dashboard/sites/:siteId/cohorts" element={<Cohorts />} />
           <Route path="/dashboard/settings" element={<Settings />} />
+          <Route path="/tools/campaign-builder" element={<CampaignBuilder />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
