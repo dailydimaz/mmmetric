@@ -903,6 +903,7 @@ export type Database = {
               _start_date: string
             }
             Returns: {
+              avg_session_duration: number
               bounce_rate: number
               pageviews_change: number
               total_pageviews: number
