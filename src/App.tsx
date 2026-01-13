@@ -16,6 +16,8 @@ import Roadmap from "./pages/Roadmap";
 import InviteAccept from "./pages/InviteAccept";
 import PublicDashboard from "./pages/PublicDashboard";
 import Cohorts from "./pages/Cohorts";
+import Insights from "./pages/Insights";
+import SharedInsight from "./pages/SharedInsight";
 
 import NotFound from "./pages/NotFound";
 import CompareGA from "./pages/CompareGA";
@@ -51,6 +53,7 @@ const App = () => (
 
           {/* Public routes */}
           <Route path="/share/:token" element={<PublicDashboard />} />
+          <Route path="/insight/:token" element={<SharedInsight />} />
 
           <Route path="/invite/:token" element={<InviteAccept />} />
           <Route path="/dashboard" element={<Dashboard />} />
@@ -59,6 +62,7 @@ const App = () => (
           <Route path="/dashboard/sites/:siteId/funnels/:funnelId" element={<FunnelDetail />} />
           <Route path="/dashboard/sites/:siteId/retention" element={<Retention />} />
           <Route path="/dashboard/sites/:siteId/cohorts" element={<Cohorts />} />
+          <Route path="/dashboard/sites/:siteId/insights" element={<Insights />} />
           <Route path="/dashboard/settings" element={<Settings />} />
           <Route path="/tools/campaign-builder" element={<CampaignBuilder />} />
           <Route path="*" element={<NotFound />} />

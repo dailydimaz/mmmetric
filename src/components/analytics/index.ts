@@ -1,4 +1,6 @@
 export { StatsCards } from "./StatsCards";
+export { InsightsList } from "./InsightsList";
+export { InsightsBuilder } from "./InsightsBuilder";
 export { VisitorChart } from "./VisitorChart";
 export { TopPages } from "./TopPages";
 export { TopReferrers } from "./TopReferrers";
