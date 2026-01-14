@@ -20,6 +20,15 @@ export default function Dashboard() {
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const navigate = useNavigate();
 
+  const sitesCount = sites.length;
+  const sitesLimit = plan.sitesLimit;
+  const canCreateSite = isSelfHosted || sitesLimit < 0 || !isOverLimit(sitesCount, sitesLimit);
+
+  // Get first site for insights quick-link
+  const firstSite = sites[0];
+  const { insights, isLoading: insightsLoading } = useInsights(firstSite?.id || null);
+  const hasInsights = insights && insights.length > 0;
+
   useEffect(() => {
     if (!authLoading && !user) {
       navigate("/auth");
@@ -37,15 +46,6 @@ export default function Dashboard() {
   if (!user) {
     return null;
   }
-
-  const sitesCount = sites.length;
-  const sitesLimit = plan.sitesLimit;
-  const canCreateSite = isSelfHosted || sitesLimit < 0 || !isOverLimit(sitesCount, sitesLimit);
-
-  // Get first site for insights quick-link
-  const firstSite = sites[0];
-  const { insights, isLoading: insightsLoading } = useInsights(firstSite?.id || null);
-  const hasInsights = insights && insights.length > 0;
 
   return (
     <DashboardLayout>
