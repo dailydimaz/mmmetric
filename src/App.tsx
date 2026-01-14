@@ -29,48 +29,53 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Terms from "./pages/Terms";
 import Lightweight from "./pages/Lightweight";
 import CampaignBuilder from "./pages/CampaignBuilder";
+import { ThemeProvider } from "./components/ThemeProvider";
+import { CommandMenu } from "./components/dashboard/CommandMenu";
 
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route path="/auth" element={<Auth />} />
-          <Route path="/auth/reset-password" element={<ResetPassword />} />
-          <Route path="/roadmap" element={<Roadmap />} />
-          <Route path="/compare/google-analytics" element={<CompareGA />} />
-          <Route path="/live" element={<LiveDemo />} />
-          <Route path="/resources/self-hosting" element={<SelfHosting />} />
-          <Route path="/resources/privacy" element={<Privacy />} />
-          <Route path="/terms" element={<Terms />} />
-          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-          <Route path="/resources/lightweight" element={<Lightweight />} />
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <CommandMenu />
+          <Routes>
+            <Route path="/" element={<Landing />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/auth/reset-password" element={<ResetPassword />} />
+            <Route path="/roadmap" element={<Roadmap />} />
+            <Route path="/compare/google-analytics" element={<CompareGA />} />
+            <Route path="/live" element={<LiveDemo />} />
+            <Route path="/resources/self-hosting" element={<SelfHosting />} />
+            <Route path="/resources/privacy" element={<Privacy />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/resources/lightweight" element={<Lightweight />} />
 
-          {/* Public routes */}
-          <Route path="/share/:token" element={<PublicDashboard />} />
-          <Route path="/insight/:token" element={<SharedInsight />} />
+            {/* Public routes */}
+            <Route path="/share/:token" element={<PublicDashboard />} />
+            <Route path="/insight/:token" element={<SharedInsight />} />
 
-          <Route path="/invite/:token" element={<InviteAccept />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/dashboard/sites/:siteId" element={<SiteDetail />} />
-          <Route path="/dashboard/sites/:siteId/funnels" element={<Funnels />} />
-          <Route path="/dashboard/sites/:siteId/funnels/:funnelId" element={<FunnelDetail />} />
-          <Route path="/dashboard/sites/:siteId/retention" element={<Retention />} />
-          <Route path="/dashboard/sites/:siteId/cohorts" element={<Cohorts />} />
-          <Route path="/dashboard/sites/:siteId/insights" element={<Insights />} />
-          <Route path="/dashboard/sites/:siteId/links" element={<Links />} />
-          <Route path="/dashboard/settings" element={<Settings />} />
-          <Route path="/tools/campaign-builder" element={<CampaignBuilder />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+            <Route path="/invite/:token" element={<InviteAccept />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/dashboard/sites/:siteId" element={<SiteDetail />} />
+            <Route path="/dashboard/sites/:siteId/funnels" element={<Funnels />} />
+            <Route path="/dashboard/sites/:siteId/funnels/:funnelId" element={<FunnelDetail />} />
+            <Route path="/dashboard/sites/:siteId/retention" element={<Retention />} />
+            <Route path="/dashboard/sites/:siteId/cohorts" element={<Cohorts />} />
+            <Route path="/dashboard/sites/:siteId/insights" element={<Insights />} />
+            <Route path="/dashboard/sites/:siteId/links" element={<Links />} />
+            <Route path="/dashboard/settings" element={<Settings />} />
+            <Route path="/tools/campaign-builder" element={<CampaignBuilder />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </ThemeProvider>
   </QueryClientProvider>
 );
 

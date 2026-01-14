@@ -42,9 +42,12 @@ import {
   TwitterStats,
   LinksStats,
 } from "@/components/analytics";
+import { DashboardCustomizer } from "@/components/dashboard/DashboardCustomizer";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import {
   useAnalyticsStats,
   useAnalyticsTimeSeries,
@@ -104,6 +107,8 @@ export default function SiteDetail() {
     return newFilters;
   });
 
+  const [showComparison, setShowComparison] = useState(true);
+
   // Widget visibility helper
   const widgetsParam = searchParams.get("widgets");
   const visibleWidgets = widgetsParam ? new Set(widgetsParam.split(",")) : null;
@@ -119,6 +124,7 @@ export default function SiteDetail() {
   const [editDomain, setEditDomain] = useState("");
   const [showSettings, setShowSettings] = useState(false);
   const [showGoalSetup, setShowGoalSetup] = useState(false);
+  const [showCustomizer, setShowCustomizer] = useState(false);
   const [testStatus, setTestStatus] = useState<'idle' | 'testing' | 'success' | 'error'>('idle');
 
   const site = sites.find((s) => s.id === siteId);
@@ -352,6 +358,10 @@ export default function SiteDetail() {
 
           <div className="flex items-center gap-2 shrink-0 overflow-x-auto pb-1 sm:pb-0">
             <ExportButton siteId={site.id} siteName={site.name} dateRange={dateRange} />
+            <div className="flex items-center space-x-2 px-2">
+              <Switch id="comparison-mode" checked={showComparison} onCheckedChange={setShowComparison} />
+              <Label htmlFor="comparison-mode" className="text-sm font-medium cursor-pointer text-base-content/70 hidden md:block">Compare</Label>
+            </div>
             <FilterBar filters={filters} onFilterChange={setFilters} siteId={siteId} />
             <DateRangePicker value={dateRange} onChange={setDateRange} />
             {isEditing ? (
@@ -371,13 +381,18 @@ export default function SiteDetail() {
                 </Button>
               </>
             ) : (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setShowSettings(!showSettings)}
-              >
-                <Settings className="h-4 w-4" />
-              </Button>
+              <>
+                <Button variant="ghost" size="sm" onClick={() => setShowCustomizer(true)}>
+                  Customize
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setShowSettings(!showSettings)}
+                >
+                  <Settings className="h-4 w-4" />
+                </Button>
+              </>
             )}
           </div>
         </div>
@@ -539,7 +554,7 @@ export default function SiteDetail() {
 
           <TabsContent value="overview" className="space-y-6">
             {/* Real-time Section */}
-            {!widgetsParam && (
+            {shouldShow('realtime') && (
               <div className="grid gap-6 lg:grid-cols-2">
                 <RealtimeStats siteId={site.id} />
                 <RealtimeActivityFeed siteId={site.id} />
@@ -552,12 +567,13 @@ export default function SiteDetail() {
                 stats={stats}
                 isLoading={statsLoading}
                 visibleMetrics={widgetsParam ? widgetsParam.split(',') : undefined}
+                showComparison={showComparison}
               />
             )}
 
             {/* Visitor Chart */}
             {shouldShow('visitor_chart') && (
-              <VisitorChart data={timeSeries} isLoading={timeSeriesLoading} />
+              <VisitorChart data={timeSeries} isLoading={timeSeriesLoading} showComparison={showComparison} />
             )}
 
             {/* Two Column Layout */}
@@ -567,20 +583,20 @@ export default function SiteDetail() {
             </div>
 
             {/* Funnels */}
-            {!widgetsParam && <FunnelList siteId={site.id} />}
+            {shouldShow('funnels') && <FunnelList siteId={site.id} />}
 
             {/* Goals, Retention & Custom Events */}
-            {!widgetsParam && (
-              <div className="grid gap-6 lg:grid-cols-3">
+            <div className="grid gap-6 lg:grid-cols-3">
+              {shouldShow('goals') && (
                 <GoalsCard
                   siteId={site.id}
                   dateRange={dateRange}
                   onCreateGoal={() => setShowGoalSetup(true)}
                 />
-                <RetentionCard siteId={site.id} dateRange={dateRange} />
-                <CustomEvents siteId={site.id} dateRange={dateRange} />
-              </div>
-            )}
+              )}
+              {shouldShow('retention') && <RetentionCard siteId={site.id} dateRange={dateRange} />}
+              {shouldShow('custom_events') && <CustomEvents siteId={site.id} dateRange={dateRange} />}
+            </div>
 
             {/* Device Stats */}
             {shouldShow('device_stats') && (
@@ -593,7 +609,7 @@ export default function SiteDetail() {
             )}
 
             {/* UTM Campaign Stats */}
-            {!widgetsParam && <UTMStats utmStats={utmStats} isLoading={utmLoading} />}
+            {shouldShow('utm_campaigns') && <UTMStats utmStats={utmStats} isLoading={utmLoading} />}
 
             {/* Geo & Language Stats */}
             <div className="grid gap-6 lg:grid-cols-2">
@@ -604,7 +620,7 @@ export default function SiteDetail() {
                   isLoading={geoLoading || citiesLoading}
                 />
               )}
-              {!widgetsParam && (
+              {shouldShow('language_stats') && (
                 <LanguageStats
                   languages={languageStats}
                   isLoading={languagesLoading}
@@ -613,7 +629,7 @@ export default function SiteDetail() {
             </div>
 
             {/* Outbound Links */}
-            {!widgetsParam && <LinksStats siteId={site.id} dateRange={dateRange} />}
+            {shouldShow('links') && <LinksStats siteId={site.id} dateRange={dateRange} />}
           </TabsContent>
 
           <TabsContent value="twitter">
@@ -629,6 +645,21 @@ export default function SiteDetail() {
           onClose={() => setShowGoalSetup(false)}
         />
       )}
+
+      <DashboardCustomizer
+        open={showCustomizer}
+        onOpenChange={setShowCustomizer}
+        currentWidgets={visibleWidgets}
+        onApply={(widgets) => {
+          const newParams = new URLSearchParams(searchParams);
+          if (widgets) {
+            newParams.set("widgets", widgets.join(","));
+          } else {
+            newParams.delete("widgets");
+          }
+          navigate(`/dashboard/sites/${site.id}?${newParams.toString()}`);
+        }}
+      />
     </DashboardLayout>
   );
 }

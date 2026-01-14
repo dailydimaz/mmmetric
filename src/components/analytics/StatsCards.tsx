@@ -13,9 +13,10 @@ interface StatCardProps {
   icon: React.ReactNode;
   desc?: string;
   isLoading: boolean;
+  showComparison?: boolean;
 }
 
-function StatCard({ title, value, change, icon, desc, isLoading }: StatCardProps) {
+function StatCard({ title, value, change, icon, desc, isLoading, showComparison = true }: StatCardProps) {
   const isPositive = change !== undefined && change >= 0;
 
   return (
@@ -30,7 +31,7 @@ function StatCard({ title, value, change, icon, desc, isLoading }: StatCardProps
         <div className="stat-value text-3xl font-bold tracking-tight">{value}</div>
       )}
 
-      {!isLoading && change !== undefined && (
+      {!isLoading && change !== undefined && showComparison && (
         <div className={`stat-desc flex items-center gap-1 font-medium ${isPositive ? 'text-success' : 'text-error'}`}>
           {isPositive ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
           <span>{Math.abs(change).toFixed(1)}%</span>
@@ -50,7 +51,7 @@ function formatNumber(num: number): string {
   return num.toString();
 }
 
-export function StatsCards({ stats, isLoading, visibleMetrics }: StatsCardsProps & { visibleMetrics?: string[] }) {
+export function StatsCards({ stats, isLoading, visibleMetrics, showComparison = true }: StatsCardsProps & { visibleMetrics?: string[], showComparison?: boolean }) {
   const show = (key: string) => !visibleMetrics || visibleMetrics.includes(key);
 
   if (visibleMetrics && visibleMetrics.length === 0) return null;
@@ -64,6 +65,7 @@ export function StatsCards({ stats, isLoading, visibleMetrics }: StatsCardsProps
           change={stats?.pageviewsChange}
           icon={<Eye className="h-6 w-6" />}
           isLoading={isLoading}
+          showComparison={showComparison}
         />
       )}
       {show('visitors') && (
@@ -73,6 +75,7 @@ export function StatsCards({ stats, isLoading, visibleMetrics }: StatsCardsProps
           change={stats?.visitorsChange}
           icon={<Users className="h-6 w-6" />}
           isLoading={isLoading}
+          showComparison={showComparison}
         />
       )}
       {show('bounce_rate') && (
@@ -82,6 +85,7 @@ export function StatsCards({ stats, isLoading, visibleMetrics }: StatsCardsProps
           desc="Single page sessions"
           icon={<MousePointerClick className="h-6 w-6" />}
           isLoading={isLoading}
+          showComparison={showComparison}
         />
       )}
       {show('avg_duration') && (
@@ -91,6 +95,7 @@ export function StatsCards({ stats, isLoading, visibleMetrics }: StatsCardsProps
           desc="Time spent on site"
           icon={<Clock className="h-6 w-6" />}
           isLoading={isLoading}
+          showComparison={showComparison}
         />
       )}
     </div>

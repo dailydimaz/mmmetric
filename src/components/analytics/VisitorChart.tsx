@@ -6,9 +6,10 @@ import { LineChart } from "lucide-react";
 interface VisitorChartProps {
   data: TimeSeriesData[] | undefined;
   isLoading: boolean;
+  showComparison?: boolean;
 }
 
-export function VisitorChart({ data, isLoading }: VisitorChartProps) {
+export function VisitorChart({ data, isLoading, showComparison = true }: VisitorChartProps) {
   if (isLoading) {
     return (
       <div className="card bg-base-100 shadow-sm border border-base-200">
@@ -96,17 +97,19 @@ export function VisitorChart({ data, isLoading }: VisitorChartProps) {
                 strokeWidth={2}
                 animationDuration={1000}
               />
-              <Area
-                type="monotone"
-                dataKey="prevPageviews"
-                name="Previous Pageviews"
-                stroke="hsl(var(--primary))"
-                strokeDasharray="4 4"
-                fillOpacity={0}
-                strokeWidth={2}
-                strokeOpacity={0.3}
-                animationDuration={1000}
-              />
+              {showComparison && (
+                <Area
+                  type="monotone"
+                  dataKey="prevPageviews"
+                  name="Previous Pageviews"
+                  stroke="hsl(var(--primary))"
+                  strokeDasharray="4 4"
+                  fillOpacity={0}
+                  strokeWidth={2}
+                  strokeOpacity={0.3}
+                  animationDuration={1000}
+                />
+              )}
               <Area
                 type="monotone"
                 dataKey="visitors"
@@ -117,17 +120,19 @@ export function VisitorChart({ data, isLoading }: VisitorChartProps) {
                 strokeWidth={2}
                 animationDuration={1000}
               />
-              <Area
-                type="monotone"
-                dataKey="prevVisitors"
-                name="Previous Visitors"
-                stroke="hsl(var(--secondary))"
-                strokeDasharray="4 4"
-                fillOpacity={0}
-                strokeWidth={2}
-                strokeOpacity={0.3}
-                animationDuration={1000}
-              />
+              {showComparison && (
+                <Area
+                  type="monotone"
+                  dataKey="prevVisitors"
+                  name="Previous Visitors"
+                  stroke="hsl(var(--secondary))"
+                  strokeDasharray="4 4"
+                  fillOpacity={0}
+                  strokeWidth={2}
+                  strokeOpacity={0.3}
+                  animationDuration={1000}
+                />
+              )}
             </AreaChart>
           </ResponsiveContainer>
         </div>
