@@ -118,10 +118,10 @@ export function PublicDashboardCard() {
   };
 
   const handleSetPassword = () => {
-    if (newPassword.length < 4) {
+    if (newPassword.length < 8) {
       toast({
         title: 'Error',
-        description: 'Password must be at least 4 characters.',
+        description: 'Password must be at least 8 characters.',
         variant: 'destructive',
       });
       return;
@@ -337,7 +337,7 @@ export function PublicDashboardCard() {
                       type="password"
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
-                      placeholder="Enter password (min 4 chars)"
+                      placeholder="Enter password (min 8 chars)"
                     />
                     <Button
                       onClick={handleSetPassword}
