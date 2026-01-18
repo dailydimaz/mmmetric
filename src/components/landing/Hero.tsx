@@ -1,18 +1,29 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, Shield, Zap, BarChart3, CheckCircle2, Eye, Users, MousePointerClick, TrendingUp, Clock, Calendar } from "lucide-react";
+import { ArrowRight, Shield, Zap, BarChart3, CheckCircle2 } from "lucide-react";
 import { motion } from "framer-motion";
-import { AreaChart, Area, ResponsiveContainer, CartesianGrid, Tooltip } from "recharts";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
+import { StatsCards, VisitorChart } from "@/components/analytics";
+import { StatsData } from "@/hooks/useAnalytics";
+import { subDays } from "date-fns";
 
-const mockChartData = Array.from({ length: 24 }).map((_, i) => ({
-  name: i.toString(),
-  visitors: Math.floor(Math.random() * 100) + 50,
-  pageviews: Math.floor(Math.random() * 150) + 80,
-}));
+const mockStats: StatsData = {
+  totalPageviews: 48200,
+  uniqueVisitors: 12800,
+  bounceRate: 42.3,
+  avgSessionDuration: 134,
+  pageviewsChange: 12.5,
+  visitorsChange: 8.2,
+};
 
-
+const mockTimeSeries = Array.from({ length: 30 }).map((_, i) => {
+  const date = subDays(new Date(), 29 - i);
+  return {
+    date: date.toISOString(),
+    visitors: Math.floor(Math.random() * 100) + 50,
+    pageviews: Math.floor(Math.random() * 150) + 80,
+  };
+});
 
 export function Hero() {
   return (
@@ -125,97 +136,9 @@ export function Hero() {
             </div>
 
             {/* Dashboard Content */}
-            <div className="p-8 bg-gradient-to-b from-background/40 to-background/80 backdrop-blur-sm">
-              {/* Stats Grid */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
-                {[
-                  { title: "Total Views", value: "48.2k", change: 12.5, icon: Eye },
-                  { title: "Unique Visitors", value: "12.8k", change: 8.2, icon: Users },
-                  { title: "Bounce Rate", value: "42.3%", change: -3.1, icon: MousePointerClick, isInverse: true },
-                  { title: "Avg. Session", value: "2m 14s", change: 4.5, icon: Clock },
-                ].map((stat, i) => (
-                  <Card key={i} className="p-5 rounded-xl border-border/40 bg-card/40 backdrop-blur-md shadow-sm hover:shadow-md hover:bg-card/60 transition-all duration-300 group">
-                    <div className="flex justify-between items-start mb-3">
-                      <div className="p-2.5 bg-primary/10 rounded-lg text-primary group-hover:scale-110 transition-transform duration-300">
-                        <stat.icon className="h-4.5 w-4.5" />
-                      </div>
-                      <Badge variant="secondary" className={`text-[10px] px-1.5 py-0 h-5 font-semibold ${(stat.isInverse ? stat.change < 0 : stat.change > 0)
-                        ? 'text-emerald-500 bg-emerald-500/10 hover:bg-emerald-500/20'
-                        : 'text-rose-500 bg-rose-500/10 hover:bg-rose-500/20'
-                        }`}>
-                        {stat.change > 0 ? '+' : ''}{stat.change}%
-                      </Badge>
-                    </div>
-                    <div className="text-3xl font-bold tracking-tight mb-1 text-foreground font-display">{stat.value}</div>
-                    <div className="text-xs text-muted-foreground font-medium">{stat.title}</div>
-                  </Card>
-                ))}
-              </div>
-
-              {/* Main Chart */}
-              <div className="rounded-xl border border-border/40 bg-card/40 backdrop-blur-md shadow-sm overflow-hidden p-1">
-                <div className="flex items-center justify-between px-6 py-4 border-b border-border/30">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-primary/10 rounded-md text-primary">
-                      <BarChart3 className="h-4 w-4" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-sm text-foreground">Traffic Overview</h3>
-                      <p className="text-xs text-muted-foreground">Visitors vs Pageviews</p>
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <div className="h-8 w-24 bg-muted/30 rounded-md" />
-                  </div>
-                </div>
-                <div className="p-6 h-[320px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={mockChartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-                      <defs>
-                        <linearGradient id="colorPageviewsHero" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
-                          <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
-                        </linearGradient>
-                        <linearGradient id="colorVisitorsHero" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="hsl(var(--secondary))" stopOpacity={0.3} />
-                          <stop offset="95%" stopColor="hsl(var(--secondary))" stopOpacity={0} />
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" opacity={0.4} />
-                      <Tooltip
-                        contentStyle={{
-                          backgroundColor: 'hsl(var(--card))',
-                          borderColor: 'hsl(var(--border))',
-                          borderRadius: '0.75rem',
-                          fontSize: '12px',
-                          boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)',
-                          padding: '12px'
-                        }}
-                        itemStyle={{ padding: 0 }}
-                        cursor={{ stroke: 'hsl(var(--foreground))', strokeWidth: 1, opacity: 0.1, strokeDasharray: '4 4' }}
-                      />
-                      <Area
-                        type="monotone"
-                        dataKey="pageviews"
-                        stroke="hsl(var(--primary))"
-                        strokeWidth={2}
-                        fill="url(#colorPageviewsHero)"
-                        animationDuration={1500}
-                      />
-                      <Area
-                        type="monotone"
-                        dataKey="visitors"
-                        stroke="hsl(var(--foreground))"
-                        strokeOpacity={0.5}
-                        strokeWidth={2}
-                        fill="url(#colorVisitorsHero)"
-                        animationDuration={1500}
-                        animationBegin={300}
-                      />
-                    </AreaChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
+            <div className="p-8 bg-gradient-to-b from-background/40 to-background/80 backdrop-blur-sm space-y-6">
+              <StatsCards stats={mockStats} isLoading={false} />
+              <VisitorChart data={mockTimeSeries} isLoading={false} />
             </div>
           </div>
         </motion.div>

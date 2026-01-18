@@ -127,212 +127,181 @@ export default function LiveDemo() {
         { icon: Users, label: "Retention", href: "#", active: false },
     ];
 
-    return (
-        <div className="flex min-h-screen bg-background font-sans">
-            {/* Desktop Sidebar */}
-            <div className="hidden lg:flex w-72 flex-col border-r border-border bg-card">
-                <div className="p-6">
-                    <Link to="/" className="flex items-center gap-3 px-2 mb-8 mt-2 group">
-                        <img src={mmmetricLogo} alt="Logo" className="h-10 w-10 rounded-xl shadow-sm group-hover:scale-105 transition-transform" />
-                        <div className="flex flex-col">
-                            <span className="font-display font-bold text-xl tracking-tight">mmmetric</span>
-                            <span className="text-xs text-muted-foreground">Privacy-first analytics</span>
-                        </div>
-                    </Link>
-
-                    <ul className="space-y-1">
-                        {navItems.map((item) => (
-                            <li key={item.label}>
-                                <a
-                                    href={item.href}
-                                    className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${item.active
-                                        ? 'bg-primary text-primary-foreground shadow-sm'
-                                        : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground opacity-60 cursor-not-allowed'
-                                        }`}
-                                    onClick={(e) => !item.active && e.preventDefault()}
-                                >
-                                    <item.icon className="h-4 w-4" />
-                                    {item.label}
-                                    {!item.active && <span className="ml-auto text-[10px] uppercase font-bold tracking-wider text-muted-foreground/70 bg-muted px-1.5 py-0.5 rounded">Pro</span>}
-                                </a>
-                            </li>
-                        ))}
-                    </ul>
-
-                    <div className="mt-8 px-4 py-4 bg-muted/50 rounded-xl border border-border">
-                        <h4 className="font-semibold text-sm mb-2">Live Demo Mode</h4>
-                        <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
-                            You are exploring a read-only potential of mmmetric.
-                        </p>
-                        <Link to="/auth?mode=signup">
-                            <Button size="sm" className="w-full text-xs">
-                                Get Started
-                            </Button>
-                        </Link>
+    const SidebarContent = () => (
+        <div className="flex flex-col h-full bg-sidebar border-r border-sidebar-border">
+            <div className="p-6">
+                <Link to="/" className="flex items-center gap-3 mb-8 px-2 group">
+                    <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300">
+                        <LayoutDashboard className="h-5 w-5" />
                     </div>
+                    <div className="flex flex-col">
+                        <span className="font-display font-bold text-lg tracking-tight text-sidebar-foreground">mmmetric</span>
+                        <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium">Live Demo</span>
+                    </div>
+                </Link>
+
+                <div className="space-y-1">
+                    {navItems.map((item) => (
+                        <a
+                            key={item.label}
+                            href={item.href}
+                            className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-all duration-200 group relative ${item.active
+                                ? 'bg-sidebar-accent text-sidebar-accent-foreground shadow-sm'
+                                : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground opacity-60 cursor-not-allowed'
+                                }`}
+                            onClick={(e) => !item.active && e.preventDefault()}
+                        >
+                            <item.icon className={`h-4 w-4 ${item.active ? "text-sidebar-foreground" : "text-sidebar-foreground/50 group-hover:text-sidebar-foreground"}`} />
+                            {item.label}
+                            {item.active && <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-primary rounded-r-full"></span>}
+                            {!item.active && <span className="ml-auto text-[10px] uppercase font-bold tracking-wider text-muted-foreground/70 bg-sidebar-accent px-1.5 py-0.5 rounded">Pro</span>}
+                        </a>
+                    ))}
                 </div>
 
-                <div className="mt-auto p-6">
-                    <Link to="/">
-                        <Button variant="ghost" size="sm" className="w-full justify-start gap-2 text-muted-foreground">
-                            <ArrowLeft className="h-4 w-4" />
-                            Back to Home
+                <div className="mt-8 px-4 py-4 bg-sidebar-accent/50 rounded-xl border border-sidebar-border">
+                    <h4 className="font-semibold text-sm mb-2 text-sidebar-foreground">Live Demo Mode</h4>
+                    <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
+                        You are exploring a read-only potential of mmmetric.
+                    </p>
+                    <Link to="/auth?mode=signup">
+                        <Button size="sm" className="w-full text-xs shadow-sm">
+                            Get Started
                         </Button>
                     </Link>
                 </div>
             </div>
 
-            {/* Mobile Sheet Sidebar */}
-            <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-                <SheetContent side="left" className="p-0 w-72">
-                    <div className="flex flex-col h-full bg-card">
-                        <div className="p-6">
-                            <Link to="/" className="flex items-center gap-2 mb-8">
-                                <img src={mmmetricLogo} alt="Logo" className="h-8 w-8 rounded-lg" />
-                                <span className="font-bold text-lg">mmmetric</span>
-                            </Link>
-                            <ul className="space-y-1">
-                                {navItems.map((item) => (
-                                    <li key={item.label}>
-                                        <a
-                                            href={item.href}
-                                            className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium ${item.active
-                                                ? 'bg-primary text-primary-foreground'
-                                                : 'text-muted-foreground hover:bg-accent'
-                                                }`}
-                                            onClick={(e) => {
-                                                if (!item.active) e.preventDefault();
-                                                setMobileMenuOpen(false);
-                                            }}
-                                        >
-                                            <item.icon className="h-4 w-4" />
-                                            {item.label}
-                                        </a>
-                                    </li>
-                                ))}
-                            </ul>
-                            <div className="mt-8 px-4 py-4 bg-muted/50 rounded-xl border border-border">
-                                <h4 className="font-semibold text-sm mb-2">Live Demo Mode</h4>
-                                <Link to="/auth?mode=signup" onClick={() => setMobileMenuOpen(false)}>
-                                    <Button size="sm" className="w-full text-xs">
-                                        Get Started
-                                    </Button>
+            <div className="mt-auto p-4 border-t border-sidebar-border/60">
+                <Link to="/">
+                    <Button variant="ghost" size="sm" className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground">
+                        <ArrowLeft className="h-4 w-4" />
+                        Back to Home
+                    </Button>
+                </Link>
+            </div>
+        </div>
+    );
+
+    return (
+        <div className="min-h-screen bg-background text-foreground font-sans">
+            {/* Mobile Header */}
+            <div className="lg:hidden flex items-center justify-between p-4 border-b border-border bg-sidebar/95 backdrop-blur-sm sticky top-0 z-50">
+                <div className="flex items-center gap-2">
+                    <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                        <LayoutDashboard className="h-5 w-5" />
+                    </div>
+                    <span className="font-bold text-lg font-display">mmmetric</span>
+                </div>
+                <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+                    <SheetContent side="left" className="p-0 w-72 border-r border-sidebar-border bg-sidebar">
+                        <SidebarContent />
+                    </SheetContent>
+                    <Button variant="ghost" size="icon" onClick={() => setMobileMenuOpen(true)}>
+                        <Menu className="h-6 w-6" />
+                    </Button>
+                </Sheet>
+            </div>
+
+            <div className="flex">
+                {/* Desktop Sidebar */}
+                <aside className="hidden lg:block w-72 min-h-screen sticky top-0 h-screen overflow-y-auto bg-sidebar border-r border-sidebar-border">
+                    <SidebarContent />
+                </aside>
+
+                {/* Main Content Area */}
+                <main className="flex-1 w-full overflow-hidden bg-background">
+                    <div className="p-6 md:p-10 max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500 slide-in-from-bottom-2">
+                        {/* Top Header */}
+                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+                            <div className="flex items-center gap-4">
+                                {/* Fake Site Selector */}
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button variant="outline" className="w-[220px] justify-between font-normal bg-card border-border h-10 shadow-sm">
+                                            <div className="flex items-center gap-2">
+                                                <div className="h-5 w-5 rounded bg-primary/10 flex items-center justify-center text-primary">
+                                                    <Globe className="h-3.5 w-3.5" />
+                                                </div>
+                                                <span className="truncate font-medium text-sm">mmmetric.com</span>
+                                            </div>
+                                            <ChevronDown className="h-4 w-4 opacity-50" />
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent className="w-[220px]" align="start">
+                                        <div className="px-2 py-1.5 text-xs text-muted-foreground">
+                                            You are viewing a public demo.
+                                            <br />Data is mocked for privacy.
+                                        </div>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            </div>
+
+                            {/* CTA Buttons */}
+                            <div className="flex items-center gap-3">
+                                <span className="text-sm text-muted-foreground hidden sm:inline-block">Like what you see?</span>
+                                <Link to="/auth">
+                                    <Button variant="outline" size="sm">Sign in</Button>
+                                </Link>
+                                <Link to="/auth?mode=signup">
+                                    <Button size="sm" className="shadow-lg shadow-primary/20">Start for Free</Button>
                                 </Link>
                             </div>
                         </div>
-                        <div className="mt-auto p-6">
-                            <Link to="/" onClick={() => setMobileMenuOpen(false)}>
-                                <Button variant="ghost" size="sm" className="w-full justify-start gap-2">
-                                    <ArrowLeft className="h-4 w-4" />
-                                    Back to Home
-                                </Button>
-                            </Link>
-                        </div>
-                    </div>
-                </SheetContent>
-            </Sheet>
 
-            {/* Main Content Area */}
-            <div className="flex-1 flex flex-col min-h-0 bg-muted/20">
-                {/* Mobile Header */}
-                <div className="lg:hidden flex items-center justify-between p-4 border-b border-border bg-background/50 backdrop-blur-md sticky top-0 z-30">
-                    <Button variant="ghost" size="icon" onClick={() => setMobileMenuOpen(true)}>
-                        <Menu className="h-5 w-5" />
-                    </Button>
-                    <span className="font-semibold">mmmetric Live Demo</span>
-                    <Link to="/">
-                        <Button variant="ghost" size="sm">Exit</Button>
-                    </Link>
-                </div>
-
-                <main className="flex-1 p-4 md:p-8 overflow-y-auto">
-                    {/* Top Header (Desktop) */}
-                    <div className="hidden lg:flex justify-between items-center mb-8">
-                        <div className="flex items-center gap-4">
-                            {/* Fake Site Selector */}
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" className="gap-2 text-lg font-normal h-auto py-2 px-3">
-                                        <div className="flex flex-col items-start text-left gap-0.5">
-                                            <span className="font-semibold">mmmetric.com</span>
-                                            <span className="text-xs text-muted-foreground font-mono">Live Demo View</span>
-                                        </div>
-                                        <ChevronDown className="h-4 w-4 opacity-50" />
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent className="w-60" align="start">
-                                    <div className="px-2 py-1.5 text-xs text-muted-foreground">
-                                        You are viewing a public demo.
-                                        <br />Data is mocked for privacy.
-                                    </div>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-                        </div>
-
-                        {/* CTA Buttons */}
-                        <div className="flex items-center gap-3">
-                            <span className="text-sm text-muted-foreground mr-2">Like what you see?</span>
-                            <Link to="/auth">
-                                <Button variant="outline" size="sm">Sign in</Button>
-                            </Link>
-                            <Link to="/auth?mode=signup">
-                                <Button size="sm">Start for Free</Button>
-                            </Link>
-                        </div>
-                    </div>
-
-                    {/* Subheader / Page Title */}
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-                        <div className="flex items-center gap-4">
-                            <ButtonBack />
+                        {/* Page Title */}
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                             <div>
-                                <h1 className="text-2xl font-bold tracking-tight">Analytics</h1>
-                                <div className="text-muted-foreground flex items-center gap-2 mt-1">
-                                    <Globe className="h-4 w-4" />
-                                    mmmetric.com
-                                </div>
+                                <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-foreground to-foreground/60 bg-clip-text text-transparent">
+                                    Analytics
+                                </h1>
+                                <p className="text-muted-foreground mt-1">
+                                    Overview for mmmetric.com
+                                </p>
+                            </div>
+                            {/* Mock Date Picker Display */}
+                            <div className="flex items-center gap-2 text-muted-foreground text-sm bg-muted/50 px-3 py-1.5 rounded-md border border-border">
+                                <span>Last 30 Days</span>
+                                <span className="text-border">|</span>
+                                <span className="text-xs">{format(subDays(new Date(), 30), 'MMM d')} - {format(new Date(), 'MMM d, yyyy')}</span>
                             </div>
                         </div>
-                        {/* Mock Date Picker Display */}
-                        <Button variant="outline" size="sm" className="w-full sm:w-auto justify-between font-normal">
-                            Last 30 Days
-                            <ChevronDown className="h-4 w-4 ml-2 opacity-50" />
-                        </Button>
-                    </div>
 
-                    {/* Analytics Components Grid */}
-                    <div className="space-y-6 animate-in fade-in duration-500 pb-10">
-                        {/* Stats Overview */}
-                        <StatsCards stats={mockStats} isLoading={false} />
 
-                        {/* Main Chart */}
-                        <VisitorChart data={mockTimeSeries} isLoading={false} />
+                        {/* Analytics Components Grid */}
+                        <div className="space-y-6 pb-10">
+                            {/* Stats Overview */}
+                            <StatsCards stats={mockStats} isLoading={false} />
 
-                        {/* Two Column Layout */}
-                        <div className="grid gap-6 lg:grid-cols-2">
-                            <TopPages pages={mockTopPages} isLoading={false} />
-                            <TopReferrers referrers={mockTopReferrers} isLoading={false} />
-                        </div>
+                            {/* Main Chart */}
+                            <VisitorChart data={mockTimeSeries} isLoading={false} />
 
-                        {/* Device Stats */}
-                        <DeviceStats
-                            browsers={mockDevices.browsers}
-                            operatingSystems={mockDevices.operatingSystems}
-                            devices={mockDevices.devices}
-                            isLoading={false}
-                        />
+                            {/* Two Column Layout */}
+                            <div className="grid gap-6 lg:grid-cols-2">
+                                <TopPages pages={mockTopPages} isLoading={false} />
+                                <TopReferrers referrers={mockTopReferrers} isLoading={false} />
+                            </div>
 
-                        {/* Geo & Language Stats */}
-                        <div className="grid gap-6 lg:grid-cols-2">
-                            <GeoStats
-                                countries={mockGeoStats}
-                                cities={mockCityStats}
+                            {/* Device Stats */}
+                            <DeviceStats
+                                browsers={mockDevices.browsers}
+                                operatingSystems={mockDevices.operatingSystems}
+                                devices={mockDevices.devices}
                                 isLoading={false}
                             />
-                            <LanguageStats
-                                languages={mockLanguageStats}
-                                isLoading={false}
-                            />
+
+                            {/* Geo & Language Stats */}
+                            <div className="grid gap-6 lg:grid-cols-2">
+                                <GeoStats
+                                    countries={mockGeoStats}
+                                    cities={mockCityStats}
+                                    isLoading={false}
+                                />
+                                <LanguageStats
+                                    languages={mockLanguageStats}
+                                    isLoading={false}
+                                />
+                            </div>
                         </div>
                     </div>
                 </main>
