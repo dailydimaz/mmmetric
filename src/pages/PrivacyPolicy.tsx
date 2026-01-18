@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import { ArrowLeft, Shield } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
 
 export default function PrivacyPolicy() {
@@ -25,19 +24,30 @@ export default function PrivacyPolicy() {
                 </div>
             </header>
 
-            <main className="container mx-auto px-4 lg:px-8 py-16 max-w-3xl">
-                <div className="mb-12">
-                    <h1 className="text-4xl font-bold tracking-tight mb-4">Privacy Policy</h1>
-                    <p className="text-muted-foreground">Last updated: {new Date().toLocaleDateString()}</p>
+            <main className="container mx-auto px-4 lg:px-8 py-16 max-w-4xl">
+                <div className="mb-12 pb-8 border-b border-border">
+                    <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4 text-foreground">Privacy Policy</h1>
+                    <p className="text-muted-foreground text-lg">
+                        Last updated: <span className="font-medium text-foreground">{new Date().toLocaleDateString()}</span>
+                    </p>
                 </div>
 
-                <div className="prose prose-lg max-w-none prose-headings:font-bold prose-h3:text-xl prose-p:text-muted-foreground">
+                <div className="prose prose-lg dark:prose-invert max-w-none prose-headings:font-bold prose-h3:text-2xl prose-h4:text-xl prose-p:text-muted-foreground prose-li:text-muted-foreground prose-strong:text-foreground">
                     <h3>1. Our Privacy Commitment</h3>
                     <p>
                         At mmmetric, we believe privacy is a fundamental human right. Our analytics platform is built
                         on the principle of "privacy by design." We collect the minimum amount of data necessary
                         to provide you with useful insights, without compromising the privacy of your visitors.
                     </p>
+
+                    <div className="my-8 p-6 bg-muted/30 border border-border rounded-xl">
+                        <h4 className="mt-0 text-foreground">Key Summary</h4>
+                        <ul className="mb-0">
+                            <li>We do <strong>not</strong> use cookies.</li>
+                            <li>We do <strong>not</strong> collect PII (Personally Identifiable Information).</li>
+                            <li>We do <strong>not</strong> track people across different websites.</li>
+                        </ul>
+                    </div>
 
                     <h3>2. What We Collect (and What We Don't)</h3>
 
@@ -72,13 +82,13 @@ export default function PrivacyPolicy() {
                     <h3>4. Data Ownership</h3>
                     <p>
                         You own your data. We do not sell, rent, or share your analytics data with third parties,
-                        advertising companies, or data brokers.
+                        advertising companies, or data brokers. You can export or delete your data at any time.
                     </p>
 
                     <h3>5. Self-Hosted Version</h3>
                     <p>
                         If you use the Self-Hosted version of mmmetric, all data remains on your own servers.
-                        We have absolutely no access to it.
+                        We have absolutely no access to it. You are the sole data controller.
                     </p>
 
                     <h3>6. Contact Us</h3>
@@ -88,7 +98,7 @@ export default function PrivacyPolicy() {
                 </div>
             </main>
 
-            <footer className="border-t border-border py-8 mt-16">
+            <footer className="border-t border-border py-8 mt-16 bg-muted/20">
                 <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
                     © {new Date().getFullYear()} mmmetric Analytics. All rights reserved.
                 </div>

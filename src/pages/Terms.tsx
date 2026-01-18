@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import { ArrowLeft, FileText } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
 
 export default function Terms() {
@@ -25,13 +24,15 @@ export default function Terms() {
                 </div>
             </header>
 
-            <main className="container mx-auto px-4 lg:px-8 py-16 max-w-3xl">
-                <div className="mb-12">
-                    <h1 className="text-4xl font-bold tracking-tight mb-4">Terms of Service</h1>
-                    <p className="text-muted-foreground">Last updated: {new Date().toLocaleDateString()}</p>
+            <main className="container mx-auto px-4 lg:px-8 py-16 max-w-4xl">
+                <div className="mb-12 pb-8 border-b border-border">
+                    <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4 text-foreground">Terms of Service</h1>
+                    <p className="text-muted-foreground text-lg">
+                        Last updated: <span className="font-medium text-foreground">{new Date().toLocaleDateString()}</span>
+                    </p>
                 </div>
 
-                <div className="prose prose-lg max-w-none prose-headings:font-bold prose-h3:text-xl prose-p:text-muted-foreground">
+                <div className="prose prose-lg dark:prose-invert max-w-none prose-headings:font-bold prose-h3:text-2xl prose-h4:text-xl prose-p:text-muted-foreground prose-li:text-muted-foreground prose-strong:text-foreground">
                     <h3>1. Introduction</h3>
                     <p>
                         Welcome to mmmetric ("we," "our," or "us"). By accessing or using our analytics services, website,
@@ -42,20 +43,24 @@ export default function Terms() {
                     <p>
                         mmmetric provides privacy-friendly web analytics services. We offer two versions of our Service:
                     </p>
-                    <ul>
-                        <li><strong>Cloud Version:</strong> Hosted by us on our infrastructure.</li>
-                        <li><strong>Self-Hosted Version:</strong> Hosted by you on your own infrastructure.</li>
+                    <ul className="bg-muted/30 border border-border rounded-xl p-6 list-none pl-6">
+                        <li className="mb-2 relative before:content-['•'] before:absolute before:-left-4 before:text-primary">
+                            <strong>Cloud Version:</strong> Hosted by us on our managed infrastructure.
+                        </li>
+                        <li className="relative before:content-['•'] before:absolute before:-left-4 before:text-primary">
+                            <strong>Self-Hosted Version:</strong> Hosted by you on your own infrastructure.
+                        </li>
                     </ul>
 
                     <h3>3. Use License (Self-Hosted)</h3>
                     <p>
                         For the Self-Hosted version, we grant you a limited, non-exclusive, non-transferable license to
-                        install and use the software for your internal business purposes, subject to these Terms.
+                        install and use the software for your internal business or personal purposes, subject to these Terms.
                     </p>
 
                     <h3>4. Acceptable Use</h3>
                     <p>
-                        You agree not to misuse the Service or help anyone else to do so. You must not trying to access
+                        You agree not to misuse the Service or help anyone else to do so. You must not try to access
                         non-public areas of the Service, test the vulnerability of the Service, or try to reverse engineer the Service.
                     </p>
 
@@ -63,7 +68,7 @@ export default function Terms() {
                     <p>
                         We prioritize user privacy. Our Service is designed to be compliant with GDPR, CCPA, and PECR.
                         We do not use tracking cookies and we anonymize visitor IP addresses.
-                        For more details, please refer to our <Link to="/privacy-policy">Privacy Policy</Link>.
+                        For more details, please refer to our <Link to="/privacy-policy" className="text-primary hover:underline">Privacy Policy</Link>.
                     </p>
 
                     <h3>6. Disclaimer</h3>
@@ -82,7 +87,7 @@ export default function Terms() {
                 </div>
             </main>
 
-            <footer className="border-t border-border py-8 mt-16">
+            <footer className="border-t border-border py-8 mt-16 bg-muted/20">
                 <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
                     © {new Date().getFullYear()} mmmetric Analytics. All rights reserved.
                 </div>
