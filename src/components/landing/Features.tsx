@@ -10,7 +10,10 @@ import {
   LayoutTemplate,
   Target,
   UserPlus,
-  Download
+  Download,
+  Route,
+  Layers,
+  Command,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -88,6 +91,24 @@ const features = [
     icon: Download,
     title: "Data Export",
     description: "Your data belongs to you. Export all your analytics data to CSV anytime.",
+    className: "md:col-span-1",
+  },
+  {
+    icon: Route,
+    title: "User Journeys",
+    description: "Visualise how users navigate through your site. Identify drop-off points and optimize flow.",
+    className: "md:col-span-2",
+  },
+  {
+    icon: Layers,
+    title: "Deep Breakdowns",
+    description: "Slice and dice your data. Filter by any property, including custom events.",
+    className: "md:col-span-1",
+  },
+  {
+    icon: Command,
+    title: "Command Menu",
+    description: "navigate everything with your keyboard. Just press Cmd+K.",
     className: "md:col-span-1",
   },
 ];

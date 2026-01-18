@@ -41,6 +41,7 @@ import {
   Globe2,
   LayoutTemplate,
   Bell,
+  Command,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -295,7 +296,7 @@ const features: Feature[] = [
     name: "Breakdown",
     description: "Dive deeper with segments and filters",
     icon: Database,
-    implemented: false,
+    implemented: true,
     difficulty: "hard",
     category: "insights",
   },
@@ -303,7 +304,7 @@ const features: Feature[] = [
     name: "Journey",
     description: "Visualize how users navigate your site",
     icon: Route,
-    implemented: false,
+    implemented: true,
     difficulty: "hard",
     category: "insights",
   },
@@ -394,6 +395,14 @@ const features: Feature[] = [
     implemented: true,
     difficulty: "medium",
     category: "cloud",
+  },
+  {
+    name: "Command Menu",
+    description: "Quickly navigate and control via keyboard (Cmd+K)",
+    icon: Command,
+    implemented: true,
+    difficulty: "medium",
+    category: "analytics",
   },
   {
     name: "GA Import",
