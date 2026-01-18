@@ -2492,6 +2492,15 @@ export type Database = {
               visits: number
             }[]
           }
+      get_user_journeys: {
+        Args: {
+          _end_date: string
+          _limit?: number
+          _site_id: string
+          _start_date: string
+        }
+        Returns: Json
+      }
       get_utm_stats:
         | {
             Args: {

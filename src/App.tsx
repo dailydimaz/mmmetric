@@ -10,6 +10,7 @@ import Dashboard from "./pages/Dashboard";
 import SiteDetail from "./pages/SiteDetail";
 import FunnelDetail from "./pages/FunnelDetail";
 import Funnels from "./pages/Funnels";
+import Journeys from "./pages/Journeys";
 import Retention from "./pages/Retention";
 import Settings from "./pages/Settings";
 import Roadmap from "./pages/Roadmap";
@@ -66,6 +67,7 @@ const App = () => (
             <Route path="/dashboard/sites/:siteId/funnels" element={<Funnels />} />
             <Route path="/dashboard/sites/:siteId/funnels/:funnelId" element={<FunnelDetail />} />
             <Route path="/dashboard/sites/:siteId/retention" element={<Retention />} />
+            <Route path="/dashboard/sites/:siteId/journeys" element={<Journeys />} />
             <Route path="/dashboard/sites/:siteId/cohorts" element={<Cohorts />} />
             <Route path="/dashboard/sites/:siteId/insights" element={<Insights />} />
             <Route path="/dashboard/sites/:siteId/links" element={<Links />} />
