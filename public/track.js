@@ -243,10 +243,91 @@
     window.addEventListener('popstate', handleNavigation);
   }
 
+  // Track Core Web Vitals
+  function measureWebVitals() {
+    function getRating(metric, value) {
+      if (metric === 'LCP') return value <= 2500 ? 'good' : value <= 4000 ? 'needs-improvement' : 'poor';
+      if (metric === 'CLS') return value <= 0.1 ? 'good' : value <= 0.25 ? 'needs-improvement' : 'poor';
+      if (metric === 'INP') return value <= 200 ? 'good' : value <= 500 ? 'needs-improvement' : 'poor';
+      return 'unknown';
+    }
+
+    function sendVital(metric, value) {
+      // Round values for consistency
+      var val = metric === 'CLS' ? Math.round(value * 1000) / 1000 : Math.round(value);
+
+      track('web_vitals', {
+        metric: metric,
+        value: val,
+        rating: getRating(metric, value)
+      });
+    }
+
+    if (typeof PerformanceObserver === 'function') {
+      // LCP
+      try {
+        new PerformanceObserver(function (entryList) {
+          var entries = entryList.getEntries();
+          var lastEntry = entries[entries.length - 1];
+          // Determine when to report (simplified: just keep updating locally, report on visibility hidden could be complex without library)
+          // For simplicity in this lightweight script, we'll report the candidate on pagehide
+          if (lastEntry) {
+            window._mm_lcp = lastEntry.startTime;
+          }
+        }).observe({ type: 'largest-contentful-paint', buffered: true });
+      } catch (e) { }
+
+      // CLS
+      try {
+        window._mm_cls = 0;
+        new PerformanceObserver(function (entryList) {
+          entryList.getEntries().forEach(function (entry) {
+            if (!entry.hadRecentInput) {
+              window._mm_cls += entry.value;
+            }
+          });
+        }).observe({ type: 'layout-shift', buffered: true });
+      } catch (e) { }
+
+      // INP (Simplified: observing long interactions)
+      try {
+        window._mm_inp = 0;
+        new PerformanceObserver(function (entryList) {
+          entryList.getEntries().forEach(function (entry) {
+            if (entry.interactionId && entry.duration > window._mm_inp) {
+              window._mm_inp = entry.duration;
+            }
+          });
+        }).observe({ type: 'event', durationThreshold: 16, buffered: true });
+      } catch (e) { }
+
+      // Report on page hide / unload
+      var reported = false;
+      function reportMetrics() {
+        if (reported) return;
+        reported = true;
+
+        if (window._mm_lcp !== undefined) sendVital('LCP', window._mm_lcp);
+        if (window._mm_cls !== undefined) sendVital('CLS', window._mm_cls);
+        if (window._mm_inp !== undefined && window._mm_inp > 0) sendVital('INP', window._mm_inp);
+      }
+
+      window.addEventListener('visibilitychange', function () {
+        if (document.visibilityState === 'hidden') {
+          reportMetrics();
+        }
+      });
+
+      // Safari support for pagehide
+      window.addEventListener('pagehide', reportMetrics);
+    }
+  }
+
   // Initialize tracking
   function init() {
     trackPageview();
     setupOutboundTracking();
+    measureWebVitals();
 
     // Delay 404 check to allow page to fully load
     setTimeout(track404, 1000);
