@@ -49,6 +49,37 @@ setInterval(cleanupRateLimitMap, 5 * 60 * 1000);
 const MAX_URL_LENGTH = 2000;
 const MAX_EVENT_NAME_LENGTH = 100;
 const MAX_PROPERTIES_SIZE = 10240; // 10KB
+const MAX_JSON_DEPTH = 10;
+const MAX_KEYS_PER_OBJECT = 100;
+const MAX_ARRAY_LENGTH = 1000;
+
+// Validate JSON structure to prevent DoS from deeply nested/complex objects
+function validateJsonStructure(obj: unknown, depth = 0): void {
+  if (depth > MAX_JSON_DEPTH) {
+    throw new Error('JSON depth exceeded');
+  }
+  
+  if (obj === null || typeof obj !== 'object') {
+    return;
+  }
+  
+  if (Array.isArray(obj)) {
+    if (obj.length > MAX_ARRAY_LENGTH) {
+      throw new Error('Array length exceeded');
+    }
+    for (const item of obj) {
+      validateJsonStructure(item, depth + 1);
+    }
+  } else {
+    const keys = Object.keys(obj);
+    if (keys.length > MAX_KEYS_PER_OBJECT) {
+      throw new Error('Object key count exceeded');
+    }
+    for (const key of keys) {
+      validateJsonStructure((obj as Record<string, unknown>)[key], depth + 1);
+    }
+  }
+}
 
 // Parse user agent to extract browser, OS, and device type
 function parseUserAgent(ua: string): { browser: string; os: string; device_type: string } {
@@ -209,11 +240,21 @@ serve(async (req) => {
       });
     }
 
-    // Validate properties size
+    // Validate properties size and structure
     if (properties) {
       const propsString = JSON.stringify(properties);
       if (propsString.length > MAX_PROPERTIES_SIZE) {
         return new Response(JSON.stringify({ error: 'Properties too large (max 10KB)' }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      
+      // Validate JSON structure to prevent DoS from deeply nested/complex objects
+      try {
+        validateJsonStructure(properties);
+      } catch {
+        return new Response(JSON.stringify({ error: 'Properties structure invalid (too deep or complex)' }), {
           status: 400,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
@@ -286,8 +327,8 @@ serve(async (req) => {
       .maybeSingle();
 
     if (siteError) {
-      // Log only error code, not full details to prevent schema leakage
-      console.error('Site verification failed', { code: siteError?.code, hint: siteError?.hint });
+      // Log generic error message only - no error codes or hints in production logs
+      console.error('Site verification failed');
       return new Response(JSON.stringify({ error: 'Database error' }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -383,8 +424,8 @@ serve(async (req) => {
     })();
 
     if (insertError) {
-      // Log only error code, not full details to prevent schema leakage
-      console.error('Event insert failed', { code: insertError?.code, hint: insertError?.hint });
+      // Log generic error message only - no error codes or hints in production logs
+      console.error('Event insert failed');
       return new Response(JSON.stringify({ error: 'Failed to record event' }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
