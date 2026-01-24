@@ -42,6 +42,65 @@ import { CommandMenu } from "./components/dashboard/CommandMenu";
 
 const queryClient = new QueryClient();
 
+import { AnimatePresence, motion } from "framer-motion";
+import { useLocation } from "react-router-dom";
+
+const AppRoutes = () => {
+  const location = useLocation();
+
+  return (
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={location.pathname}
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -10 }}
+        transition={{ duration: 0.2 }}
+        className="min-h-screen"
+      >
+        <Routes location={location} key={location.pathname}>
+          <Route path="/" element={<Landing />} />
+          <Route path="/auth" element={<Auth />} />
+          <Route path="/auth/reset-password" element={<ResetPassword />} />
+          <Route path="/roadmap" element={<Roadmap />} />
+          <Route path="/compare/google-analytics" element={<CompareGA />} />
+          <Route path="/live" element={<LiveDemo />} />
+          <Route path="/resources/self-hosting" element={<SelfHosting />} />
+          <Route path="/resources/privacy" element={<Privacy />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/resources/lightweight" element={<Lightweight />} />
+          <Route path="/migrate" element={<Migrate />} />
+          <Route path="/changelog" element={<Changelog />} />
+          {/* Public routes */}
+          <Route path="/share/:token" element={<PublicDashboard />} />
+          <Route path="/insight/:token" element={<SharedInsight />} />
+
+          {/* Integrations */}
+          <Route path="/dashboard/sites/:siteId/integrations" element={<Integrations />} />
+          <Route path="/dashboard/sites/:siteId/integrations/ga-import" element={<GAImportWizard />} />
+          <Route path="/dashboard/sites/:siteId/gsc" element={<GSCDashboard />} />
+
+          <Route path="/invite/:token" element={<InviteAccept />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard/sites/:siteId" element={<SiteDetail />} />
+          <Route path="/dashboard/sites/:siteId/funnels" element={<Funnels />} />
+          <Route path="/dashboard/sites/:siteId/funnels/:funnelId" element={<FunnelDetail />} />
+          <Route path="/dashboard/sites/:siteId/retention" element={<Retention />} />
+          <Route path="/dashboard/sites/:siteId/journeys" element={<Journeys />} />
+          <Route path="/dashboard/sites/:siteId/cohorts" element={<Cohorts />} />
+          <Route path="/dashboard/sites/:siteId/insights" element={<Insights />} />
+          <Route path="/dashboard/sites/:siteId/links" element={<Links />} />
+          <Route path="/dashboard/sites/:siteId/attribution" element={<Attribution />} />
+          <Route path="/dashboard/settings" element={<Settings />} />
+          <Route path="/tools/campaign-builder" element={<CampaignBuilder />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </motion.div>
+    </AnimatePresence>
+  );
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
@@ -50,44 +109,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <CommandMenu />
-          <Routes>
-            <Route path="/" element={<Landing />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/auth/reset-password" element={<ResetPassword />} />
-            <Route path="/roadmap" element={<Roadmap />} />
-            <Route path="/compare/google-analytics" element={<CompareGA />} />
-            <Route path="/live" element={<LiveDemo />} />
-            <Route path="/resources/self-hosting" element={<SelfHosting />} />
-            <Route path="/resources/privacy" element={<Privacy />} />
-            <Route path="/terms" element={<Terms />} />
-            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-            <Route path="/resources/lightweight" element={<Lightweight />} />
-            <Route path="/migrate" element={<Migrate />} />
-            <Route path="/changelog" element={<Changelog />} />
-            {/* Public routes */}
-            <Route path="/share/:token" element={<PublicDashboard />} />
-            <Route path="/insight/:token" element={<SharedInsight />} />
-
-            {/* Integrations */}
-            <Route path="/dashboard/sites/:siteId/integrations" element={<Integrations />} />
-            <Route path="/dashboard/sites/:siteId/integrations/ga-import" element={<GAImportWizard />} />
-            <Route path="/dashboard/sites/:siteId/gsc" element={<GSCDashboard />} />
-
-            <Route path="/invite/:token" element={<InviteAccept />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/dashboard/sites/:siteId" element={<SiteDetail />} />
-            <Route path="/dashboard/sites/:siteId/funnels" element={<Funnels />} />
-            <Route path="/dashboard/sites/:siteId/funnels/:funnelId" element={<FunnelDetail />} />
-            <Route path="/dashboard/sites/:siteId/retention" element={<Retention />} />
-            <Route path="/dashboard/sites/:siteId/journeys" element={<Journeys />} />
-            <Route path="/dashboard/sites/:siteId/cohorts" element={<Cohorts />} />
-            <Route path="/dashboard/sites/:siteId/insights" element={<Insights />} />
-            <Route path="/dashboard/sites/:siteId/links" element={<Links />} />
-            <Route path="/dashboard/sites/:siteId/attribution" element={<Attribution />} />
-            <Route path="/dashboard/settings" element={<Settings />} />
-            <Route path="/tools/campaign-builder" element={<CampaignBuilder />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <AppRoutes />
         </BrowserRouter>
       </TooltipProvider>
     </ThemeProvider>

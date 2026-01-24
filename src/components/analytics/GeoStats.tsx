@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { MapPin, Building2, Map as MapIcon, Layers } from "lucide-react";
 import { GeoStat, CityStat } from "@/hooks/useAnalytics";
+import { GeoMap } from "./GeoMap";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import {
@@ -44,6 +45,7 @@ function getCountryName(code: string): string {
 
 export function GeoStats({ countries, cities, isLoading, onBreakdown }: GeoStatsProps) {
   const [activeTab, setActiveTab] = useState<"countries" | "cities">("countries");
+  const [viewMode, setViewMode] = useState<"list" | "map">("list");
 
   return (
     <Card className="h-full">
@@ -61,6 +63,16 @@ export function GeoStats({ countries, cities, isLoading, onBreakdown }: GeoStats
               <Layers className="h-3 w-3" />
             </span>
           )}
+
+          <ToggleGroup type="single" value={viewMode} onValueChange={(val) => val && setViewMode(val as "list" | "map")} className="bg-muted p-1 rounded-lg mr-2">
+            <ToggleGroupItem value="list" size="sm" className="h-7 w-7 p-0 data-[state=on]:bg-background data-[state=on]:shadow-sm">
+              <Layers className="h-3 w-3" />
+            </ToggleGroupItem>
+            <ToggleGroupItem value="map" size="sm" className="h-7 w-7 p-0 data-[state=on]:bg-background data-[state=on]:shadow-sm">
+              <MapIcon className="h-3 w-3" />
+            </ToggleGroupItem>
+          </ToggleGroup>
+
           <ToggleGroup type="single" value={activeTab} onValueChange={(val) => val && setActiveTab(val as "countries" | "cities")} className="bg-muted p-1 rounded-lg">
             <ToggleGroupItem value="countries" size="sm" className="h-7 text-xs data-[state=on]:bg-background data-[state=on]:shadow-sm">
               Countries
@@ -85,6 +97,10 @@ export function GeoStats({ countries, cities, isLoading, onBreakdown }: GeoStats
                   <Skeleton className="h-4 w-12" />
                 </div>
               ))}
+            </div>
+          ) : viewMode === "map" && activeTab === "countries" ? (
+            <div className="p-4">
+              <GeoMap data={countries} isLoading={isLoading} onCountryClick={onBreakdown} />
             </div>
           ) : activeTab === "countries" ? (
             countries && countries.length > 0 ? (

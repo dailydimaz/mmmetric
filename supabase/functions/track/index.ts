@@ -58,11 +58,11 @@ function validateJsonStructure(obj: unknown, depth = 0): void {
   if (depth > MAX_JSON_DEPTH) {
     throw new Error('JSON depth exceeded');
   }
-  
+
   if (obj === null || typeof obj !== 'object') {
     return;
   }
-  
+
   if (Array.isArray(obj)) {
     if (obj.length > MAX_ARRAY_LENGTH) {
       throw new Error('Array length exceeded');
@@ -112,8 +112,14 @@ function parseUserAgent(ua: string): { browser: string; os: string; device_type:
 }
 
 // Generate a cryptographic hash for visitor fingerprinting using SHA-256
+// Generate a cryptographic hash for visitor fingerprinting using SHA-256
+// Rotates daily for privacy compliance (24h retention)
 async function generateVisitorId(ip: string, ua: string): Promise<string> {
-  const str = `${ip}-${ua}`;
+  // Use a rotating salt based on the current date (UTC)
+  const dateSalt = new Date().toISOString().slice(0, 10); // "YYYY-MM-DD"
+  const secretSalt = Deno.env.get(' daily_salt_secret') || 'default-salt-change-me';
+
+  const str = `${ip}-${ua}-${dateSalt}-${secretSalt}`;
   const encoder = new TextEncoder();
   const data = encoder.encode(str);
   const hashBuffer = await crypto.subtle.digest('SHA-256', data);
@@ -249,7 +255,7 @@ serve(async (req) => {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       }
-      
+
       // Validate JSON structure to prevent DoS from deeply nested/complex objects
       try {
         validateJsonStructure(properties);
@@ -282,11 +288,11 @@ serve(async (req) => {
         const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
         const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
         const geoSupabase = createClient(supabaseUrl, supabaseServiceKey);
-        
-        const { data: geoData, error: geoError } = await geoSupabase.rpc('lookup_geoip', { 
-          ip_address: clientIp 
+
+        const { data: geoData, error: geoError } = await geoSupabase.rpc('lookup_geoip', {
+          ip_address: clientIp
         });
-        
+
         if (geoError) {
           console.warn('GeoIP lookup RPC error:', geoError.message);
         } else if (geoData && geoData.length > 0) {
