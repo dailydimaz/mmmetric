@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Loader2 } from "lucide-react";
 import { Download, FileJson, FileSpreadsheet } from "lucide-react";
 import { DateRange } from "@/hooks/useAnalytics";
 import { fetchExportData, exportToCSV, exportToJSON } from "@/utils/analyticsExport";
@@ -78,7 +79,7 @@ export function ExportButton({ siteId, siteName, dateRange }: ExportButtonProps)
           disabled={isExporting}
         >
           {isExporting ? (
-            <span className="loading loading-spinner loading-sm mr-2"></span>
+            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
           ) : (
             <Download className="h-4 w-4 mr-2" />
           )}
