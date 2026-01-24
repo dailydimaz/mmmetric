@@ -2412,15 +2412,15 @@ export type Database = {
     }
     Functions: {
       aggregate_analytics_data:
-        | { Args: never; Returns: undefined }
-        | {
-            Args: { _batch_size?: number }
-            Returns: {
-              events_processed: number
-              hours_aggregated: number
-              sites_processed: number
-            }[]
-          }
+      | { Args: never; Returns: undefined }
+      | {
+        Args: { _batch_size?: number }
+        Returns: {
+          events_processed: number
+          hours_aggregated: number
+          sites_processed: number
+        }[]
+      }
       create_future_partitions: { Args: never; Returns: undefined }
       get_attribution_stats: {
         Args: {
@@ -2433,49 +2433,49 @@ export type Database = {
         Returns: Json
       }
       get_city_stats:
-        | {
-            Args: {
-              _end_date: string
-              _limit?: number
-              _site_id: string
-              _start_date: string
-            }
-            Returns: {
-              city: string
-              country: string
-              percentage: number
-              visits: number
-            }[]
-          }
-        | {
-            Args: {
-              _end_date: string
-              _filters?: Json
-              _limit?: number
-              _site_id: string
-              _start_date: string
-            }
-            Returns: {
-              city: string
-              country: string
-              percentage: number
-              visits: number
-            }[]
-          }
+      | {
+        Args: {
+          _end_date: string
+          _limit?: number
+          _site_id: string
+          _start_date: string
+        }
+        Returns: {
+          city: string
+          country: string
+          percentage: number
+          visits: number
+        }[]
+      }
+      | {
+        Args: {
+          _end_date: string
+          _filters?: Json
+          _limit?: number
+          _site_id: string
+          _start_date: string
+        }
+        Returns: {
+          city: string
+          country: string
+          percentage: number
+          visits: number
+        }[]
+      }
       get_device_stats:
-        | {
-            Args: { _end_date: string; _site_id: string; _start_date: string }
-            Returns: Json
-          }
-        | {
-            Args: {
-              _end_date: string
-              _filters?: Json
-              _site_id: string
-              _start_date: string
-            }
-            Returns: Json
-          }
+      | {
+        Args: { _end_date: string; _site_id: string; _start_date: string }
+        Returns: Json
+      }
+      | {
+        Args: {
+          _end_date: string
+          _filters?: Json
+          _site_id: string
+          _start_date: string
+        }
+        Returns: Json
+      }
       get_funnel_stats: {
         Args: { _end_date: string; _funnel_id: string; _start_date: string }
         Returns: {
@@ -2487,33 +2487,33 @@ export type Database = {
         }[]
       }
       get_geo_stats:
-        | {
-            Args: {
-              _end_date: string
-              _limit?: number
-              _site_id: string
-              _start_date: string
-            }
-            Returns: {
-              country: string
-              percentage: number
-              visits: number
-            }[]
-          }
-        | {
-            Args: {
-              _end_date: string
-              _filters?: Json
-              _limit?: number
-              _site_id: string
-              _start_date: string
-            }
-            Returns: {
-              country: string
-              percentage: number
-              visits: number
-            }[]
-          }
+      | {
+        Args: {
+          _end_date: string
+          _limit?: number
+          _site_id: string
+          _start_date: string
+        }
+        Returns: {
+          country: string
+          percentage: number
+          visits: number
+        }[]
+      }
+      | {
+        Args: {
+          _end_date: string
+          _filters?: Json
+          _limit?: number
+          _site_id: string
+          _start_date: string
+        }
+        Returns: {
+          country: string
+          percentage: number
+          visits: number
+        }[]
+      }
       get_goal_stats: {
         Args: { _end_date: string; _site_id: string; _start_date: string }
         Returns: {
@@ -2532,60 +2532,60 @@ export type Database = {
         }[]
       }
       get_language_stats:
-        | {
-            Args: {
-              _end_date: string
-              _limit?: number
-              _site_id: string
-              _start_date: string
-            }
-            Returns: {
-              language: string
-              percentage: number
-              visits: number
-            }[]
-          }
-        | {
-            Args: {
-              _end_date: string
-              _filters?: Json
-              _limit?: number
-              _site_id: string
-              _start_date: string
-            }
-            Returns: {
-              language: string
-              percentage: number
-              visits: number
-            }[]
-          }
+      | {
+        Args: {
+          _end_date: string
+          _limit?: number
+          _site_id: string
+          _start_date: string
+        }
+        Returns: {
+          language: string
+          percentage: number
+          visits: number
+        }[]
+      }
+      | {
+        Args: {
+          _end_date: string
+          _filters?: Json
+          _limit?: number
+          _site_id: string
+          _start_date: string
+        }
+        Returns: {
+          language: string
+          percentage: number
+          visits: number
+        }[]
+      }
       get_public_dashboard_stats:
-        | {
-            Args: {
-              _end_date: string
-              _password?: string
-              _share_token: string
-              _start_date: string
-            }
-            Returns: Json
-          }
-        | {
-            Args: {
-              _end_date: string
-              _share_token: string
-              _start_date: string
-            }
-            Returns: Json
-          }
-        | {
-            Args: {
-              _end_date: string
-              _password?: string
-              _share_token: string
-              _start_date: string
-            }
-            Returns: Json
-          }
+      | {
+        Args: {
+          _end_date: string
+          _password?: string
+          _share_token: string
+          _start_date: string
+        }
+        Returns: Json
+      }
+      | {
+        Args: {
+          _end_date: string
+          _share_token: string
+          _start_date: string
+        }
+        Returns: Json
+      }
+      | {
+        Args: {
+          _end_date: string
+          _password?: string
+          _share_token: string
+          _start_date: string
+        }
+        Returns: Json
+      }
       get_retention_cohorts: {
         Args: { _end_date: string; _site_id: string; _start_date: string }
         Returns: Json
@@ -2637,95 +2637,95 @@ export type Database = {
         }[]
       }
       get_timeseries_stats:
-        | {
-            Args: {
-              _end_date: string
-              _prev_end_date: string
-              _prev_start_date: string
-              _site_id: string
-              _start_date: string
-            }
-            Returns: {
-              date: string
-              pageviews: number
-              prev_pageviews: number
-              prev_visitors: number
-              visitors: number
-            }[]
-          }
-        | {
-            Args: {
-              _end_date: string
-              _filters?: Json
-              _prev_end_date: string
-              _prev_start_date: string
-              _site_id: string
-              _start_date: string
-            }
-            Returns: {
-              date: string
-              pageviews: number
-              prev_pageviews: number
-              prev_visitors: number
-              visitors: number
-            }[]
-          }
+      | {
+        Args: {
+          _end_date: string
+          _prev_end_date: string
+          _prev_start_date: string
+          _site_id: string
+          _start_date: string
+        }
+        Returns: {
+          date: string
+          pageviews: number
+          prev_pageviews: number
+          prev_visitors: number
+          visitors: number
+        }[]
+      }
+      | {
+        Args: {
+          _end_date: string
+          _filters?: Json
+          _prev_end_date: string
+          _prev_start_date: string
+          _site_id: string
+          _start_date: string
+        }
+        Returns: {
+          date: string
+          pageviews: number
+          prev_pageviews: number
+          prev_visitors: number
+          visitors: number
+        }[]
+      }
       get_top_pages:
-        | {
-            Args: {
-              _end_date: string
-              _limit?: number
-              _site_id: string
-              _start_date: string
-            }
-            Returns: {
-              pageviews: number
-              unique_visitors: number
-              url: string
-            }[]
-          }
-        | {
-            Args: {
-              _end_date: string
-              _filters?: Json
-              _limit?: number
-              _site_id: string
-              _start_date: string
-            }
-            Returns: {
-              pageviews: number
-              unique_visitors: number
-              url: string
-            }[]
-          }
+      | {
+        Args: {
+          _end_date: string
+          _limit?: number
+          _site_id: string
+          _start_date: string
+        }
+        Returns: {
+          pageviews: number
+          unique_visitors: number
+          url: string
+        }[]
+      }
+      | {
+        Args: {
+          _end_date: string
+          _filters?: Json
+          _limit?: number
+          _site_id: string
+          _start_date: string
+        }
+        Returns: {
+          pageviews: number
+          unique_visitors: number
+          url: string
+        }[]
+      }
       get_top_referrers:
-        | {
-            Args: {
-              _end_date: string
-              _limit?: number
-              _site_id: string
-              _start_date: string
-            }
-            Returns: {
-              percentage: number
-              referrer: string
-              visits: number
-            }[]
-          }
-        | {
-            Args: {
-              _end_date: string
-              _filters?: Json
-              _limit?: number
-              _site_id: string
-              _start_date: string
-            }
-            Returns: {
-              percentage: number
-              referrer: string
-              visits: number
-            }[]
-          }
+      | {
+        Args: {
+          _end_date: string
+          _limit?: number
+          _site_id: string
+          _start_date: string
+        }
+        Returns: {
+          percentage: number
+          referrer: string
+          visits: number
+        }[]
+      }
+      | {
+        Args: {
+          _end_date: string
+          _filters?: Json
+          _limit?: number
+          _site_id: string
+          _start_date: string
+        }
+        Returns: {
+          percentage: number
+          referrer: string
+          visits: number
+        }[]
+      }
       get_user_journeys: {
         Args: {
           _end_date: string
@@ -2736,25 +2736,25 @@ export type Database = {
         Returns: Json
       }
       get_utm_stats:
-        | {
-            Args: {
-              _end_date: string
-              _limit?: number
-              _site_id: string
-              _start_date: string
-            }
-            Returns: Json
-          }
-        | {
-            Args: {
-              _end_date: string
-              _filters?: Json
-              _limit?: number
-              _site_id: string
-              _start_date: string
-            }
-            Returns: Json
-          }
+      | {
+        Args: {
+          _end_date: string
+          _limit?: number
+          _site_id: string
+          _start_date: string
+        }
+        Returns: Json
+      }
+      | {
+        Args: {
+          _end_date: string
+          _filters?: Json
+          _limit?: number
+          _site_id: string
+          _start_date: string
+        }
+        Returns: Json
+      }
       has_team_role: {
         Args: { _min_role: string; _site_id: string }
         Returns: boolean
@@ -2775,9 +2775,9 @@ export type Database = {
     }
     Enums: {
       integration_provider:
-        | "google_analytics"
-        | "shopify"
-        | "google_search_console"
+      | "google_analytics"
+      | "shopify"
+      | "google_search_console"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -2791,116 +2791,116 @@ type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
-    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
-    | { schema: keyof DatabaseWithoutInternals },
+  | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+  | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never = never,
+  ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+    DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+  : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
   ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+    DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
       Row: infer R
     }
-    ? R
-    : never
+  ? R
+  : never
   : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])
-    ? (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
-        Row: infer R
-      }
-      ? R
-      : never
-    : never
+    DefaultSchema["Views"])
+  ? (DefaultSchema["Tables"] &
+    DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+      Row: infer R
+    }
+  ? R
+  : never
+  : never
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
-    | { schema: keyof DatabaseWithoutInternals },
+  | keyof DefaultSchema["Tables"]
+  | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+  ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+  : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
   ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Insert: infer I
-    }
-    ? I
-    : never
+    Insert: infer I
+  }
+  ? I
+  : never
   : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-        Insert: infer I
-      }
-      ? I
-      : never
-    : never
+  ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+    Insert: infer I
+  }
+  ? I
+  : never
+  : never
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
-    | { schema: keyof DatabaseWithoutInternals },
+  | keyof DefaultSchema["Tables"]
+  | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+  ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+  : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
   ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Update: infer U
-    }
-    ? U
-    : never
+    Update: infer U
+  }
+  ? U
+  : never
   : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-        Update: infer U
-      }
-      ? U
-      : never
-    : never
+  ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+    Update: infer U
+  }
+  ? U
+  : never
+  : never
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
-    | keyof DefaultSchema["Enums"]
-    | { schema: keyof DatabaseWithoutInternals },
+  | keyof DefaultSchema["Enums"]
+  | { schema: keyof DatabaseWithoutInternals },
   EnumName extends DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
+  ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+  : never = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
   ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
-    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
-    : never
+  ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+  : never
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
-    | keyof DefaultSchema["CompositeTypes"]
-    | { schema: keyof DatabaseWithoutInternals },
+  | keyof DefaultSchema["CompositeTypes"]
+  | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
+  ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+  : never = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
   ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
   : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
-    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
-    : never
+  ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+  : never
 
 export const Constants = {
   public: {

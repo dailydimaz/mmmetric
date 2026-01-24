@@ -21,6 +21,9 @@ import Insights from "./pages/Insights";
 import SharedInsight from "./pages/SharedInsight";
 import Links from "./pages/Links";
 import Attribution from "./pages/Attribution";
+import Integrations from "./pages/Integrations";
+import GAImportWizard from "./pages/GAImportWizard";
+import GSCDashboard from "./pages/GSCDashboard";
 
 import NotFound from "./pages/NotFound";
 import CompareGA from "./pages/CompareGA";
@@ -62,6 +65,11 @@ const App = () => (
             {/* Public routes */}
             <Route path="/share/:token" element={<PublicDashboard />} />
             <Route path="/insight/:token" element={<SharedInsight />} />
+
+            {/* Integrations */}
+            <Route path="/dashboard/sites/:siteId/integrations" element={<Integrations />} />
+            <Route path="/dashboard/sites/:siteId/integrations/ga-import" element={<GAImportWizard />} />
+            <Route path="/dashboard/sites/:siteId/gsc" element={<GSCDashboard />} />
 
             <Route path="/invite/:token" element={<InviteAccept />} />
             <Route path="/dashboard" element={<Dashboard />} />
