@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { ArrowLeft, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import mmmetricLogo from "@/assets/mmmetric-logo.png";
 
 export default function Terms() {
     return (
@@ -9,9 +10,7 @@ export default function Terms() {
                 <div className="container mx-auto px-4 lg:px-8">
                     <div className="flex h-16 items-center justify-between">
                         <Link to="/" className="flex items-center gap-2">
-                            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
-                                <FileText className="h-5 w-5 text-primary-foreground" />
-                            </div>
+                            <img src={mmmetricLogo} alt="mmmetric" className="h-8 w-8 rounded-lg" />
                             <span className="font-display text-xl font-bold">mmmetric</span>
                         </Link>
                         <Button variant="ghost" size="sm" asChild>

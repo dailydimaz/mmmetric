@@ -3,6 +3,7 @@ import { ArrowLeft, Zap, Gauge, ArrowRight, Activity, ArrowDown } from "lucide-r
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import mmmetricLogo from "@/assets/mmmetric-logo.png";
 
 export default function Lightweight() {
     return (
@@ -14,9 +15,7 @@ export default function Lightweight() {
                 <div className="container mx-auto px-4 lg:px-8">
                     <div className="flex h-16 items-center justify-between">
                         <Link to="/" className="flex items-center gap-2">
-                            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
-                                <Zap className="h-5 w-5 text-primary-foreground" />
-                            </div>
+                            <img src={mmmetricLogo} alt="mmmetric" className="h-8 w-8 rounded-lg" />
                             <span className="font-display text-xl font-bold">mmmetric</span>
                         </Link>
                         <Button variant="ghost" size="sm" asChild>

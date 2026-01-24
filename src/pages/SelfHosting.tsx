@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import mmmetricLogo from "@/assets/mmmetric-logo.png";
 
 const CopyButton = ({ text }: { text: string }) => {
     const [copied, setCopied] = useState(false);
@@ -38,9 +39,7 @@ export default function SelfHosting() {
                 <div className="container mx-auto px-4 lg:px-8">
                     <div className="flex h-16 items-center justify-between">
                         <Link to="/" className="flex items-center gap-2">
-                            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
-                                <Server className="h-5 w-5 text-primary-foreground" />
-                            </div>
+                            <img src={mmmetricLogo} alt="mmmetric" className="h-8 w-8 rounded-lg" />
                             <span className="font-display text-xl font-bold">mmmetric</span>
                         </Link>
                         <Button variant="ghost" size="sm" asChild>
