@@ -14,9 +14,10 @@ export default function Integrations() {
         queryKey: ["integrations", siteId],
         queryFn: async () => {
             if (!siteId) return [];
+            // Select only safe fields - never expose access_token or refresh_token to client
             const { data, error } = await supabase
                 .from("integrations")
-                .select("*")
+                .select("id, site_id, provider, expires_at, metadata, is_active, last_sync_at, created_at, updated_at")
                 .eq("site_id", siteId);
 
             if (error) throw error;

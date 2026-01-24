@@ -5,10 +5,12 @@ import { Resend } from "https://esm.sh/resend@2.0.0";
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
 const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+const cronSecret = Deno.env.get("CRON_SECRET");
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-cron-secret",
 };
 
 interface EmailReportRequest {
@@ -231,11 +233,68 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
     const body: EmailReportRequest = await req.json();
     const { user_id, report_type, force_all } = body;
 
     console.log("Email report request:", { user_id, report_type, force_all });
+
+    // AUTHENTICATION: Check for valid authorization
+    // Option 1: Cron secret for scheduled jobs (force_all)
+    // Option 2: User JWT for user-triggered reports
+    
+    if (force_all) {
+      // Cron jobs must provide the secret
+      const providedCronSecret = req.headers.get("x-cron-secret");
+      if (!cronSecret || !providedCronSecret || providedCronSecret !== cronSecret) {
+        console.error("Unauthorized: Invalid or missing cron secret for force_all request");
+        return new Response(
+          JSON.stringify({ error: "Unauthorized" }),
+          { status: 401, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        );
+      }
+    } else if (user_id) {
+      // User-triggered reports must have valid JWT that matches user_id
+      const authHeader = req.headers.get("Authorization");
+      if (!authHeader) {
+        console.error("Unauthorized: Missing authorization header");
+        return new Response(
+          JSON.stringify({ error: "Unauthorized" }),
+          { status: 401, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        );
+      }
+
+      // Verify the JWT and ensure it matches the requested user_id
+      const supabaseAuth = createClient(supabaseUrl, supabaseAnonKey, {
+        global: { headers: { Authorization: authHeader } }
+      });
+      
+      const { data: { user }, error: authError } = await supabaseAuth.auth.getUser();
+      
+      if (authError || !user) {
+        console.error("Unauthorized: Invalid JWT", authError?.message);
+        return new Response(
+          JSON.stringify({ error: "Invalid session" }),
+          { status: 401, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        );
+      }
+
+      // Ensure user can only request reports for themselves
+      if (user.id !== user_id) {
+        console.error("Forbidden: User attempting to request report for another user");
+        return new Response(
+          JSON.stringify({ error: "Forbidden" }),
+          { status: 403, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        );
+      }
+    } else {
+      return new Response(
+        JSON.stringify({ error: "Either user_id or force_all must be provided" }),
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+      );
+    }
+
+    // Use service role for database operations
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     // deno-lint-ignore no-explicit-any
     let usersToEmail: { id: string; email: string; full_name: string | null }[] = [];
@@ -267,8 +326,6 @@ const handler = async (req: Request): Promise<Response> => {
       }
 
       usersToEmail = [profile];
-    } else {
-      throw new Error("Either user_id or force_all must be provided");
     }
 
     const results: { email: string; success: boolean; error?: string }[] = [];
@@ -327,7 +384,7 @@ const handler = async (req: Request): Promise<Response> => {
   } catch (error) {
     console.error("Error in send-email-report:", error);
     return new Response(
-      JSON.stringify({ error: String(error) }),
+      JSON.stringify({ error: "Internal server error" }),
       {
         status: 500,
         headers: { "Content-Type": "application/json", ...corsHeaders },

@@ -20,7 +20,7 @@ interface SlackIntegration {
   id: string;
   site_id: string;
   user_id: string;
-  webhook_url: string;
+  // webhook_url intentionally excluded - kept server-side only for security
   channel_name: string | null;
   notify_on: SlackNotifySettings;
   is_active: boolean;
@@ -37,9 +37,10 @@ export function useSlackIntegration(siteId: string | undefined) {
     queryFn: async () => {
       if (!siteId || !user) return null;
 
+      // Select only safe fields - never expose webhook_url to client
       const { data, error } = await supabase
         .from('slack_integrations')
-        .select('*')
+        .select('id, site_id, user_id, channel_name, notify_on, is_active, created_at, updated_at')
         .eq('site_id', siteId)
         .maybeSingle();
 
