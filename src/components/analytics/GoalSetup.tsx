@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { X, Target, Loader2 } from "lucide-react";
+import { Target, Loader2, DollarSign } from "lucide-react";
 import { useCreateGoal } from "@/hooks/useGoals";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import {
   Dialog,
   DialogContent,
@@ -30,6 +31,9 @@ export function GoalSetup({ siteId, onClose }: GoalSetupProps) {
   const [eventName, setEventName] = useState("pageview");
   const [urlMatch, setUrlMatch] = useState("");
   const [matchType, setMatchType] = useState<"exact" | "contains" | "starts_with" | "regex">("contains");
+  const [trackRevenue, setTrackRevenue] = useState(false);
+  const [revenueProperty, setRevenueProperty] = useState("revenue");
+  const [targetValue, setTargetValue] = useState("");
 
   const createGoal = useCreateGoal();
   const { toast } = useToast();
@@ -53,11 +57,13 @@ export function GoalSetup({ siteId, onClose }: GoalSetupProps) {
         event_name: eventName,
         url_match: urlMatch.trim() || null,
         match_type: matchType,
+        revenue_property: trackRevenue ? revenueProperty.trim() || null : null,
+        target_value: targetValue ? parseFloat(targetValue) : null,
       });
 
       toast({
         title: "Goal created",
-        description: `"${name}" is now tracking conversions.`,
+        description: `"${name}" is now tracking conversions${trackRevenue ? " and revenue" : ""}.`,
       });
       onClose();
     } catch (error) {
@@ -136,11 +142,62 @@ export function GoalSetup({ siteId, onClose }: GoalSetupProps) {
             </div>
           )}
 
+          {/* Revenue Tracking Section */}
+          <div className="border rounded-lg p-4 space-y-4 bg-muted/30">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <DollarSign className="h-4 w-4 text-emerald-600" />
+                <Label htmlFor="track-revenue" className="font-medium cursor-pointer">
+                  Track Revenue
+                </Label>
+              </div>
+              <Switch
+                id="track-revenue"
+                checked={trackRevenue}
+                onCheckedChange={setTrackRevenue}
+              />
+            </div>
+            
+            {trackRevenue && (
+              <div className="space-y-4 pt-2">
+                <div className="space-y-2">
+                  <Label className="text-sm">Revenue Property Name</Label>
+                  <Input
+                    placeholder="e.g., revenue, value, amount"
+                    value={revenueProperty}
+                    onChange={(e) => setRevenueProperty(e.target.value)}
+                  />
+                  <p className="text-[0.8rem] text-muted-foreground">
+                    The event property that contains the monetary value
+                  </p>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label className="text-sm">Monthly Target (optional)</Label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
+                    <Input
+                      type="number"
+                      placeholder="e.g., 10000"
+                      value={targetValue}
+                      onChange={(e) => setTargetValue(e.target.value)}
+                      className="pl-7"
+                    />
+                  </div>
+                  <p className="text-[0.8rem] text-muted-foreground">
+                    Set a revenue target to track goal progress
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+
           <div className="bg-muted rounded-lg p-3 text-sm text-muted-foreground">
             <p>
               <strong>Goal will track:</strong>{" "}
               {eventName === "pageview" ? "page views" : `${eventName} events`}
               {urlMatch && ` where URL ${matchType.replace("_", " ")} "${urlMatch}"`}
+              {trackRevenue && ` with revenue from "${revenueProperty}" property`}
             </p>
           </div>
 

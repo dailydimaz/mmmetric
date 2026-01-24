@@ -2356,12 +2356,16 @@ export type Database = {
       get_goal_stats: {
         Args: { _end_date: string; _site_id: string; _start_date: string }
         Returns: {
+          average_order_value: number
           conversion_rate: number
           conversions: number
           event_name: string
           goal_id: string
           goal_name: string
           match_type: string
+          revenue_property: string
+          target_value: number
+          total_revenue: number
           total_visitors: number
           url_match: string
         }[]
