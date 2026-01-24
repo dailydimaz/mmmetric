@@ -55,28 +55,44 @@ export default function Integrations() {
 
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                     <IntegrationCard
-                        title="Google Analytics Import"
-                        description="Import your historical data from Universal Analytics or GA4 to maintain your data history."
-                        icon={<BarChart3 className="w-6 h-6 text-orange-500" />}
-                        isConnected={isConnected("google_analytics")}
-                        onConnect={() => handleConnect("google_analytics")}
-                    />
-
-                    <IntegrationCard
                         title="Shopify"
                         description="Connect your Shopify store to track revenue, orders, and attribution automatically."
                         icon={<ShoppingBag className="w-6 h-6 text-green-500" />}
                         isConnected={isConnected("shopify")}
                         onConnect={() => handleConnect("shopify")}
                     />
+                </div>
 
-                    <IntegrationCard
-                        title="Google Search Console"
-                        description="Monitor your organic search presence, keywords, and click-through rates."
-                        icon={<Search className="w-6 h-6 text-blue-500" />}
-                        isConnected={isConnected("google_search_console")}
-                        onConnect={() => handleConnect("google_search_console")}
-                    />
+                {/* Coming Soon Section */}
+                <div className="mt-12">
+                    <h2 className="text-lg font-semibold text-muted-foreground mb-4">Coming Soon</h2>
+                    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                        <div className="relative">
+                            <div className="absolute inset-0 bg-background/60 backdrop-blur-sm rounded-lg z-10 flex items-center justify-center">
+                                <span className="text-sm font-medium text-muted-foreground bg-muted px-3 py-1 rounded-full">Coming Soon</span>
+                            </div>
+                            <IntegrationCard
+                                title="Google Analytics Import"
+                                description="Import your historical data from Universal Analytics or GA4 to maintain your data history."
+                                icon={<BarChart3 className="w-6 h-6 text-orange-500 opacity-50" />}
+                                isConnected={false}
+                                onConnect={() => {}}
+                            />
+                        </div>
+
+                        <div className="relative">
+                            <div className="absolute inset-0 bg-background/60 backdrop-blur-sm rounded-lg z-10 flex items-center justify-center">
+                                <span className="text-sm font-medium text-muted-foreground bg-muted px-3 py-1 rounded-full">Coming Soon</span>
+                            </div>
+                            <IntegrationCard
+                                title="Google Search Console"
+                                description="Monitor your organic search presence, keywords, and click-through rates."
+                                icon={<Search className="w-6 h-6 text-blue-500 opacity-50" />}
+                                isConnected={false}
+                                onConnect={() => {}}
+                            />
+                        </div>
+                    </div>
                 </div>
             </div>
         </DashboardLayout>
