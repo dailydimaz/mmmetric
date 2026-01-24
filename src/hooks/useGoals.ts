@@ -10,6 +10,8 @@ export interface Goal {
   event_name: string;
   url_match: string | null;
   match_type: "exact" | "contains" | "starts_with" | "regex";
+  revenue_property: string | null;
+  target_value: number | null;
   created_at: string;
   updated_at: string;
 }
@@ -18,6 +20,8 @@ export interface GoalStats {
   goal: Goal;
   conversions: number;
   conversionRate: number;
+  totalRevenue: number;
+  averageOrderValue: number;
 }
 
 interface GoalsParams {
@@ -83,7 +87,7 @@ export function useGoalStats({ siteId, dateRange }: GoalsParams) {
 
       if (!data || data.length === 0) return [];
 
-      // Transform RPC response to match the existing GoalStats interface
+      // Transform RPC response to match the GoalStats interface
       return data.map((row: {
         goal_id: string;
         goal_name: string;
@@ -93,6 +97,10 @@ export function useGoalStats({ siteId, dateRange }: GoalsParams) {
         conversions: number;
         total_visitors: number;
         conversion_rate: number;
+        revenue_property: string | null;
+        total_revenue: number;
+        average_order_value: number;
+        target_value: number | null;
       }) => ({
         goal: {
           id: row.goal_id,
@@ -101,22 +109,36 @@ export function useGoalStats({ siteId, dateRange }: GoalsParams) {
           event_name: row.event_name,
           url_match: row.url_match,
           match_type: row.match_type as Goal["match_type"],
+          revenue_property: row.revenue_property,
+          target_value: row.target_value,
           created_at: "",
           updated_at: "",
         },
         conversions: Number(row.conversions),
         conversionRate: Number(row.conversion_rate),
+        totalRevenue: Number(row.total_revenue) || 0,
+        averageOrderValue: Number(row.average_order_value) || 0,
       }));
     },
     enabled: !!siteId,
   });
 }
 
+export interface CreateGoalInput {
+  site_id: string;
+  name: string;
+  event_name: string;
+  url_match: string | null;
+  match_type: "exact" | "contains" | "starts_with" | "regex";
+  revenue_property?: string | null;
+  target_value?: number | null;
+}
+
 export function useCreateGoal() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (goal: Omit<Goal, "id" | "created_at" | "updated_at">) => {
+    mutationFn: async (goal: CreateGoalInput) => {
       const { data, error } = await supabase
         .from("goals")
         .insert(goal)

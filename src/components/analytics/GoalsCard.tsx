@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { Target, TrendingUp, Plus, Trash2 } from "lucide-react";
+import { Target, TrendingUp, Plus, Trash2, DollarSign } from "lucide-react";
 import { useGoalStats, useDeleteGoal, GoalStats } from "@/hooks/useGoals";
 import { DateRange } from "@/hooks/useAnalytics";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,42 +24,101 @@ interface GoalsCardProps {
   onCreateGoal: () => void;
 }
 
+function formatCurrency(value: number): string {
+  if (value >= 1000000) {
+    return `$${(value / 1000000).toFixed(1)}M`;
+  }
+  if (value >= 1000) {
+    return `$${(value / 1000).toFixed(1)}K`;
+  }
+  return `$${value.toFixed(2)}`;
+}
+
 function GoalRow({ goalStats, onDelete }: { goalStats: GoalStats; onDelete: () => void }) {
+  const hasRevenue = goalStats.goal.revenue_property && goalStats.totalRevenue > 0;
+  const hasTarget = goalStats.goal.target_value && goalStats.goal.target_value > 0;
+  const progressPercent = hasTarget 
+    ? Math.min((goalStats.totalRevenue / goalStats.goal.target_value!) * 100, 100)
+    : 0;
+
   return (
-    <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg group border border-transparent hover:border-border transition-colors">
-      <div className="flex-1 min-w-0">
-        <p className="font-medium truncate text-sm">{goalStats.goal.name}</p>
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <span>{goalStats.goal.event_name}</span>
-          {goalStats.goal.url_match && (
-            <>
-              <span>•</span>
-              <span className="truncate">{goalStats.goal.url_match}</span>
-            </>
-          )}
-        </div>
-      </div>
-      <div className="flex items-center gap-4">
-        <div className="text-right">
-          <p className="font-bold text-lg">{goalStats.conversions}</p>
-          <p className="text-xs text-muted-foreground">conversions</p>
-        </div>
-        <div className="text-right">
-          <div className="flex items-center gap-1 text-emerald-600">
-            <TrendingUp className="h-4 w-4" />
-            <span className="font-bold">{goalStats.conversionRate.toFixed(1)}%</span>
+    <div className="p-4 bg-muted/50 rounded-lg group border border-transparent hover:border-border transition-all duration-200 hover:shadow-sm">
+      <div className="flex items-start justify-between mb-3">
+        <div className="flex-1 min-w-0">
+          <p className="font-medium truncate">{goalStats.goal.name}</p>
+          <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5">
+            <span className="bg-muted px-1.5 py-0.5 rounded">{goalStats.goal.event_name}</span>
+            {goalStats.goal.url_match && (
+              <>
+                <span>•</span>
+                <span className="truncate">{goalStats.goal.url_match}</span>
+              </>
+            )}
+            {goalStats.goal.revenue_property && (
+              <>
+                <span>•</span>
+                <span className="flex items-center gap-1 text-emerald-600">
+                  <DollarSign className="h-3 w-3" />
+                  {goalStats.goal.revenue_property}
+                </span>
+              </>
+            )}
           </div>
-          <p className="text-xs text-muted-foreground">rate</p>
         </div>
         <Button
           variant="ghost"
           size="icon"
-          className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive hover:bg-destructive/10"
+          className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive hover:bg-destructive/10 shrink-0"
           onClick={onDelete}
         >
           <Trash2 className="h-4 w-4" />
         </Button>
       </div>
+
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div>
+          <p className="text-2xl font-bold">{goalStats.conversions.toLocaleString()}</p>
+          <p className="text-xs text-muted-foreground">conversions</p>
+        </div>
+        <div>
+          <div className="flex items-center gap-1 text-emerald-600">
+            <TrendingUp className="h-4 w-4" />
+            <span className="text-2xl font-bold">{goalStats.conversionRate.toFixed(1)}%</span>
+          </div>
+          <p className="text-xs text-muted-foreground">conversion rate</p>
+        </div>
+        {hasRevenue && (
+          <>
+            <div>
+              <p className="text-2xl font-bold text-emerald-600">
+                {formatCurrency(goalStats.totalRevenue)}
+              </p>
+              <p className="text-xs text-muted-foreground">total revenue</p>
+            </div>
+            <div>
+              <p className="text-2xl font-bold">
+                {formatCurrency(goalStats.averageOrderValue)}
+              </p>
+              <p className="text-xs text-muted-foreground">avg. order value</p>
+            </div>
+          </>
+        )}
+      </div>
+
+      {hasTarget && (
+        <div className="mt-4 pt-3 border-t border-border/50">
+          <div className="flex items-center justify-between text-xs mb-1.5">
+            <span className="text-muted-foreground">Target Progress</span>
+            <span className="font-medium">
+              {formatCurrency(goalStats.totalRevenue)} / {formatCurrency(goalStats.goal.target_value!)}
+            </span>
+          </div>
+          <Progress value={progressPercent} className="h-2" />
+          <p className="text-xs text-muted-foreground mt-1">
+            {progressPercent.toFixed(1)}% of monthly target
+          </p>
+        </div>
+      )}
     </div>
   );
 }
@@ -88,6 +148,10 @@ export function GoalsCard({ siteId, dateRange, onCreateGoal }: GoalsCardProps) {
     }
   };
 
+  // Calculate totals for summary
+  const totalConversions = goalStats?.reduce((sum, s) => sum + s.conversions, 0) || 0;
+  const totalRevenue = goalStats?.reduce((sum, s) => sum + s.totalRevenue, 0) || 0;
+
   return (
     <>
       <Card>
@@ -102,10 +166,26 @@ export function GoalsCard({ siteId, dateRange, onCreateGoal }: GoalsCardProps) {
           </Button>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4 pt-2">
+          {/* Summary Stats */}
+          {goalStats && goalStats.length > 0 && (
+            <div className="flex items-center gap-6 mb-4 pb-4 border-b">
+              <div>
+                <p className="text-3xl font-bold">{totalConversions.toLocaleString()}</p>
+                <p className="text-sm text-muted-foreground">total conversions</p>
+              </div>
+              {totalRevenue > 0 && (
+                <div>
+                  <p className="text-3xl font-bold text-emerald-600">{formatCurrency(totalRevenue)}</p>
+                  <p className="text-sm text-muted-foreground">total revenue</p>
+                </div>
+              )}
+            </div>
+          )}
+
+          <div className="space-y-3">
             {isLoading ? (
               Array.from({ length: 2 }).map((_, i) => (
-                <Skeleton key={i} className="h-20 w-full" />
+                <Skeleton key={i} className="h-32 w-full" />
               ))
             ) : goalStats && goalStats.length > 0 ? (
               goalStats.map((stats) => (
@@ -119,7 +199,7 @@ export function GoalsCard({ siteId, dateRange, onCreateGoal }: GoalsCardProps) {
               <div className="text-center py-8">
                 <Target className="h-12 w-12 text-muted-foreground/20 mx-auto mb-3" />
                 <p className="text-sm text-muted-foreground mb-3">
-                  Track conversions by creating goals
+                  Track conversions and revenue by creating goals
                 </p>
                 <Button size="sm" onClick={onCreateGoal}>
                   <Plus className="h-4 w-4 mr-2" />
