@@ -149,9 +149,11 @@ export function WebhookIntegrationCard() {
         );
     }
 
-    const isSlack = integration?.webhook_url.includes("slack.com");
-    const isDiscord = integration?.webhook_url.includes("discord");
-    const platformName = isSlack ? "Slack" : isDiscord ? "Discord" : "Webhook";
+    // Determine platform from channel_name hint (webhook_url is no longer exposed to client for security)
+    const channelHint = integration?.channel_name?.toLowerCase() || '';
+    const isSlackChannel = channelHint.includes('slack');
+    const isDiscordChannel = channelHint.includes('discord');
+    const platformName = isSlackChannel ? "Slack" : isDiscordChannel ? "Discord" : "Webhook";
 
     return (
         <Card>

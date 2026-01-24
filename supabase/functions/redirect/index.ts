@@ -5,6 +5,22 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+// Validate URL to prevent open redirects and XSS attacks
+function isValidRedirectUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    
+    // Only allow http/https protocols - blocks javascript:, data:, etc.
+    if (!['http:', 'https:'].includes(parsed.protocol)) {
+      return false;
+    }
+    
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 Deno.serve(async (req) => {
   // Handle CORS preflight
   if (req.method === "OPTIONS") {
@@ -38,6 +54,15 @@ Deno.serve(async (req) => {
     if (error || !link) {
       return new Response("Link not found", { 
         status: 404,
+        headers: corsHeaders 
+      });
+    }
+
+    // Validate the redirect URL to prevent open redirects
+    if (!isValidRedirectUrl(link.original_url)) {
+      console.error("Invalid redirect URL blocked:", link.original_url);
+      return new Response("Invalid redirect URL", { 
+        status: 400,
         headers: corsHeaders 
       });
     }

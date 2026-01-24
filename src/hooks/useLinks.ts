@@ -29,6 +29,34 @@ export function getShortUrl(slug: string): string {
   return `https://${projectId}.supabase.co/functions/v1/redirect?s=${slug}`;
 }
 
+// Validate URL to prevent open redirects and XSS attacks
+export function validateUrl(url: string): { valid: boolean; error?: string } {
+  try {
+    const parsed = new URL(url);
+    
+    // Only allow http/https protocols - blocks javascript:, data:, etc.
+    if (!['http:', 'https:'].includes(parsed.protocol)) {
+      return { valid: false, error: 'Only HTTP(S) URLs are allowed' };
+    }
+    
+    // Block localhost/private IPs to prevent SSRF
+    const hostname = parsed.hostname.toLowerCase();
+    if (
+      hostname === 'localhost' || 
+      hostname.startsWith('127.') ||
+      hostname.startsWith('192.168.') ||
+      hostname.startsWith('10.') ||
+      hostname.match(/^172\.(1[6-9]|2[0-9]|3[01])\./)
+    ) {
+      return { valid: false, error: 'Cannot create links to private networks' };
+    }
+    
+    return { valid: true };
+  } catch {
+    return { valid: false, error: 'Invalid URL format' };
+  }
+}
+
 export function useLinks(siteId: string | null) {
   const queryClient = useQueryClient();
   const { user } = useAuth();
@@ -63,6 +91,12 @@ export function useLinks(siteId: string | null) {
       description?: string;
     }) => {
       if (!user) throw new Error("Not authenticated");
+
+      // Validate URL to prevent open redirects and XSS
+      const urlValidation = validateUrl(originalUrl);
+      if (!urlValidation.valid) {
+        throw new Error(urlValidation.error || "Invalid URL");
+      }
 
       const finalSlug = slug || generateSlug();
 
