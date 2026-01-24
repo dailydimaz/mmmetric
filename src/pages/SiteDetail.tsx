@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Loader2 } from "lucide-react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useSites } from "@/hooks/useSites";
@@ -189,7 +190,7 @@ export default function SiteDetail() {
   if (authLoading || sitesLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <span className="loading loading-spinner loading-lg text-primary"></span>
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }

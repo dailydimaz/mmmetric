@@ -1,5 +1,5 @@
 import { formatDistanceToNow } from "date-fns";
-import { Activity, Globe, MousePointer, ExternalLink, AlertCircle } from "lucide-react";
+import { Activity, Globe, MousePointer, ExternalLink, AlertCircle, Loader2 } from "lucide-react";
 import { useRealtimeAnalytics } from "@/hooks/useRealtimeAnalytics";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -67,7 +67,7 @@ export function RealtimeActivityFeed({ siteId }: RealtimeActivityFeedProps) {
         <div className="absolute inset-0 overflow-y-auto">
           {recentEvents.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-muted-foreground/40">
-              <div className="loading loading-dots loading-sm mb-2 opacity-50"></div>
+              <Loader2 className="h-5 w-5 mb-2 animate-spin opacity-50" />
               <p className="text-sm">Waiting for incoming events...</p>
             </div>
           ) : (
