@@ -23,8 +23,15 @@
   <meta name="twitter:site" content="@mmmetric" />
   <meta name="twitter:image" content="/og-image.png" />
 
-  <!-- Metric Analytics - Self-tracking (dogfooding) -->
-  <script defer src="https://mmmetric.lovable.app/track.js" data-site="st_70965cd97158"></script>
+  <!-- 
+    Self-tracking (dogfooding) - For self-hosted instances:
+    1. Create a site in your dashboard and get the tracking ID
+    2. Uncomment the script below and update data-site and data-api with your values
+    
+    <script defer src="/track.js" 
+            data-site="YOUR_TRACKING_ID" 
+            data-api="YOUR_SUPABASE_URL/functions/v1/track"></script>
+  -->
 </head>
 
 <body>

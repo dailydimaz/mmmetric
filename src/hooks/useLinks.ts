@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "./useAuth";
 import { toast } from "sonner";
+import { getRedirectUrl } from "@/lib/config";
 
 export interface Link {
   id: string;
@@ -25,8 +26,7 @@ export function generateSlug(length = 6): string {
 
 // Get the short URL for a slug
 export function getShortUrl(slug: string): string {
-  const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID || "lckjlefupqlblfcwhbom";
-  return `https://${projectId}.supabase.co/functions/v1/redirect?s=${slug}`;
+  return getRedirectUrl(slug);
 }
 
 // Validate URL to prevent open redirects and XSS attacks

@@ -2,10 +2,14 @@ import { Link } from "react-router-dom";
 import { ArrowLeft, Cloud } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MigrationWizard } from "@/components/migration";
-import { isBillingEnabled } from "@/lib/billing";
+import { isBillingEnabled, isSelfHosted } from "@/lib/billing";
+import { getCloudUrl, getAppName } from "@/lib/config";
 
 export default function Migrate() {
-  // Only show migration wizard in cloud mode
+  const appName = getAppName();
+  const cloudUrl = getCloudUrl();
+
+  // Only show migration wizard in cloud mode (billing enabled)
   if (!isBillingEnabled()) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
@@ -13,16 +17,21 @@ export default function Migrate() {
           <Cloud className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
           <h1 className="text-2xl font-bold mb-2">Migration Wizard</h1>
           <p className="text-muted-foreground mb-6">
-            This feature is only available on mmmetric Cloud. To migrate your self-hosted
-            data, please visit the cloud version at{" "}
-            <a
-              href="https://mmmetric.lovable.app/migrate"
-              className="text-primary hover:underline"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              mmmetric.lovable.app/migrate
-            </a>
+            This feature is only available on the hosted version. To migrate your self-hosted
+            data, please visit the cloud version
+            {cloudUrl && (
+              <>
+                {" "}at{" "}
+                <a
+                  href={`${cloudUrl}/migrate`}
+                  className="text-primary hover:underline"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {cloudUrl.replace(/^https?:\/\//, '')}/migrate
+                </a>
+              </>
+            )}
           </p>
           <Button asChild>
             <Link to="/">Go Home</Link>
@@ -46,7 +55,7 @@ export default function Migrate() {
               <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
                 <Cloud className="h-5 w-5 text-primary-foreground" />
               </div>
-              <span className="font-display text-xl font-bold">mmmetric</span>
+              <span className="font-display text-xl font-bold">{appName}</span>
             </Link>
             <Button variant="ghost" size="sm" asChild>
               <Link to="/">

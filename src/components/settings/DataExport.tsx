@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
@@ -7,7 +6,8 @@ import { Download, Loader2, FileJson, FileText, Database, Cloud, ArrowRight } fr
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { isBillingEnabled } from "@/lib/billing";
+import { isBillingEnabled, isSelfHosted } from "@/lib/billing";
+import { getCloudUrl } from "@/lib/config";
 
 type ExportFormat = "json" | "csv";
 
@@ -207,6 +207,8 @@ export function DataExport() {
     URL.revokeObjectURL(url);
   };
 
+  const cloudUrl = getCloudUrl();
+
   return (
     <Card>
       <CardHeader>
@@ -279,21 +281,23 @@ export function DataExport() {
           Note: Large datasets may take a moment to export. Events are limited to the most recent 10,000 records.
         </p>
 
-        {/* Migration CTA */}
-        <div className="mt-4 p-4 rounded-lg bg-primary/5 border border-primary/20">
-          <div className="flex items-center gap-2 mb-2">
-            <Cloud className="h-4 w-4 text-primary" />
-            <span className="font-medium text-sm">Ready for the Cloud?</span>
+        {/* Migration CTA - only show if cloud URL is configured and different from current */}
+        {cloudUrl && isSelfHosted() && (
+          <div className="mt-4 p-4 rounded-lg bg-primary/5 border border-primary/20">
+            <div className="flex items-center gap-2 mb-2">
+              <Cloud className="h-4 w-4 text-primary" />
+              <span className="font-medium text-sm">Ready for the Cloud?</span>
+            </div>
+            <p className="text-xs text-muted-foreground mb-3">
+              Export your data and use our migration wizard to seamlessly transfer to the hosted version.
+            </p>
+            <Button variant="outline" size="sm" asChild>
+              <a href={`${cloudUrl}/migrate`} target="_blank" rel="noopener noreferrer">
+                Start Migration <ArrowRight className="h-3 w-3 ml-1" />
+              </a>
+            </Button>
           </div>
-          <p className="text-xs text-muted-foreground mb-3">
-            Export your data and use our migration wizard to seamlessly transfer to mmmetric Cloud.
-          </p>
-          <Button variant="outline" size="sm" asChild>
-            <a href="https://mmmetric.lovable.app/migrate" target="_blank" rel="noopener noreferrer">
-              Start Migration <ArrowRight className="h-3 w-3 ml-1" />
-            </a>
-          </Button>
-        </div>
+        )}
       </CardContent>
     </Card>
   );

@@ -8,6 +8,11 @@ const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
 const cronSecret = Deno.env.get("CRON_SECRET");
 
+// Configurable app settings from environment
+const appUrl = Deno.env.get("APP_URL") || "https://your-instance.com";
+const appName = Deno.env.get("APP_NAME") || "mmmetric";
+const emailFrom = Deno.env.get("EMAIL_FROM") || `${appName} <reports@${new URL(appUrl).hostname}>`;
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-cron-secret",
@@ -123,7 +128,7 @@ function generateEmailHtml(
       `}
 
       <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid #e5e7eb; text-align: center;">
-        <a href="https://mmmetric.lovable.app/dashboard" 
+        <a href="${appUrl}/dashboard" 
            style="display: inline-block; background: #2563eb; color: white; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: 500;">
           View Full Dashboard
         </a>
@@ -133,7 +138,7 @@ function generateEmailHtml(
     <div style="text-align: center; margin-top: 24px; color: #9ca3af; font-size: 12px;">
       <p>You're receiving this because you have email reports enabled.</p>
       <p>
-        <a href="https://mmmetric.lovable.app/settings" style="color: #6b7280;">Manage preferences</a>
+        <a href="${appUrl}/settings" style="color: #6b7280;">Manage preferences</a>
       </p>
     </div>
   </div>
@@ -344,11 +349,11 @@ const handler = async (req: Request): Promise<Response> => {
 
         // Send email
         const subject = report_type === "weekly"
-          ? "📊 Your Weekly Analytics Report"
-          : "📊 Your Monthly Analytics Report";
+          ? `📊 Your Weekly Analytics Report`
+          : `📊 Your Monthly Analytics Report`;
 
         const { error: emailError } = await resend.emails.send({
-          from: "mmmetric <reports@mmmetric.lovable.app>",
+          from: emailFrom,
           to: [user.email],
           subject,
           html,

@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { StatsCards, VisitorChart } from "@/components/analytics";
 import { StatsData } from "@/hooks/useAnalytics";
 import { subDays } from "date-fns";
+import { getAppName, getAppUrl } from "@/lib/config";
 
 const mockStats: StatsData = {
   totalPageviews: 48200,
@@ -26,6 +27,10 @@ const mockTimeSeries = Array.from({ length: 30 }).map((_, i) => {
 });
 
 export function Hero() {
+  const appName = getAppName();
+  // Get a display-friendly URL (remove protocol)
+  const displayUrl = getAppUrl().replace(/^https?:\/\//, '');
+
   return (
     <section className="relative pt-32 pb-24 overflow-hidden bg-background selection:bg-primary/20">
       {/* Dynamic Background */}
@@ -125,7 +130,7 @@ export function Hero() {
               <div className="flex-1 flex items-center justify-between">
                 <div className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-background/50 border border-border/50 text-xs font-medium text-foreground/80 shadow-sm backdrop-blur-sm">
                   <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
-                  mmmetric.lovable.app
+                  {displayUrl}
                 </div>
 
                 {/* Mock Actions */}
