@@ -42,6 +42,8 @@ interface InsightsListProps {
   onEdit: (insight: Insight) => void;
 }
 
+import { DefaultInsights } from "./DefaultInsights";
+
 export function InsightsList({ siteId, onCreateNew, onView, onEdit }: InsightsListProps) {
   const { insights, isLoading, deleteInsight, togglePublic } = useInsights(siteId);
   const [search, setSearch] = useState("");
@@ -90,6 +92,8 @@ export function InsightsList({ siteId, onCreateNew, onView, onEdit }: InsightsLi
 
   return (
     <>
+      <DefaultInsights onView={onView} />
+
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
           <CardTitle className="flex items-center gap-2">
