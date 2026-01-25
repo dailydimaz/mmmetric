@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Site } from "@/hooks/useSites";
+import { getAppUrl, getTrackingApiUrl, getPixelUrl } from "@/lib/config";
 
 interface SiteSettingsPanelProps {
     site: Site;
@@ -29,6 +30,11 @@ export function SiteSettingsPanel({ site, onEdit, onDelete, deletePending }: Sit
     const [testStatus, setTestStatus] = useState<'idle' | 'testing' | 'success' | 'error'>('idle');
     const { toast } = useToast();
 
+    // Generate tracking script with dynamic URLs
+    const trackScriptUrl = `${getAppUrl()}/track.js`;
+    const trackApiUrl = getTrackingApiUrl();
+    const trackingScript = `<script defer src="${trackScriptUrl}" data-site="${site.tracking_id}" data-api="${trackApiUrl}"></script>`;
+
     const copyTrackingId = async () => {
         await navigator.clipboard.writeText(site.tracking_id);
         setCopied(true);
@@ -40,8 +46,7 @@ export function SiteSettingsPanel({ site, onEdit, onDelete, deletePending }: Sit
     };
 
     const copyScript = async () => {
-        const script = `<script defer src="https://mmmetric.lovable.app/track.js" data-site="${site.tracking_id}"></script>`;
-        await navigator.clipboard.writeText(script);
+        await navigator.clipboard.writeText(trackingScript);
         toast({
             title: "Copied!",
             description: "Add this script to your website's <head> tag to start tracking.",
@@ -181,7 +186,7 @@ export function SiteSettingsPanel({ site, onEdit, onDelete, deletePending }: Sit
                         Add this script to your website's <code className="bg-muted px-1 rounded">&lt;head&gt;</code> tag:
                     </p>
                     <div className="mt-2 rounded-md bg-muted p-4 font-mono text-sm overflow-x-auto border border-border text-foreground">
-                        <pre><code>{`<script defer src="https://mmmetric.lovable.app/track.js" data-site="${site.tracking_id}"></script>`}</code></pre>
+                        <pre><code>{trackingScript}</code></pre>
                     </div>
 
                     {/* Cross-Domain Tracking */}
@@ -245,7 +250,7 @@ export function SiteSettingsPanel({ site, onEdit, onDelete, deletePending }: Sit
                         Use this 1x1 image for tracking in emails or non-JS environments:
                     </p>
                     <div className="mt-2 rounded-md bg-muted p-4 font-mono text-sm overflow-x-auto border border-border text-foreground">
-                        <pre><code>{`<img src="${import.meta.env.VITE_SUPABASE_URL}/functions/v1/pixel?site_id=${site.tracking_id}" alt="" />`}</code></pre>
+                        <pre><code>{`<img src="${getPixelUrl(site.tracking_id)}" alt="" />`}</code></pre>
                     </div>
                 </div>
             </div>

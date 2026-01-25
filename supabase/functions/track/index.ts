@@ -112,12 +112,11 @@ function parseUserAgent(ua: string): { browser: string; os: string; device_type:
 }
 
 // Generate a cryptographic hash for visitor fingerprinting using SHA-256
-// Generate a cryptographic hash for visitor fingerprinting using SHA-256
 // Rotates daily for privacy compliance (24h retention)
 async function generateVisitorId(ip: string, ua: string): Promise<string> {
   // Use a rotating salt based on the current date (UTC)
   const dateSalt = new Date().toISOString().slice(0, 10); // "YYYY-MM-DD"
-  const secretSalt = Deno.env.get(' daily_salt_secret') || 'default-salt-change-me';
+  const secretSalt = Deno.env.get('DAILY_SALT_SECRET') || 'default-salt-change-me';
 
   const str = `${ip}-${ua}-${dateSalt}-${secretSalt}`;
   const encoder = new TextEncoder();
@@ -143,6 +142,12 @@ function extractLanguage(req: Request): string | null {
 
   // Return just the language code (e.g., "en" from "en-US")
   return primaryLang?.split('-')[0]?.toLowerCase() || null;
+}
+
+// Get allowed development origins from environment (comma-separated)
+function getAllowedDevOrigins(): string[] {
+  const envOrigins = Deno.env.get('ALLOWED_DEV_ORIGINS') || 'localhost';
+  return envOrigins.split(',').map(o => o.trim().toLowerCase()).filter(Boolean);
 }
 
 serve(async (req) => {
@@ -367,13 +372,20 @@ serve(async (req) => {
           .replace(/\/.*$/, '') // Remove any path
           .trim();
 
+        // Get allowed development origins from environment
+        const allowedDevOrigins = getAllowedDevOrigins();
+        
+        // Check if origin is an allowed dev origin
+        const isDevOrigin = allowedDevOrigins.some(domain => 
+          originHost.includes(domain)
+        );
+
         // Check if origin matches the configured domain (with or without www)
         const isValidOrigin = originHost === siteDomain ||
           originHost === `www.${siteDomain}` ||
           originHost.endsWith(`.${siteDomain}`) ||
           siteDomain.includes(originHost) || // Handle subdomain cases
-          originHost.includes('lovable.app') || // Allow Lovable preview domains
-          originHost.includes('localhost'); // Allow localhost for development
+          isDevOrigin;
 
         if (!isValidOrigin) {
           console.warn(`Origin mismatch: ${originHost} vs ${siteDomain} for site ${site_id}`);

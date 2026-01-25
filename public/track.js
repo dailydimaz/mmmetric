@@ -2,8 +2,15 @@
  * mmmetric Analytics - Lightweight Tracking Script
  * Privacy-focused, cookie-less analytics with UTM and outbound tracking
  * 
- * Usage: <script defer src="https://mmmetric.lovable.app/track.js" data-site="YOUR_TRACKING_ID"></script>
- * Pixel: <img src="https://lckjlefupqlblfcwhbom.supabase.co/functions/v1/pixel?site_id=YOUR_TRACKING_ID" alt="" />
+ * Usage: 
+ *   <script defer src="https://your-instance.com/track.js" 
+ *           data-site="YOUR_TRACKING_ID" 
+ *           data-api="https://your-supabase.co/functions/v1/track"></script>
+ * 
+ * The data-api attribute is required and should point to your Supabase Edge Function URL.
+ * 
+ * Pixel tracking:
+ *   <img src="https://your-supabase.co/functions/v1/pixel?site_id=YOUR_TRACKING_ID" alt="" />
  */
 (function () {
   'use strict';
@@ -13,14 +20,39 @@
   var siteId = script && script.getAttribute('data-site');
   var crossDomains = (script && script.getAttribute('data-cross-domain') || '').split(',').map(function (d) { return d.trim(); }).filter(Boolean);
 
-  // Use custom API URL if provided, otherwise use the mmmetric Edge Function URL
-  var apiUrl = script && script.getAttribute('data-api') || 'https://lckjlefupqlblfcwhbom.supabase.co/functions/v1/track';
+  // Get API URL from data-api attribute (required for self-hosted instances)
+  var apiUrl = script && script.getAttribute('data-api');
+  
+  // If no explicit API URL, try to derive from script source
+  if (!apiUrl && script && script.src) {
+    try {
+      var scriptUrl = new URL(script.src);
+      // Check if script is served from a Supabase functions URL
+      if (scriptUrl.hostname.includes('supabase.co') || scriptUrl.hostname.includes('supabase.in')) {
+        // Script is on Supabase, use same origin for track endpoint
+        apiUrl = scriptUrl.origin + '/functions/v1/track';
+      } else {
+        // Script is on app domain, look for data-supabase-url attribute
+        var supabaseUrl = script.getAttribute('data-supabase-url');
+        if (supabaseUrl) {
+          apiUrl = supabaseUrl + '/functions/v1/track';
+        }
+      }
+    } catch (e) {
+      console.warn('mmmetric: Could not parse script URL');
+    }
+  }
 
   // Debug logging (can be removed in production)
   console.log('mmmetric: Initializing with site ID:', siteId);
 
   if (!siteId) {
     console.warn('mmmetric: Missing data-site attribute. Add data-site="YOUR_TRACKING_ID" to the script tag.');
+    return;
+  }
+
+  if (!apiUrl) {
+    console.warn('mmmetric: Missing data-api attribute. Add data-api="https://your-supabase.co/functions/v1/track" to the script tag.');
     return;
   }
 
