@@ -1,4 +1,4 @@
-import { FormInput, CheckCircle2, RotateCcw } from "lucide-react";
+import { FormInput, CheckCircle2, RotateCcw, XCircle } from "lucide-react";
 import { DateRange } from "@/hooks/useAnalytics";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
@@ -59,17 +59,21 @@ export function FormStats({ siteId, dateRange }: FormStatsProps) {
                                     </div>
                                 </div>
 
-                                {/* Funnel Visual */}
+                                {/* Stats Row */}
                                 <div className="relative pt-2">
-                                    <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
-                                        <span className="flex items-center gap-1"><RotateCcw className="h-3 w-3" /> Started: {form.views}</span>
-                                        <span className="flex items-center gap-1"><CheckCircle2 className="h-3 w-3" /> Submitted: {form.submissions}</span>
+                                    <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
+                                        <span className="flex items-center gap-1">
+                                            <RotateCcw className="h-3 w-3" /> Started: {form.views}
+                                        </span>
+                                        <span className="flex items-center gap-1">
+                                            <CheckCircle2 className="h-3 w-3 text-green-500" /> Submitted: {form.submissions}
+                                        </span>
+                                        <span className="flex items-center gap-1">
+                                            <XCircle className="h-3 w-3 text-destructive" /> Abandoned: {form.abandons}
+                                        </span>
                                     </div>
-                                    <div className="h-2 bg-muted rounded-full overflow-hidden flex">
-                                        <div className="h-full bg-primary/20" style={{ width: '100%' }}></div> {/* Base is 100% of starts? No visual tricky */}
-                                        {/* Actually let's just show progress bar of conversion */}
-                                    </div>
-                                    <div className="h-2 bg-muted rounded-full overflow-hidden mt-1 w-full">
+                                    {/* Conversion progress bar */}
+                                    <div className="h-2 bg-muted rounded-full overflow-hidden w-full">
                                         <div
                                             className="h-full bg-primary transition-all duration-500"
                                             style={{ width: `${form.conversionRate}%` }}

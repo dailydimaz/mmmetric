@@ -6,6 +6,7 @@ export interface FormStats {
     formId: string;
     views: number; // starts
     submissions: number;
+    abandons: number;
     conversionRate: number;
 }
 
@@ -24,21 +25,21 @@ export function useFormAnalytics({ siteId, dateRange }: UseFormAnalyticsProps) {
                 .from("events")
                 .select("event_name, properties")
                 .eq("site_id", siteId)
-                .in("event_name", ["form_start", "form_submit"])
+                .in("event_name", ["form_start", "form_submit", "form_abandon"])
                 .gte("created_at", start.toISOString())
                 .lte("created_at", end.toISOString());
 
             if (error) throw error;
 
             // Aggregation
-            const forms = new Map<string, { starts: number; submissions: number }>();
+            const forms = new Map<string, { starts: number; submissions: number; abandons: number }>();
 
             data?.forEach(event => {
                 const props = event.properties as any;
                 const formId = props.form_id || 'unknown-form';
 
                 if (!forms.has(formId)) {
-                    forms.set(formId, { starts: 0, submissions: 0 });
+                    forms.set(formId, { starts: 0, submissions: 0, abandons: 0 });
                 }
 
                 const stats = forms.get(formId)!;
@@ -46,6 +47,8 @@ export function useFormAnalytics({ siteId, dateRange }: UseFormAnalyticsProps) {
                     stats.starts++;
                 } else if (event.event_name === 'form_submit') {
                     stats.submissions++;
+                } else if (event.event_name === 'form_abandon') {
+                    stats.abandons++;
                 }
             });
 
@@ -53,6 +56,7 @@ export function useFormAnalytics({ siteId, dateRange }: UseFormAnalyticsProps) {
                 formId,
                 views: stats.starts,
                 submissions: stats.submissions,
+                abandons: stats.abandons,
                 conversionRate: stats.starts > 0 ? (stats.submissions / stats.starts) * 100 : 0
             })).sort((a, b) => b.submissions - a.submissions);
         },
