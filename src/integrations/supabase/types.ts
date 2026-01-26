@@ -3222,6 +3222,10 @@ export type Database = {
           updated_at: string
         }[]
       }
+      get_site_group_stats: {
+        Args: { _end_date: string; _group_id: string; _start_date: string }
+        Returns: Json
+      }
       get_site_stats: {
         Args: {
           _end_date: string
