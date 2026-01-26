@@ -1,29 +1,30 @@
 <!doctype html>
 <html lang="en" data-theme="metric">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="mmmetric" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <title>mmmetric - Privacy-First Analytics</title>
+    <meta
+      name="description"
+      content="Simple, powerful web analytics without compromising user privacy. GDPR compliant, lightweight, and beautifully designed."
+    />
+    <meta name="author" content="mmmetric" />
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#ffffff" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-  <meta name="apple-mobile-web-app-title" content="mmmetric" />
-  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-  <title>mmmetric - Privacy-First Analytics</title>
-  <meta name="description"
-    content="Simple, powerful web analytics without compromising user privacy. GDPR compliant, lightweight, and beautifully designed." />
-  <meta name="author" content="mmmetric" />
+    <meta property="og:title" content="mmmetric - Privacy-First Analytics" />
+    <meta property="og:description" content="Simple, powerful web analytics without compromising user privacy." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/og-image.png" />
 
-  <meta property="og:title" content="mmmetric - Privacy-First Analytics" />
-  <meta property="og:description" content="Simple, powerful web analytics without compromising user privacy." />
-  <meta property="og:type" content="website" />
-  <meta property="og:image" content="/og-image.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@mmmetric" />
+    <meta name="twitter:image" content="/og-image.png" />
 
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:site" content="@mmmetric" />
-  <meta name="twitter:image" content="/og-image.png" />
-
-  <!-- 
+    <!-- 
     Self-tracking (dogfooding) - For self-hosted instances:
     1. Create a site in your dashboard and get the tracking ID
     2. Uncomment the script below and update data-site and data-api with your values
@@ -32,11 +33,17 @@
             data-site="YOUR_TRACKING_ID" 
             data-api="YOUR_SUPABASE_URL/functions/v1/track"></script>
   -->
-</head>
 
-<body>
-  <div id="root"></div>
-  <script type="module" src="/src/main.tsx"></script>
-</body>
+    <script
+      defer
+      src="https://mmmetric.lovable.app/track.js"
+      data-site="st_70965cd97158"
+      data-api="https://lckjlefupqlblfcwhbom.supabase.co/functions/v1/track"
+    ></script>
+  </head>
 
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>
