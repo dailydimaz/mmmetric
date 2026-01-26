@@ -2476,6 +2476,19 @@ export type Database = {
             }
             Returns: Json
           }
+      get_entry_exit_pages: {
+        Args: {
+          _end_date: string
+          _limit?: number
+          _site_id: string
+          _start_date: string
+        }
+        Returns: {
+          entry_count: number
+          exit_count: number
+          url: string
+        }[]
+      }
       get_funnel_stats: {
         Args: { _end_date: string; _funnel_id: string; _start_date: string }
         Returns: {

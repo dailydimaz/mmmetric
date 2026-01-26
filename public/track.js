@@ -272,15 +272,36 @@
   function setupScrollTracking() {
     var milestones = [25, 50, 75, 90, 100];
     var sent = {};
-    var cleanup = null;
 
     function handleScroll() {
-      var scrollPercent = Math.round((window.scrollY + window.innerHeight) / document.body.scrollHeight * 100);
-      var url = window.location.pathname; // Store locally to check against current page
+      // Improved scroll calculation to handle edge cases
+      var scrollHeight = Math.max(
+        document.body.scrollHeight || 0,
+        document.documentElement.scrollHeight || 0,
+        document.body.offsetHeight || 0,
+        document.documentElement.offsetHeight || 0
+      );
+      var scrollTop = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
+      var clientHeight = window.innerHeight || document.documentElement.clientHeight || 0;
+      
+      // Prevent division by zero
+      if (scrollHeight <= clientHeight) {
+        // Page fits in viewport, consider it 100% scrolled
+        if (!sent[100]) {
+          sent[100] = true;
+          console.log('mmmetric: Scroll depth 100% (page fits in viewport)');
+          track('scroll_depth', { percent: 100, url: window.location.pathname });
+        }
+        return;
+      }
+      
+      var scrollPercent = Math.min(100, Math.round(((scrollTop + clientHeight) / scrollHeight) * 100));
+      var url = window.location.pathname;
 
       milestones.forEach(function (milestone) {
         if (scrollPercent >= milestone && !sent[milestone]) {
           sent[milestone] = true;
+          console.log('mmmetric: Scroll depth', milestone + '%');
           track('scroll_depth', {
             percent: milestone,
             url: url
@@ -301,15 +322,7 @@
       sent = {};
     }
 
-    // Hook into existing navigation handler if possible, or just observe location
-    // Since we have SPA support via pushState override above, we can piggyback or add a new listener.
-    // The verify simple way is to reset 'sent' when URL changes.
     var lastUrl = window.location.pathname;
-
-    // We'll use a MutationObserver or just check on scroll if URL changed (simple)
-    // Or we rely on the handleNavigation we defined earlier? 
-    // Let's hook into the global navigation handling we essentially did with pushState/popstate.
-    // But since that logic is inside init() scope (or global IIFE scope), we can just add a check inside debouncedScroll
 
     function checkUrl() {
       if (window.location.pathname !== lastUrl) {
@@ -322,8 +335,9 @@
       checkUrl();
       debouncedScroll();
     });
-
-    // Also reset on initial load? No, it's empty.
+    
+    // Initial check after page load (in case page is short)
+    setTimeout(handleScroll, 1000);
   }
 
   // Track 404 errors
@@ -374,14 +388,18 @@
   }
 
   // Track Engagement
+  var engagementSent = false;
+  
   function sendEngagement(url) {
     var duration = Math.round((Date.now() - engagementStartTime) / 1000);
-    // Only track if reasonable duration (e.g. > 1s and < 24h)
-    if (duration > 1 && duration < 86400) {
+    // Only track if reasonable duration (e.g. > 5s and < 24h)
+    if (duration >= 5 && duration < 86400) {
+      console.log('mmmetric: Sending engagement event, duration:', duration + 's');
       track('engagement', {
         duration_seconds: duration,
         url: url || lastPath
       });
+      engagementSent = true;
     }
   }
 
@@ -389,16 +407,34 @@
     // Send on visibility hidden (tab switch/close)
     document.addEventListener('visibilitychange', function () {
       if (document.hidden) {
+        console.log('mmmetric: Visibility hidden, sending engagement');
         sendEngagement();
       } else {
         engagementStartTime = Date.now();
+        engagementSent = false;
       }
     });
 
     // Send on unload
     window.addEventListener('pagehide', function () {
+      console.log('mmmetric: Page hide, sending engagement');
       sendEngagement();
     });
+    
+    // Backup: send engagement every 30 seconds while page is active
+    setInterval(function () {
+      if (!document.hidden && !engagementSent) {
+        var duration = Math.round((Date.now() - engagementStartTime) / 1000);
+        // Send if user has been on page for at least 30 seconds
+        if (duration >= 30) {
+          console.log('mmmetric: Backup engagement timer fired, duration:', duration + 's');
+          sendEngagement();
+          // Reset for next interval
+          engagementStartTime = Date.now();
+          engagementSent = false;
+        }
+      }
+    }, 30000);
   }
 
   // Track Forms
@@ -413,8 +449,10 @@
         var form = target.form;
         if (form && !activeForms.has(form)) {
           activeForms.add(form);
+          var formId = form.id || form.getAttribute('name') || 'unknown';
+          console.log('mmmetric: Form start detected:', formId);
           track('form_start', {
-            form_id: form.id || form.getAttribute('name') || 'unknown'
+            form_id: formId
           });
         }
         if (form) {
@@ -439,12 +477,14 @@
           total++;
           if (pair[1]) filled++;
         }
-      } catch (e) {
+      } catch (err) {
         total = form.elements.length;
       }
 
+      var formId = form.id || form.getAttribute('name') || 'unknown';
+      console.log('mmmetric: Form submit detected:', formId);
       track('form_submit', {
-        form_id: form.id || form.getAttribute('name') || 'unknown',
+        form_id: formId,
         form_action: form.action,
         fields_filled: filled
       });
@@ -453,8 +493,10 @@
     // Track abandonment
     function checkAbandonment() {
       activeForms.forEach(function (form) {
+        var formId = form.id || form.getAttribute('name') || 'unknown';
+        console.log('mmmetric: Form abandon detected:', formId);
         track('form_abandon', {
-          form_id: form.id || form.getAttribute('name') || 'unknown',
+          form_id: formId,
           last_field: lastFocusedField
         });
       });
