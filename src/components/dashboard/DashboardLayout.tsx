@@ -166,7 +166,10 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
         <div className="space-y-1">
           {navItems.map((item) => {
-            const isActive = location.pathname === item.href || location.pathname.startsWith(`${item.href}/`);
+            // Use exact match for Overview (/dashboard), prefix match for others
+            const isActive = item.href === "/dashboard" 
+              ? location.pathname === "/dashboard"
+              : location.pathname === item.href || location.pathname.startsWith(`${item.href}/`);
             return (
               <Link
                 key={item.label}
