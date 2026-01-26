@@ -36,6 +36,13 @@ import {
   Twitter,
   Bell,
   Globe2,
+  FlaskConical,
+  Bot,
+  ArrowDownToLine,
+  AlertTriangle,
+  Tag,
+  FileDown,
+  FormInput,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
@@ -170,6 +177,110 @@ const JourneyIllustration = () => (
       <circle cx="100" cy="20" r="4" className="fill-primary" />
       <circle cx="180" cy="50" r="4" className="fill-primary" />
     </svg>
+  </div>
+);
+
+const HeatmapIllustration = () => (
+  <div className="absolute inset-0 flex items-center justify-center p-4 opacity-80">
+    <div className="relative w-full h-full bg-background border border-border/50 rounded-lg overflow-hidden grid grid-cols-4 grid-rows-3 gap-1 p-1">
+      {[...Array(12)].map((_, i) => (
+        <motion.div
+          key={i}
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ delay: i * 0.05 }}
+          className={cn(
+            "rounded-[2px]",
+            [2, 5, 6, 9].includes(i) ? "bg-red-500/40" :
+              [0, 3, 7, 10].includes(i) ? "bg-yellow-500/30" : "bg-blue-500/10"
+          )}
+        />
+      ))}
+      <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
+    </div>
+  </div>
+);
+
+const ABTestIllustration = () => (
+  <div className="absolute inset-0 flex items-center justify-center gap-4 p-4">
+    <div className="w-16 h-20 bg-muted/40 rounded border border-border flex flex-col items-center justify-center gap-1 group">
+      <div className="w-8 h-8 rounded-full bg-red-500/20 text-[10px] flex items-center justify-center font-bold text-red-500">A</div>
+      <div className="w-10 h-1 bg-muted-foreground/20 rounded"></div>
+      <div className="w-8 h-1 bg-muted-foreground/20 rounded"></div>
+    </div>
+    <div className="w-16 h-20 bg-primary/10 rounded border border-primary/20 flex flex-col items-center justify-center gap-1 shadow-sm">
+      <div className="absolute -top-2 -right-2 bg-green-500 text-white text-[8px] px-1.5 py-0.5 rounded-full font-bold">WINNER</div>
+      <div className="w-8 h-8 rounded-full bg-green-500/20 text-[10px] flex items-center justify-center font-bold text-green-500">B</div>
+      <div className="w-10 h-1 bg-primary/30 rounded"></div>
+      <div className="w-8 h-1 bg-primary/30 rounded"></div>
+    </div>
+  </div>
+);
+
+const BotIllustration = () => (
+  <div className="absolute inset-0 flex items-center justify-center">
+    <div className="relative">
+      <Bot className="w-16 h-16 text-muted-foreground/30" />
+      <motion.div
+        initial={{ scale: 0 }}
+        whileInView={{ scale: 1 }}
+        className="absolute -right-2 -bottom-2 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center border-2 border-background z-10"
+      >
+        <Shield className="w-4 h-4 text-white fill-white" />
+      </motion.div>
+      <div className="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full animate-ping" />
+    </div>
+  </div>
+);
+
+const FormIllustration = () => (
+  <div className="absolute inset-x-8 top-16 space-y-2">
+    <div className="flex gap-2">
+      <div className="w-1/2 h-4 bg-muted rounded border border-border/50"></div>
+      <div className="w-1/2 h-4 bg-muted rounded border border-border/50"></div>
+    </div>
+    <div className="w-full h-4 bg-primary/10 rounded border border-primary/30 ring-2 ring-primary/10"></div>
+    <div className="w-2/3 h-4 bg-muted rounded border border-border/50 opacity-50"></div>
+    <div className="absolute right-0 top-6 text-xs font-mono text-primary bg-background px-1 border rounded shadow-sm">
+      Typing...
+    </div>
+  </div>
+);
+
+const ScrollIllustration = () => (
+  <div className="absolute inset-x-12 top-12 bottom-4 bg-background border border-border rounded shadow-sm overflow-hidden flex flex-col">
+    <div className="h-full w-full bg-muted/20 relative">
+      <div className="absolute right-1 top-2 bottom-2 w-1 bg-muted rounded-full overflow-hidden">
+        <motion.div
+          initial={{ top: "0%" }}
+          whileInView={{ top: "60%" }}
+          transition={{ duration: 1.5, repeat: Infinity, repeatType: "reverse" }}
+          className="absolute w-full h-1/3 bg-primary rounded-full"
+        />
+      </div>
+      <div className="p-2 space-y-2 opacity-50">
+        <div className="w-3/4 h-2 bg-muted-foreground/20 rounded"></div>
+        <div className="w-full h-2 bg-muted-foreground/20 rounded"></div>
+        <div className="w-full h-20 bg-muted-foreground/10 rounded"></div>
+        <div className="w-5/6 h-2 bg-muted-foreground/20 rounded"></div>
+      </div>
+    </div>
+  </div>
+);
+
+const TagIllustration = () => (
+  <div className="absolute inset-0 flex items-center justify-center">
+    <div className="flex gap-1 items-end">
+      <div className="w-8 h-10 bg-blue-500/20 border border-blue-500/40 rounded flex items-center justify-center">
+        <span className="text-[10px] font-mono font-bold text-blue-600">JS</span>
+      </div>
+      <div className="w-8 h-12 bg-yellow-500/20 border border-yellow-500/40 rounded flex items-center justify-center z-10">
+        <Tag className="w-4 h-4 text-yellow-600" />
+      </div>
+      <div className="w-8 h-9 bg-purple-500/20 border border-purple-500/40 rounded flex items-center justify-center">
+        <span className="text-[10px] font-mono font-bold text-purple-600">GTM</span>
+      </div>
+    </div>
   </div>
 );
 
@@ -579,6 +690,121 @@ export function Features() {
               )}
               delay={0.5}
             />
+
+            {/* --- NEWLY ADDED FEATURES --- */}
+
+            {/* Card: Heatmaps */}
+            <BentoCard
+              className="md:col-span-1"
+              icon={MousePointerClick}
+              title="Heatmaps"
+              description="Visualize where users click, move, and scroll with stunning heatmaps."
+              illustration={HeatmapIllustration}
+              delay={0.6}
+            />
+
+            {/* Card: A/B Testing */}
+            <BentoCard
+              className="md:col-span-1"
+              icon={FlaskConical}
+              title="A/B Testing"
+              description="Test different content and layouts to optimize conversions."
+              illustration={ABTestIllustration}
+              delay={0.7}
+            />
+
+            {/* Card: Bot Detection */}
+            <BentoCard
+              className="md:col-span-1"
+              icon={Bot}
+              title="Bot Protection"
+              description="Automatically filter out bots, spiders, and scrapers from your data."
+              illustration={BotIllustration}
+              delay={0.5}
+            />
+
+            {/* Card: Form Analytics */}
+            <BentoCard
+              className="md:col-span-1"
+              icon={FormInput}
+              title="Form Analytics"
+              description="Identify which fields cause users to abandon your forms."
+              illustration={FormIllustration}
+              delay={0.6}
+            />
+
+            {/* Card: Scroll Depth */}
+            <BentoCard
+              className="md:col-span-1"
+              icon={ArrowDownToLine}
+              title="Scroll Depth"
+              description="See exactly how far users scroll down your pages."
+              illustration={ScrollIllustration}
+              delay={0.7}
+            />
+
+            {/* Card: Tag Manager */}
+            <BentoCard
+              className="md:col-span-1"
+              icon={Tag}
+              title="Tag Manager"
+              description="Manage tracking scripts without touching your code."
+              illustration={TagIllustration}
+              delay={0.4}
+            />
+
+            {/* Card: File Downloads */}
+            <BentoCard
+              className="md:col-span-1"
+              icon={FileDown}
+              title="File Downloads"
+              description="Automatically track PDF, document, and asset downloads."
+              illustration={() => (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <motion.div
+                    animate={{ y: [0, 5, 0] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                    className="p-3 bg-primary/10 rounded-full text-primary"
+                  >
+                    <FileDown className="w-6 h-6" />
+                  </motion.div>
+                </div>
+              )}
+              delay={0.5}
+            />
+
+            {/* Card: Custom Alerts */}
+            <BentoCard
+              className="md:col-span-1"
+              icon={AlertTriangle}
+              title="Custom Alerts"
+              description="Get notified instantly when key metrics spike or drop."
+              illustration={() => (
+                <div className="absolute inset-x-8 top-16 h-10 bg-background rounded-lg border border-border shadow-sm flex items-center px-3 gap-2">
+                  <AlertTriangle className="h-4 w-4 text-orange-500" />
+                  <div className="h-3 w-2/3 bg-muted rounded-full"></div>
+                </div>
+              )}
+              delay={0.6}
+            />
+
+            {/* Card: Pixels */}
+            <BentoCard
+              className="md:col-span-1"
+              icon={Image}
+              title="Tracking Pixels"
+              description="Embed invisible pixels to track views in emails and 3rd party sites."
+              illustration={() => (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-32 h-20 bg-card border border-border shadow-lg rounded-md p-2 space-y-2 relative">
+                    <div className="w-full h-2 bg-muted rounded"></div>
+                    <div className="w-2/3 h-2 bg-muted rounded"></div>
+                    <div className="absolute bottom-2 right-2 w-1.5 h-1.5 bg-primary rounded-full animate-pulse ring-4 ring-primary/20"></div>
+                  </div>
+                </div>
+              )}
+              delay={0.7}
+            />
           </div>
         </div>
       </section>
@@ -683,7 +909,7 @@ export function Features() {
               {/* Dashboard Mockup Image or actual iframe */}
               <div className="text-center z-10 p-8">
                 <Button size="lg" className="rounded-full h-12 px-8 text-base shadow-lg animate-pulse-glow" asChild>
-                  <a href="/auth">
+                  <a href="/live">
                     View Live Demo <ArrowRight className="ml-2 h-4 w-4" />
                   </a>
                 </Button>

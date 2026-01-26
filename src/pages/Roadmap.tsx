@@ -396,7 +396,7 @@ const features: Feature[] = [
     category: "analytics",
   },
 
-  // NOT IMPLEMENTED - Easy
+  // IMPLEMENTED - Easy (New)
   {
     name: "Outbound Link Clicks",
     description: "Auto-track clicks on external links",
@@ -475,7 +475,7 @@ const features: Feature[] = [
     name: "Custom Alerts",
     description: "Get notified on traffic spikes or drops",
     icon: AlertTriangle,
-    implemented: false,
+    implemented: true,
     difficulty: "medium",
     category: "cloud",
   },
@@ -491,7 +491,7 @@ const features: Feature[] = [
     name: "Tag Manager",
     description: "Built-in tag management for tracking scripts",
     icon: Tag,
-    implemented: false,
+    implemented: true,
     difficulty: "medium",
     category: "cloud",
   },
@@ -533,7 +533,7 @@ const features: Feature[] = [
     name: "Heatmaps",
     description: "Visualize clicks, mouse movements, and scroll depth",
     icon: MousePointerClick,
-    implemented: false,
+    implemented: true,
     difficulty: "hard",
     category: "insights",
   },
@@ -549,7 +549,7 @@ const features: Feature[] = [
     name: "A/B Testing",
     description: "Built-in split testing for conversion optimization",
     icon: FlaskConical,
-    implemented: false,
+    implemented: true,
     difficulty: "hard",
     category: "insights",
   },
