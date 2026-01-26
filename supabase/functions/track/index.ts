@@ -446,7 +446,43 @@ serve(async (req) => {
       properties,
     };
 
-    // Insert into original events table
+    // Branch based on event type
+    if (event_name === 'heatmap_click') {
+      // Insert into heatmap_clicks
+      const { error: hmError } = await supabase
+        .from('heatmap_clicks')
+        .insert({
+          site_id: site.id,
+          url: url,
+          x: properties.x,
+          y: properties.y,
+          viewport_width: properties.viewport_width,
+          viewport_height: properties.viewport_height,
+          selector: properties.selector,
+          visitor_id: visitor_id
+        });
+      if (hmError) console.error('Heatmap insert failed', hmError);
+
+      return new Response(JSON.stringify({ success: true }), {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    if (event_name === 'experiment_assignment') {
+      // Insert into experiment_assignments
+      const { error: expError } = await supabase
+        .from('experiment_assignments')
+        .insert({
+          experiment_id: properties.experiment_id,
+          variant_id: properties.variant_id,
+          visitor_id: visitor_id,
+          session_id: session_id
+        });
+      if (expError) console.error('Experiment assignment insert failed', expError);
+    }
+
+    // Insert into original events table (for pageviews, custom events, and experiment assignments too)
     const { error: insertError } = await supabase
       .from('events')
       .insert(eventData);

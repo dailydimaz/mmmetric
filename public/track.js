@@ -283,7 +283,7 @@
       );
       var scrollTop = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
       var clientHeight = window.innerHeight || document.documentElement.clientHeight || 0;
-      
+
       // Prevent division by zero
       if (scrollHeight <= clientHeight) {
         // Page fits in viewport, consider it 100% scrolled
@@ -294,7 +294,7 @@
         }
         return;
       }
-      
+
       var scrollPercent = Math.min(100, Math.round(((scrollTop + clientHeight) / scrollHeight) * 100));
       var url = window.location.pathname;
 
@@ -335,7 +335,7 @@
       checkUrl();
       debouncedScroll();
     });
-    
+
     // Initial check after page load (in case page is short)
     setTimeout(handleScroll, 1000);
   }
@@ -389,7 +389,7 @@
 
   // Track Engagement
   var engagementSent = false;
-  
+
   function sendEngagement(url) {
     var duration = Math.round((Date.now() - engagementStartTime) / 1000);
     // Only track if reasonable duration (e.g. > 5s and < 24h)
@@ -420,7 +420,7 @@
       console.log('mmmetric: Page hide, sending engagement');
       sendEngagement();
     });
-    
+
     // Backup: send engagement every 30 seconds while page is active
     setInterval(function () {
       if (!document.hidden && !engagementSent) {
@@ -586,6 +586,152 @@
     }
   }
 
+  // Fetch dynamic config (Tags, Experiments)
+  function fetchConfig() {
+    // Determine config URL (sibling to track endpoint)
+    var configUrl = apiUrl.replace('/track', '/get-config');
+
+    fetch(configUrl, {
+      method: 'POST',
+      body: JSON.stringify({ site_id: siteId }),
+      headers: { 'Content-Type': 'application/json' }
+    })
+      .then(function (res) { return res.json(); })
+      .then(function (data) {
+        if (data.error) return;
+
+        // 1. Inject Tags
+        if (data.tags && Array.isArray(data.tags)) {
+          data.tags.forEach(function (tag) {
+            try {
+              if (tag.type === 'custom_script' && tag.config.url) {
+                var s = document.createElement('script');
+                s.src = tag.config.url;
+                s.async = true;
+                document.head.appendChild(s);
+              } else if (tag.type === 'google_analytics' && tag.config.measurementId) {
+                // GA4
+                var s = document.createElement('script');
+                s.src = 'https://www.googletagmanager.com/gtag/js?id=' + tag.config.measurementId;
+                s.async = true;
+                document.head.appendChild(s);
+
+                window.dataLayer = window.dataLayer || [];
+                function gtag() { window.dataLayer.push(arguments); }
+                gtag('js', new Date());
+                gtag('config', tag.config.measurementId);
+              } else if (tag.type === 'custom_html' && tag.config.html) {
+                // Basic HTML injection - use with caution
+                var div = document.createElement('div');
+                div.innerHTML = tag.config.html;
+                // Execute scripts if any
+                var scripts = div.getElementsByTagName('script');
+                for (var i = 0; i < scripts.length; i++) {
+                  var newScript = document.createElement('script');
+                  if (scripts[i].src) newScript.src = scripts[i].src;
+                  else newScript.textContent = scripts[i].textContent;
+                  document.head.appendChild(newScript);
+                }
+                // Append other content
+                while (div.firstChild) {
+                  if (div.firstChild.nodeName !== 'SCRIPT') {
+                    document.body.appendChild(div.firstChild);
+                  } else {
+                    div.removeChild(div.firstChild);
+                  }
+                }
+              }
+            } catch (e) {
+              console.error('mmmetric: Error injecting tag', e);
+            }
+          });
+        }
+
+        // 2. Experiments
+        if (data.experiments && Array.isArray(data.experiments)) {
+          data.experiments.forEach(function (exp) {
+            // Simple random assignment based on weights
+            var variants = exp.variants;
+            var totalWeight = variants.reduce(function (acc, v) { return acc + v.weight; }, 0);
+            var random = Math.random() * totalWeight;
+            var sum = 0;
+            var selectedVariant = variants.find(function (v) {
+              sum += v.weight;
+              return random <= sum;
+            });
+
+            if (selectedVariant) {
+              console.log('mmmetric: Experiment assigned:', exp.name, selectedVariant.name);
+              // Store assignment
+              sessionStorage.setItem('exp_' + exp.id, selectedVariant.id);
+
+              // Track assignment
+              track('experiment_assignment', {
+                experiment_id: exp.id,
+                variant_id: selectedVariant.id,
+                variant_name: selectedVariant.name
+              });
+
+              // Apply redirect if configured
+              if (selectedVariant.config && selectedVariant.config.redirectUrl) {
+                window.location.replace(selectedVariant.config.redirectUrl);
+              }
+            }
+          });
+        }
+      })
+      .catch(function (err) {
+        console.error('mmmetric: Config fetch error', err);
+      });
+  }
+
+  // Track Heatmap Clicks
+  function setupHeatmapTracking() {
+    // Throttle clicks to avoid flooding
+    var lastClick = 0;
+    document.addEventListener('mousedown', function (e) {
+      var now = Date.now();
+      if (now - lastClick < 100) return;
+      lastClick = now;
+
+      // Get logic coordinates relative to document (or viewport?)
+      // Usually full page coordinates: pageX, pageY
+      var x = e.pageX;
+      var y = e.pageY;
+
+      // Get selector path
+      var selector = '';
+      try {
+        var el = e.target;
+        var path = [];
+        while (el && el.nodeType === 1) {
+          var sel = el.tagName.toLowerCase();
+          if (el.id) {
+            sel += '#' + el.id;
+            path.unshift(sel);
+            break;
+          } else if (el.className && typeof el.className === 'string') {
+            var classes = el.className.split(/\s+/).filter(Boolean).join('.');
+            if (classes) sel += '.' + classes;
+          }
+          path.unshift(sel);
+          el = el.parentNode;
+        }
+        selector = path.join(' > ');
+      } catch (err) {
+        selector = e.target.tagName || 'unknown';
+      }
+
+      track('heatmap_click', {
+        x: x,
+        y: y,
+        viewport_width: window.innerWidth,
+        viewport_height: window.innerHeight,
+        selector: selector.substring(0, 255) // Limit length
+      });
+    }, true);
+  }
+
   // Initialize tracking
   function init() {
     trackPageview();
@@ -595,6 +741,10 @@
     setupEngagementTracking();
     setupFormTracking();
     measureWebVitals();
+    setupHeatmapTracking();
+
+    // Fetch remote config
+    fetchConfig();
 
     // Delay 404 check to allow page to fully load
     setTimeout(track404, 1000);

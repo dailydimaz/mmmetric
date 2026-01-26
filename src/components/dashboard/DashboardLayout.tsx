@@ -163,11 +163,19 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           </DropdownMenu>
         </div>
 
+        {/* Groups Selector */}
+        <div className="mb-6 px-2">
+          <Button variant="outline" className="w-full justify-between font-normal bg-sidebar-accent/50 border-sidebar-border/50 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground h-10 shadow-sm transition-all hover:border-sidebar-border" onClick={() => navigate("/dashboard/groups")}>
+            <span className="truncate font-medium text-sm">View Site Groups</span>
+            <LayoutDashboard className="h-4 w-4 opacity-50" />
+          </Button>
+        </div>
+
 
         <div className="space-y-1">
           {navItems.map((item) => {
             // Use exact match for Overview and Analytics (base site page), prefix match for others
-            const isExactMatchRoute = item.href === "/dashboard" || 
+            const isExactMatchRoute = item.href === "/dashboard" ||
               (item.label === "Analytics" && item.href.startsWith("/dashboard/sites/"));
             const isActive = isExactMatchRoute
               ? location.pathname === item.href

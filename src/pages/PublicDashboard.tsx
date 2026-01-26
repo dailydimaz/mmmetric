@@ -28,6 +28,10 @@ interface TimeseriesPoint {
 
 interface PublicDashboardStats {
   site_name: string;
+  brand_color?: string;
+  brand_logo_url?: string;
+  custom_css?: string;
+  remove_branding?: boolean;
   title: string | null;
   password_required: boolean;
   visitors: number | null;
@@ -35,7 +39,7 @@ interface PublicDashboardStats {
   timeseries: TimeseriesPoint[] | null;
   top_pages: Array<{ url: string; pageviews: number; unique_visitors: number }> | null;
   top_referrers: Array<{ referrer: string; visits: number; percentage: number }> | null;
-  devices: { 
+  devices: {
     device_types: Array<{ device_type: string; count: number }>;
     browsers: Array<{ browser: string; count: number }>;
   } | null;
@@ -46,7 +50,7 @@ export default function PublicDashboard() {
   const { token } = useParams<{ token: string }>();
   const [searchParams] = useSearchParams();
   const isEmbed = searchParams.get('embed') === 'true';
-  
+
   const [range, setRange] = useState('7d');
   const [password, setPassword] = useState('');
   const [submittedPassword, setSubmittedPassword] = useState<string | undefined>();
@@ -86,6 +90,16 @@ export default function PublicDashboard() {
     e.preventDefault();
     setSubmittedPassword(password);
   };
+
+  if (data?.custom_css) {
+    try {
+      const style = document.createElement('style');
+      style.innerHTML = data.custom_css;
+      document.head.appendChild(style);
+    } catch (e) {
+      console.error('Failed to inject custom CSS', e);
+    }
+  }
 
   if (isLoading) {
     return (
@@ -161,9 +175,14 @@ export default function PublicDashboard() {
       <div className={`container mx-auto px-4 py-8 ${isEmbed ? 'max-w-full' : 'max-w-6xl'}`}>
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-          <div>
-            <h1 className="text-2xl font-bold">{data.title || data.site_name}</h1>
-            {!isEmbed && <p className="text-muted-foreground">Public Analytics Dashboard</p>}
+          <div className="flex items-center gap-4">
+            {data.brand_logo_url && (
+              <img src={data.brand_logo_url} alt="Logo" className="h-10 w-auto object-contain" />
+            )}
+            <div>
+              <h1 className="text-2xl font-bold" style={{ color: data.brand_color }}>{data.title || data.site_name}</h1>
+              {!isEmbed && <p className="text-muted-foreground">Public Analytics Dashboard</p>}
+            </div>
           </div>
           <Select value={range} onValueChange={setRange}>
             <SelectTrigger className="w-[140px]">
@@ -220,38 +239,38 @@ export default function PublicDashboard() {
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={chartData}>
                     <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                    <XAxis 
-                      dataKey="date" 
+                    <XAxis
+                      dataKey="date"
                       tick={{ fontSize: 12 }}
                       tickLine={false}
                       axisLine={false}
                       className="text-muted-foreground"
                     />
-                    <YAxis 
+                    <YAxis
                       tick={{ fontSize: 12 }}
                       tickLine={false}
                       axisLine={false}
                       className="text-muted-foreground"
                     />
-                    <Tooltip 
-                      contentStyle={{ 
+                    <Tooltip
+                      contentStyle={{
                         backgroundColor: 'hsl(var(--card))',
                         border: '1px solid hsl(var(--border))',
                         borderRadius: '8px',
                       }}
                     />
                     <Legend />
-                    <Line 
-                      type="monotone" 
-                      dataKey="Visitors" 
-                      stroke="hsl(var(--primary))" 
+                    <Line
+                      type="monotone"
+                      dataKey="Visitors"
+                      stroke={data.brand_color || "hsl(var(--primary))"}
                       strokeWidth={2}
                       dot={false}
                     />
-                    <Line 
-                      type="monotone" 
-                      dataKey="Pageviews" 
-                      stroke="hsl(var(--muted-foreground))" 
+                    <Line
+                      type="monotone"
+                      dataKey="Pageviews"
+                      stroke="hsl(var(--muted-foreground))"
                       strokeWidth={2}
                       dot={false}
                     />
@@ -388,7 +407,7 @@ export default function PublicDashboard() {
         </div>
 
         {/* Footer */}
-        {!isEmbed && (
+        {!isEmbed && !data.remove_branding && (
           <div className="mt-12 text-center text-sm text-muted-foreground">
             Powered by MMMetric Analytics
           </div>
