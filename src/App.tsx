@@ -24,6 +24,8 @@ import Attribution from "./pages/Attribution";
 import Integrations from "./pages/Integrations";
 import GAImportWizard from "./pages/GAImportWizard";
 import GSCDashboard from "./pages/GSCDashboard";
+import SiteGroups from "./pages/SiteGroups";
+import SiteGroupDashboard from "./pages/SiteGroupDashboard";
 
 import NotFound from "./pages/NotFound";
 import CompareGA from "./pages/CompareGA";
@@ -80,6 +82,9 @@ const AppRoutes = () => {
           <Route path="/dashboard/sites/:siteId/integrations" element={<Integrations />} />
           <Route path="/dashboard/sites/:siteId/integrations/ga-import" element={<GAImportWizard />} />
           <Route path="/dashboard/sites/:siteId/gsc" element={<GSCDashboard />} />
+
+          <Route path="/dashboard/groups" element={<SiteGroups />} />
+          <Route path="/dashboard/groups/:groupId" element={<SiteGroupDashboard />} />
 
           <Route path="/invite/:token" element={<InviteAccept />} />
           <Route path="/dashboard" element={<Dashboard />} />
