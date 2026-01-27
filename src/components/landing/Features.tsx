@@ -43,6 +43,14 @@ import {
   Tag,
   FileDown,
   FormInput,
+  Gauge,
+  Timer,
+  LogIn,
+  Layers3,
+  KeyRound,
+  FileText,
+  PieChart,
+  Combine,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
@@ -318,6 +326,170 @@ const BentoCard = ({ className, title, description, icon: Icon, illustration: Il
   </motion.div>
 );
 
+
+const BreakdownIllustration = () => (
+  <div className="absolute inset-4 top-12 flex flex-col gap-3">
+    {[
+      { label: "Chrome", val: 65, color: "bg-blue-500" },
+      { label: "Safari", val: 25, color: "bg-sky-500" },
+      { label: "Firefox", val: 10, color: "bg-orange-500" },
+    ].map((item, i) => (
+      <div key={i} className="space-y-1">
+        <div className="flex justify-between text-[10px] text-muted-foreground uppercase font-bold tracking-wider">
+          <span>{item.label}</span>
+          <span>{item.val}%</span>
+        </div>
+        <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
+          <motion.div
+            initial={{ width: 0 }}
+            whileInView={{ width: `${item.val}%` }}
+            transition={{ duration: 1, delay: i * 0.2 }}
+            className={cn("h-full rounded-full", item.color, "opacity-80")}
+          />
+        </div>
+      </div>
+    ))}
+  </div>
+);
+
+const TimeIllustration = () => (
+  <div className="absolute inset-0 flex items-center justify-center">
+    <div className="relative w-24 h-24">
+      {/* Clock Face */}
+      <div className="absolute inset-0 rounded-full border-4 border-muted/50" />
+      <motion.div
+        animate={{ rotate: 360 }}
+        transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+        className="absolute inset-2"
+      >
+        <div className="w-1 h-1/2 bg-primary/50 absolute top-0 left-1/2 -translate-x-1/2 rounded-full origin-bottom" />
+      </motion.div>
+      <div className="absolute inset-0 flex items-center justify-center flex-col">
+        <span className="text-xl font-bold tabular-nums">2m 45s</span>
+        <span className="text-[10px] text-muted-foreground">Avg. Time</span>
+      </div>
+    </div>
+  </div>
+);
+
+const EntryExitIllustration = () => (
+  <div className="absolute inset-x-8 top-16 space-y-4">
+    <div className="flex items-center gap-3">
+      <Badge variant="outline" className="text-[10px] bg-green-500/10 text-green-600 border-green-200/50 px-2">Entry</Badge>
+      <div className="h-6 flex-1 bg-card border border-border/50 rounded flex items-center px-2 text-[10px] text-muted-foreground shadow-sm">/blog/privacy-guide</div>
+    </div>
+    <div className="flex justify-center -my-2">
+      <div className="w-px h-6 border-l border-dashed border-border"></div>
+    </div>
+    <div className="flex items-center gap-3">
+      <Badge variant="outline" className="text-[10px] bg-red-500/10 text-red-600 border-red-200/50 px-2">Exit</Badge>
+      <div className="h-6 flex-1 bg-card border border-border/50 rounded flex items-center px-2 text-[10px] text-muted-foreground shadow-sm">/pricing</div>
+    </div>
+  </div>
+);
+
+const ScaleIllustration = () => (
+  <div className="absolute inset-0 flex items-center justify-center flex-col gap-2">
+    <div className="flex items-end gap-1">
+      <span className="text-4xl font-extrabold tracking-tighter text-foreground">100M</span>
+      <span className="text-xl font-bold text-primary mb-1">+</span>
+    </div>
+    <div className="text-xs text-muted-foreground font-medium uppercase tracking-widest">Events / Month</div>
+    <div className="flex gap-1 h-8 items-end mt-2">
+      {[20, 40, 60, 30, 70, 50, 80, 45].map((h, i) => (
+        <motion.div
+          key={i}
+          animate={{ height: [h / 2, h, h / 2] }}
+          transition={{ duration: 1.5, delay: i * 0.1, repeat: Infinity }}
+          className="w-1.5 bg-primary/20 rounded-t-sm"
+        />
+      ))}
+    </div>
+  </div>
+);
+
+
+const PageOverlayIllustration = () => (
+  <div className="absolute inset-0 flex items-center justify-center">
+    <div className="w-32 h-24 bg-background border border-border rounded shadow-sm relative overflow-hidden">
+      <div className="w-full h-full bg-muted/20"></div>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.8 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        className="absolute top-2 right-2 w-12 h-16 bg-card/90 backdrop-blur border border-primary/20 shadow-lg rounded p-1 flex flex-col gap-1"
+      >
+        <div className="w-full h-2 bg-primary/20 rounded"></div>
+        <div className="w-2/3 h-2 bg-primary/10 rounded"></div>
+      </motion.div>
+    </div>
+  </div>
+);
+
+const SSOIllustration = () => (
+  <div className="absolute inset-0 flex items-center justify-center gap-2">
+    <div className="w-10 h-10 rounded bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
+      <span className="font-bold text-blue-500">G</span>
+    </div>
+    <div className="w-10 h-10 rounded bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center">
+      <span className="font-bold text-indigo-500">Okta</span>
+    </div>
+    <div className="absolute -bottom-2 right-1/2 translate-x-1/2 bg-green-500 text-white text-[10px] px-1.5 py-0.5 rounded-full flex items-center gap-0.5">
+      <Check className="w-2 h-2" /> SSO
+    </div>
+  </div>
+);
+
+const LogAnalyticsIllustration = () => (
+  <div className="absolute inset-4 top-12 bg-slate-950 rounded-lg p-2 font-mono text-[8px] text-slate-400 overflow-hidden flex flex-col gap-1 opacity-80">
+    <div className="flex gap-1"><span className="text-green-500">GET</span> /api/v1/users <span className="text-blue-500">200</span></div>
+    <div className="flex gap-1"><span className="text-yellow-500">POST</span> /auth/login <span className="text-blue-500">200</span></div>
+    <div className="flex gap-1"><span className="text-red-500">GET</span> /admin <span className="text-red-500">403</span></div>
+    <div className="flex gap-1"><span className="text-green-500">GET</span> /dashboard <span className="text-blue-500">200</span></div>
+  </div>
+);
+
+const LookerStudioIllustration = () => (
+  <div className="absolute inset-0 flex items-center justify-center">
+    <div className="flex items-center gap-2">
+      <div className="p-2 bg-card border border-border rounded-lg shadow-sm">
+        <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center"><BarChart3 className="w-3 h-3 text-primary" /></div>
+      </div>
+      <motion.div
+        animate={{ x: [0, 5, 0] }}
+        transition={{ duration: 1.5, repeat: Infinity }}
+        className="h-0.5 w-6 bg-primary"
+      />
+      <div className="p-2 bg-card border border-border rounded-lg shadow-sm">
+        <PieChart className="w-6 h-6 text-blue-500" />
+      </div>
+    </div>
+  </div>
+);
+
+const RollupIllustration = () => (
+  <div className="absolute inset-0 flex items-center justify-center">
+    <div className="grid grid-cols-2 gap-2 scale-75">
+      <div className="w-12 h-8 bg-muted rounded border border-border shadow-sm"></div>
+      <div className="w-12 h-8 bg-muted rounded border border-border shadow-sm"></div>
+      <div className="col-span-2 w-full h-10 bg-primary/10 rounded border border-primary/20 shadow-sm flex items-end p-1 gap-0.5">
+        <div className="w-1/4 h-2/3 bg-primary/40 rounded-t-[1px]"></div>
+        <div className="w-1/4 h-full bg-primary/60 rounded-t-[1px]"></div>
+        <div className="w-1/4 h-1/2 bg-primary/40 rounded-t-[1px]"></div>
+        <div className="w-1/4 h-3/4 bg-primary/80 rounded-t-[1px]"></div>
+      </div>
+    </div>
+  </div>
+);
+
+const WhiteLabelIllustration = () => (
+  <div className="absolute inset-0 flex items-center justify-center">
+    <div className="relative w-24 h-16 bg-card border border-border rounded shadow-sm p-2 flex flex-col gap-2">
+      <div className="w-8 h-8 rounded bg-primary/20 animate-pulse"></div>
+      <div className="w-full h-2 bg-muted rounded"></div>
+      <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-secondary border-2 border-background"></div>
+    </div>
+  </div>
+);
 
 export function Features() {
   return (
@@ -804,6 +976,106 @@ export function Features() {
                 </div>
               )}
               delay={0.7}
+            />
+
+            {/* Card: Breakdown */}
+            <BentoCard
+              className="md:col-span-1"
+              icon={Database}
+              title="Breakdown Analysis"
+              description="Slice and dice your data. Breakdown by any property to find hidden trends."
+              illustration={BreakdownIllustration}
+              delay={0.6}
+            />
+
+            {/* Card: Time on Page */}
+            <BentoCard
+              className="md:col-span-1"
+              icon={Timer}
+              title="Time Tracking"
+              description="Measure engagement with accurate time-on-page metrics."
+              illustration={TimeIllustration}
+              delay={0.7}
+            />
+
+            {/* Card: Entry/Exit */}
+            <BentoCard
+              className="md:col-span-1"
+              icon={LogIn}
+              title="Entry & Exit Pages"
+              description="Know your top landing pages and where you lose the most users."
+              illustration={EntryExitIllustration}
+              delay={0.5}
+            />
+
+            {/* Card: High Performance */}
+            <BentoCard
+              className="md:col-span-1"
+              icon={Gauge}
+              title="High Scale"
+              description="Built for scale. Optimized rollups that handle billions of records effortlessly."
+              illustration={ScaleIllustration}
+              delay={0.6}
+            />
+
+            {/* Card: Page Overlay */}
+            <BentoCard
+              className="md:col-span-1"
+              icon={Layers3}
+              title="Page Overlay"
+              description="Visualize stats directly on your website with an overlay."
+              illustration={PageOverlayIllustration}
+              delay={0.7}
+            />
+
+            {/* Card: White Labeling */}
+            <BentoCard
+              className="md:col-span-1"
+              icon={LayoutTemplate}
+              title="White Labeling"
+              description="Add your own branding and logo to the dashboard."
+              illustration={WhiteLabelIllustration}
+              delay={0.5}
+            />
+
+            {/* Card: Roll-up Reporting */}
+            <BentoCard
+              className="md:col-span-1"
+              icon={Combine}
+              title="Roll-up Reporting"
+              description="Aggregate data across multiple sites in one view."
+              illustration={RollupIllustration}
+              delay={0.6}
+            />
+
+            {/* Card: Log Analytics */}
+            <BentoCard
+              className="md:col-span-1"
+              icon={FileText}
+              title="Log Analytics"
+              description="Import server logs from Apache, Nginx, and IIS."
+              illustration={LogAnalyticsIllustration}
+              delay={0.7}
+            />
+
+            {/* Card: Looker Studio */}
+            <BentoCard
+              className="md:col-span-1"
+              icon={PieChart}
+              title="Looker Studio"
+              description="Connect your analytics data directly to Google Looker Studio."
+              illustration={LookerStudioIllustration}
+              delay={0.5}
+            />
+
+            {/* Card: SSO */}
+            <BentoCard
+              className="md:col-span-1"
+              icon={KeyRound}
+              title="SSO / SAML"
+              description="Enterprise-grade Single Sign-On integration."
+              illustration={SSOIllustration}
+              delay={0.6}
             />
           </div>
         </div>
