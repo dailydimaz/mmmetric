@@ -17,6 +17,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Site } from "@/hooks/useSites";
 import { getAppUrl, getTrackingApiUrl, getPixelUrl } from "@/lib/config";
+import { LogImportCard } from "@/components/settings/LogImportCard";
 
 interface SiteSettingsPanelProps {
     site: Site;
@@ -252,6 +253,11 @@ export function SiteSettingsPanel({ site, onEdit, onDelete, deletePending }: Sit
                     <div className="mt-2 rounded-md bg-muted p-4 font-mono text-sm overflow-x-auto border border-border text-foreground">
                         <pre><code>{`<img src="${getPixelUrl(site.tracking_id)}" alt="" />`}</code></pre>
                     </div>
+                </div>
+
+                {/* Log Analytics Import */}
+                <div className="mt-4 pt-4 border-t border-border">
+                    <LogImportCard siteId={site.id} />
                 </div>
             </div>
         </div>
