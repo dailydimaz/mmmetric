@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { ComposableMap, Geographies, Geography, ZoomableGroup, Marker } from "react-simple-maps";
-import { scaleLinear, scaleSqrt } from "d3-scale";
+import { scaleSqrt } from "d3-scale";
 import { geoCentroid } from "d3-geo";
 import { GeoStat, CityStat } from "@/hooks/useAnalytics";
 import { Loader2, Users, Eye, MousePointerClick, TrendingUp, Plus, Minus, RotateCcw, Building2 } from "lucide-react";
@@ -61,8 +61,15 @@ export function GeoMap({ data, cities, isLoading, onCountryClick }: GeoMapProps)
         x: number;
         y: number;
     } | null>(null);
-
-    const { colorScale, maxVisits, hasData } = useMemo(() => {
+    const [hoveredCity, setHoveredCity] = useState<{
+        city: string;
+        country: string;
+        visits: number;
+        percentage: number;
+        x: number;
+        y: number;
+    } | null>(null);
+    const { colorScale, hasData } = useMemo(() => {
         if (!data || data.length === 0) {
             return {
                 colorScale: () => "hsl(var(--muted))",
@@ -281,6 +288,60 @@ export function GeoMap({ data, cities, isLoading, onCountryClick }: GeoMapProps)
                                             </Marker>
                                         );
                                     })}
+                                    {/* City Markers Layer - only show when zoomed in or when coordinates available */}
+                                    {cities?.filter(c => c.latitude != null && c.longitude != null).map((city) => {
+                                        const cityMaxVisits = Math.max(...(cities?.map(c => c.visits) || [1]));
+                                        const sizeScale = scaleSqrt()
+                                            .domain([0, cityMaxVisits])
+                                            .range([3, 12]);
+                                        const markerSize = sizeScale(city.visits) / position.zoom;
+                                        
+                                        return (
+                                            <Marker 
+                                                key={`city-${city.country}-${city.city}`} 
+                                                coordinates={[city.longitude!, city.latitude!]}
+                                            >
+                                                <g
+                                                    onMouseEnter={(e) => {
+                                                        setHoveredCity({
+                                                            city: city.city,
+                                                            country: city.country,
+                                                            visits: city.visits,
+                                                            percentage: city.percentage,
+                                                            x: e.clientX,
+                                                            y: e.clientY,
+                                                        });
+                                                    }}
+                                                    onMouseLeave={() => setHoveredCity(null)}
+                                                    className="cursor-pointer hover:opacity-80 transition-opacity"
+                                                >
+                                                    <circle 
+                                                        r={markerSize} 
+                                                        fill="hsl(var(--chart-2))" 
+                                                        fillOpacity={0.7}
+                                                        stroke="hsl(var(--background))" 
+                                                        strokeWidth={1.5 / position.zoom} 
+                                                    />
+                                                    {/* Show city name when zoomed in enough */}
+                                                    {position.zoom >= 2 && (
+                                                        <text
+                                                            textAnchor="middle"
+                                                            y={-(markerSize + 4 / position.zoom)}
+                                                            style={{
+                                                                fontFamily: "system-ui",
+                                                                fill: "hsl(var(--foreground))",
+                                                                fontSize: `${Math.max(7, 9 / position.zoom)}px`,
+                                                                fontWeight: 600,
+                                                                textShadow: "0px 0px 3px hsl(var(--background)), 0px 0px 3px hsl(var(--background))"
+                                                            }}
+                                                        >
+                                                            {city.city}
+                                                        </text>
+                                                    )}
+                                                </g>
+                                            </Marker>
+                                        );
+                                    })}
                                 </>
                             )}
                         </Geographies>
@@ -367,6 +428,55 @@ export function GeoMap({ data, cities, isLoading, onCountryClick }: GeoMapProps)
                                 ) : (
                                     <p className="text-xs text-muted-foreground py-1">No visitors from this country</p>
                                 )}
+                            </div>
+                        </motion.div>
+                    )}
+                    {/* City Tooltip */}
+                    {hoveredCity && (
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                            transition={{ duration: 0.15 }}
+                            style={{
+                                position: 'fixed',
+                                left: hoveredCity.x + 10,
+                                top: hoveredCity.y - 10,
+                                pointerEvents: 'none',
+                                zIndex: 100,
+                            }}
+                            className="fixed z-50 min-w-[180px] max-w-[240px]"
+                        >
+                            <div className="bg-background/95 backdrop-blur-xl p-3 rounded-xl border border-border shadow-xl">
+                                <div className="flex items-center gap-2 mb-2 pb-2 border-b border-border/50 transition-colors">
+                                    <Building2 className="h-4 w-4 text-chart-2" />
+                                    <div className="flex flex-col leading-none">
+                                        <span className="font-semibold text-foreground text-sm">{hoveredCity.city}</span>
+                                        <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-medium mt-0.5">
+                                            {getCountryName(hoveredCity.country)} ({hoveredCity.country})
+                                        </span>
+                                    </div>
+                                </div>
+                                <div className="grid grid-cols-2 gap-2">
+                                    <div className="bg-muted/30 p-2 rounded-lg">
+                                        <span className="text-xs text-muted-foreground flex items-center gap-1 mb-0.5">
+                                            <Users className="h-3 w-3" />
+                                            Visits
+                                        </span>
+                                        <span className="font-mono font-medium text-sm block">
+                                            {hoveredCity.visits.toLocaleString()}
+                                        </span>
+                                    </div>
+                                    <div className="bg-muted/30 p-2 rounded-lg">
+                                        <span className="text-xs text-muted-foreground flex items-center gap-1 mb-0.5">
+                                            <TrendingUp className="h-3 w-3" />
+                                            Share
+                                        </span>
+                                        <span className="font-mono font-medium text-sm block">
+                                            {hoveredCity.percentage.toFixed(1)}%
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
                         </motion.div>
                     )}

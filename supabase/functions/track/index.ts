@@ -294,6 +294,8 @@ serve(async (req) => {
     const location = getLocationFromHeaders(req.headers);
     let geoCountry = location?.country || null;
     let geoCity = location?.city || null;
+    let geoLatitude = location?.latitude || null;
+    let geoLongitude = location?.longitude || null;
 
     // Extract language: prefer client-side (navigator.language) then fallback to header
     const headerLanguage = extractLanguage(req);
@@ -328,7 +330,7 @@ serve(async (req) => {
     }
 
     // Log extracted data for debugging
-    console.log(`Geo data: country=${geoCountry}, city=${geoCity}, language=${primaryLanguage}`);
+    console.log(`Geo data: country=${geoCountry}, city=${geoCity}, lat=${geoLatitude}, lng=${geoLongitude}, language=${primaryLanguage}`);
 
     // Parse user agent
     const { browser, os, device_type } = parseUserAgent(userAgent);
@@ -501,6 +503,33 @@ serve(async (req) => {
         console.warn('Partitioned table insert exception:', e);
       }
     })();
+
+    // Upsert city coordinates if we have lat/lng data (async, non-blocking)
+    // This allows the map to show city markers for future visualization
+    if (geoCity && geoCountry && geoLatitude != null && geoLongitude != null) {
+      (async () => {
+        try {
+          const { error } = await supabase
+            .from('city_coordinates')
+            .upsert({
+              country_code: geoCountry,
+              city_name: geoCity,
+              latitude: geoLatitude,
+              longitude: geoLongitude,
+            }, {
+              onConflict: 'country_code,city_name',
+              ignoreDuplicates: false
+            });
+          if (error) {
+            console.warn('City coordinates upsert failed:', error.code);
+          } else {
+            console.log(`City coordinates upserted: ${geoCity}, ${geoCountry} (${geoLatitude}, ${geoLongitude})`);
+          }
+        } catch (e: unknown) {
+          console.warn('City coordinates upsert exception:', e);
+        }
+      })();
+    }
 
     if (insertError) {
       // Log generic error message only - no error codes or hints in production logs

@@ -108,6 +108,8 @@ export interface CityStat {
   country: string;
   visits: number;
   percentage: number;
+  latitude: number | null;
+  longitude: number | null;
 }
 
 export interface LanguageStat {
@@ -368,11 +370,15 @@ export function useCityStats({ siteId, dateRange, filters }: AnalyticsParams) {
         country: string;
         visits: number;
         percentage: number;
+        latitude: number | null;
+        longitude: number | null;
       }) => ({
         city: row.city,
         country: row.country,
         visits: Number(row.visits) || 0,
         percentage: Number(row.percentage) || 0,
+        latitude: row.latitude,
+        longitude: row.longitude,
       }));
     },
     enabled: !!siteId,

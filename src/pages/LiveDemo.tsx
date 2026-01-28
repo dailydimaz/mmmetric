@@ -100,11 +100,11 @@ const mockGeoStats = [
 ];
 
 const mockCityStats = [
-    { city: "San Francisco", country: "US", visits: 3200, percentage: 11.4 },
-    { city: "Berlin", country: "DE", visits: 2100, percentage: 7.5 },
-    { city: "London", country: "GB", visits: 1900, percentage: 6.8 },
-    { city: "New York", country: "US", visits: 1500, percentage: 5.3 },
-    { city: "Paris", country: "FR", visits: 1200, percentage: 4.2 },
+    { city: "San Francisco", country: "US", visits: 3200, percentage: 11.4, latitude: 37.7749, longitude: -122.4194 },
+    { city: "Berlin", country: "DE", visits: 2100, percentage: 7.5, latitude: 52.5200, longitude: 13.4050 },
+    { city: "London", country: "GB", visits: 1900, percentage: 6.8, latitude: 51.5074, longitude: -0.1278 },
+    { city: "New York", country: "US", visits: 1500, percentage: 5.3, latitude: 40.7128, longitude: -74.0060 },
+    { city: "Paris", country: "FR", visits: 1200, percentage: 4.2, latitude: 48.8566, longitude: 2.3522 },
 ];
 
 const mockLanguageStats = [
