@@ -3035,53 +3035,23 @@ export type Database = {
         }
         Returns: Json
       }
-      get_city_stats:
-        | {
-            Args: {
-              _end_date: string
-              _limit?: number
-              _site_id: string
-              _start_date: string
-            }
-            Returns: {
-              city: string
-              country: string
-              percentage: number
-              visits: number
-            }[]
-          }
-        | {
-            Args: {
-              _end_date: string
-              _filters?: Json
-              _limit?: number
-              _site_id: string
-              _start_date: string
-            }
-            Returns: {
-              city: string
-              country: string
-              latitude: number
-              longitude: number
-              percentage: number
-              visits: number
-            }[]
-          }
-        | {
-            Args: {
-              p_end_date: string
-              p_site_id: string
-              p_start_date: string
-            }
-            Returns: {
-              city: string
-              country: string
-              latitude: number
-              longitude: number
-              unique_visitors: number
-              visits: number
-            }[]
-          }
+      get_city_stats: {
+        Args: {
+          _end_date: string
+          _filters?: Json
+          _limit?: number
+          _site_id: string
+          _start_date: string
+        }
+        Returns: {
+          city: string
+          country: string
+          latitude: number
+          longitude: number
+          unique_visitors: number
+          visits: number
+        }[]
+      }
       get_device_stats:
         | {
             Args: { _end_date: string; _site_id: string; _start_date: string }
