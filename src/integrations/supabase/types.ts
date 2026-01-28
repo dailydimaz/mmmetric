@@ -3037,6 +3037,8 @@ export type Database = {
             Returns: {
               city: string
               country: string
+              latitude: number
+              longitude: number
               percentage: number
               visits: number
             }[]
