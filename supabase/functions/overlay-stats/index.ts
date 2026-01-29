@@ -1,6 +1,41 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
+// Helper to extract domain from origin/referer
+function extractDomain(url: string | null): string | null {
+  if (!url) return null;
+  try {
+    const parsed = new URL(url);
+    return parsed.hostname.replace(/^www\./, '');
+  } catch {
+    return null;
+  }
+}
+
+// Helper to verify origin matches site domain
+function verifyOrigin(origin: string | null, referer: string | null, siteDomain: string): boolean {
+  const normalizedSiteDomain = siteDomain.replace(/^www\./, '').toLowerCase();
+  
+  // Check origin header first
+  const originDomain = extractDomain(origin);
+  if (originDomain && originDomain.toLowerCase() === normalizedSiteDomain) {
+    return true;
+  }
+  
+  // Fall back to referer
+  const refererDomain = extractDomain(referer);
+  if (refererDomain && refererDomain.toLowerCase() === normalizedSiteDomain) {
+    return true;
+  }
+  
+  // Allow localhost for development
+  if (originDomain === 'localhost' || refererDomain === 'localhost') {
+    return true;
+  }
+  
+  return false;
+}
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
@@ -47,6 +82,18 @@ serve(async (req) => {
       console.error("Site not found:", siteError);
       return new Response(JSON.stringify({ error: "Site not found" }), {
         status: 404,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Security: Verify request origin matches site domain
+    const origin = req.headers.get("origin");
+    const referer = req.headers.get("referer");
+    
+    if (!verifyOrigin(origin, referer, site.domain)) {
+      console.warn(`Origin mismatch: origin=${origin}, referer=${referer}, expected=${site.domain}`);
+      return new Response(JSON.stringify({ error: "Unauthorized origin" }), {
+        status: 403,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }

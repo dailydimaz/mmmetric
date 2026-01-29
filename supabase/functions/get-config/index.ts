@@ -1,6 +1,41 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
+// Helper to extract domain from origin/referer
+function extractDomain(url: string | null): string | null {
+    if (!url) return null;
+    try {
+        const parsed = new URL(url);
+        return parsed.hostname.replace(/^www\./, '');
+    } catch {
+        return null;
+    }
+}
+
+// Helper to verify origin matches site domain
+function verifyOrigin(origin: string | null, referer: string | null, siteDomain: string): boolean {
+    const normalizedSiteDomain = siteDomain.replace(/^www\./, '').toLowerCase();
+    
+    // Check origin header first
+    const originDomain = extractDomain(origin);
+    if (originDomain && originDomain.toLowerCase() === normalizedSiteDomain) {
+        return true;
+    }
+    
+    // Fall back to referer
+    const refererDomain = extractDomain(referer);
+    if (refererDomain && refererDomain.toLowerCase() === normalizedSiteDomain) {
+        return true;
+    }
+    
+    // Allow localhost for development
+    if (originDomain === 'localhost' || refererDomain === 'localhost') {
+        return true;
+    }
+    
+    return false;
+}
+
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -22,31 +57,28 @@ serve(async (req) => {
             throw new Error("site_id is required");
         }
 
-        // 1. Get Tags
-        const { data: tags, error: tagsError } = await supabase
-            .from('tags')
-            .select('type, config, load_priority')
-            .eq('site_id', site_id) // This assumes site_id passed is the UUID from `sites` table, but tracker passes `st_...`.
-            // We need to resolve `st_...` to UUID first?
-            // Wait, `sites` table has `tracking_id` which usually is `st_...`.
-            // Let's check schema.
-            .eq('is_enabled', true)
-            .order('load_priority', { ascending: true });
-
-        // Actually, site_id from tracker is `st_...` (tracking_id).
-        // The `tags` table uses `site_id` (UUID).
-        // So we need to join or find site first.
-
-        // Fetch site UUID from tracking_id
+        // Fetch site UUID and domain from tracking_id
         const { data: site, error: siteError } = await supabase
             .from('sites')
-            .select('id, custom_css') // Also return custom_css for white labeling injection if needed
+            .select('id, domain, custom_css')
             .eq('tracking_id', site_id)
             .single();
 
         if (siteError || !site) {
             return new Response(JSON.stringify({ error: "Site not found" }), {
                 status: 404,
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+            });
+        }
+
+        // Security: Verify request origin matches site domain
+        const origin = req.headers.get("origin");
+        const referer = req.headers.get("referer");
+        
+        if (!verifyOrigin(origin, referer, site.domain)) {
+            console.warn(`Origin mismatch: origin=${origin}, referer=${referer}, expected=${site.domain}`);
+            return new Response(JSON.stringify({ error: "Unauthorized origin" }), {
+                status: 403,
                 headers: { ...corsHeaders, 'Content-Type': 'application/json' }
             });
         }
