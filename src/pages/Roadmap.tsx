@@ -676,7 +676,7 @@ const features: Feature[] = [
     name: "Content Decay Alerts",
     description: "Get notified when high-performing pages start declining",
     icon: TrendingDown,
-    implemented: false,
+    implemented: true,
     difficulty: "medium",
     category: "insights",
   },

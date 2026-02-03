@@ -27,7 +27,8 @@ import {
     SiteSearchStats,
     ReadingDepthStats,
     SocialShareStats,
-    VideoAnalyticsStats
+    VideoAnalyticsStats,
+    ContentDecayAlerts
 } from "@/components/analytics";
 import {
     AnalyticsFilter,
@@ -235,6 +236,9 @@ export function SiteAnalytics({
 
                 {/* Video Analytics */}
                 {shouldShow('video_analytics') && <VideoAnalyticsStats siteId={site.id} dateRange={dateRange} />}
+
+                {/* Content Decay Alerts */}
+                {shouldShow('content_decay') && <ContentDecayAlerts siteId={site.id} />}
             </TabsContent>
 
             <TabsContent value="twitter" className="animate-fade-in-up">

@@ -16,7 +16,9 @@ serve(async (req) => {
         const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
         const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-        // 1. Fetch enabled alerts
+        const results: Array<{ alert: string; triggered: boolean; value: number; type: string }> = [];
+
+        // ============ STANDARD ALERTS ============
         const { data: alerts, error: alertsError } = await supabase
             .from('alerts')
             .select('*, sites(id, domain, name)')
@@ -24,10 +26,7 @@ serve(async (req) => {
 
         if (alertsError) throw alertsError;
 
-        const results = [];
-
-        // 2. Iterate and check conditions
-        for (const alert of alerts) {
+        for (const alert of alerts || []) {
             if (!alert.sites) continue;
 
             // Time range: last hour
@@ -61,28 +60,110 @@ serve(async (req) => {
                 (alert.comparison === 'lt' && value < alert.threshold);
 
             if (isTriggered) {
-                // Only trigger if not triggered recently (e.g. today)
-                // For simplicity, we just log it. A real system would check last_triggered_at
-
                 console.log(`Alert triggered: ${alert.name} for ${alert.sites.name}. Value: ${value}, Threshold: ${alert.threshold}`);
 
-                // Update last_triggered_at
                 await supabase
                     .from('alerts')
                     .update({ last_triggered_at: new Date().toISOString() })
                     .eq('id', alert.id);
 
-                // Send notification (Placeholder)
-                // In real impl, send email via Resend or Slack webhook
-                results.push({ alert: alert.name, triggered: true, value });
+                results.push({ alert: alert.name, triggered: true, value, type: 'standard' });
             }
         }
 
-        return new Response(JSON.stringify({ success: true, checked: alerts.length, triggered: results }), {
+        // ============ CONTENT DECAY ALERTS ============
+        const { data: monitors, error: monitorsError } = await supabase
+            .from('content_decay_monitors')
+            .select('*, sites:site_id(id, name, domain, user_id)')
+            .eq('is_enabled', true);
+
+        if (monitorsError) {
+            console.error('Error fetching content decay monitors:', monitorsError);
+        }
+
+        for (const monitor of monitors || []) {
+            if (!monitor.sites) continue;
+
+            // Don't alert more than once per day for the same page
+            if (monitor.last_alert_at) {
+                const lastAlert = new Date(monitor.last_alert_at);
+                const hoursSinceLastAlert = (Date.now() - lastAlert.getTime()) / (1000 * 60 * 60);
+                if (hoursSinceLastAlert < 24) continue;
+            }
+
+            // Get current pageviews for this URL in the last 7 days
+            const { count: currentPageviews } = await supabase
+                .from('events')
+                .select('*', { count: 'exact', head: true })
+                .eq('site_id', monitor.site_id)
+                .eq('event_name', 'pageview')
+                .eq('url', monitor.url)
+                .gte('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString());
+
+            const current = currentPageviews || 0;
+            const baseline = monitor.baseline_pageviews || 0;
+
+            // Calculate decay percentage
+            let decayPercent = 0;
+            if (baseline > 0) {
+                decayPercent = Math.max(0, Math.round(100 - (current * 100 / baseline)));
+            }
+
+            // Determine status
+            let status = 'healthy';
+            if (decayPercent >= monitor.decay_threshold_percent) {
+                status = 'declining';
+            } else if (decayPercent >= monitor.decay_threshold_percent / 2) {
+                status = 'warning';
+            }
+
+            // Update monitor with current stats
+            await supabase
+                .from('content_decay_monitors')
+                .update({
+                    current_decay_percent: decayPercent,
+                    status,
+                    last_checked_at: new Date().toISOString(),
+                })
+                .eq('id', monitor.id);
+
+            // Check if we need to trigger an alert
+            const isDecaying = decayPercent >= monitor.decay_threshold_percent;
+
+            if (isDecaying) {
+                console.log(`Content decay detected: ${monitor.url} on ${monitor.sites.name}. Decay: ${decayPercent}%, Threshold: ${monitor.decay_threshold_percent}%`);
+
+                // Update last alert time
+                await supabase
+                    .from('content_decay_monitors')
+                    .update({ last_alert_at: new Date().toISOString() })
+                    .eq('id', monitor.id);
+
+                results.push({
+                    alert: `Content decay: ${monitor.url}`,
+                    triggered: true,
+                    value: decayPercent,
+                    type: 'content_decay'
+                });
+
+                // TODO: Send notification (email, Slack, etc.)
+                // This would integrate with the existing notification infrastructure
+            }
+        }
+
+        return new Response(JSON.stringify({
+            success: true,
+            checked: {
+                standard_alerts: alerts?.length || 0,
+                content_decay_monitors: monitors?.length || 0
+            },
+            triggered: results
+        }), {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+        console.error('check-alerts error:', errorMessage);
         return new Response(JSON.stringify({ error: errorMessage }), {
             status: 500,
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
