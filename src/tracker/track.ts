@@ -406,6 +406,141 @@
         };
     };
 
+    // Reading Depth - Track actual reading engagement vs scroll-through
+    const setupReadingDepth = () => {
+        const zones = [0, 25, 50, 75, 100]; // Percentage zones
+        const zoneTime: Record<number, number> = {}; // Time spent in each zone (ms)
+        let currentZone = 0;
+        let zoneStartTime = Date.now();
+        let isReading = true; // Track if user is actively on page
+        let lastScrollTime = Date.now();
+        let readingReported = false;
+
+        // Initialize zone times
+        zones.forEach(z => zoneTime[z] = 0);
+
+        const getScrollZone = (): number => {
+            const h = document.documentElement;
+            const b = document.body;
+            const sh = Math.max(b.scrollHeight, h.scrollHeight, b.offsetHeight, h.offsetHeight, b.clientHeight, h.clientHeight);
+            const st = window.pageYOffset || h.scrollTop;
+            const ch = window.innerHeight || h.clientHeight;
+
+            if (sh <= ch) return 100; // Short page, all visible
+
+            const pct = Math.min(100, Math.round(((st + ch / 2) / sh) * 100)); // Center of viewport
+            
+            // Map to nearest zone
+            if (pct < 12.5) return 0;
+            if (pct < 37.5) return 25;
+            if (pct < 62.5) return 50;
+            if (pct < 87.5) return 75;
+            return 100;
+        };
+
+        const updateZoneTime = () => {
+            if (!isReading) return;
+            const now = Date.now();
+            const elapsed = now - zoneStartTime;
+            zoneTime[currentZone] = (zoneTime[currentZone] || 0) + elapsed;
+            zoneStartTime = now;
+        };
+
+        const checkZone = () => {
+            const newZone = getScrollZone();
+            if (newZone !== currentZone) {
+                updateZoneTime();
+                currentZone = newZone;
+                zoneStartTime = Date.now();
+            }
+            lastScrollTime = Date.now();
+        };
+
+        // Calculate reading score (0-100)
+        const calculateReadingScore = (): number => {
+            const totalTime = Object.values(zoneTime).reduce((a, b) => a + b, 0);
+            if (totalTime < 5000) return 0; // Less than 5 seconds, not enough data
+
+            // A "reader" spends time distributed across zones they scrolled to
+            // A "skimmer" scrolls quickly through with little time per zone
+            const zonesVisited = Object.entries(zoneTime).filter(([_, t]) => t > 2000).length;
+            const avgTimePerZone = totalTime / Math.max(1, zonesVisited);
+            
+            // Score based on:
+            // 1. Time spent (more time = higher engagement)
+            // 2. Distribution across zones (even distribution = thorough reading)
+            
+            // Time factor: 30+ seconds is good reading
+            const timeFactor = Math.min(1, totalTime / 30000);
+            
+            // Distribution factor: reading multiple zones thoroughly
+            const distFactor = zonesVisited / zones.length;
+            
+            // Combine factors (weighted average)
+            const score = Math.round((timeFactor * 0.6 + distFactor * 0.4) * 100);
+            return Math.min(100, score);
+        };
+
+        const sendReadingDepth = () => {
+            if (readingReported) return;
+            updateZoneTime();
+            
+            const totalTime = Object.values(zoneTime).reduce((a, b) => a + b, 0);
+            if (totalTime < 3000) return; // Minimum 3 seconds on page
+
+            const score = calculateReadingScore();
+            const maxScrollZone = Math.max(...Object.entries(zoneTime)
+                .filter(([_, t]) => t > 0)
+                .map(([z]) => parseInt(z)));
+
+            track('reading_depth', {
+                score,
+                classification: score >= 60 ? 'reader' : score >= 30 ? 'skimmer' : 'bouncer',
+                total_time_ms: totalTime,
+                max_depth: maxScrollZone,
+                zone_times: {
+                    top: Math.round(zoneTime[0] / 1000),
+                    quarter: Math.round(zoneTime[25] / 1000),
+                    half: Math.round(zoneTime[50] / 1000),
+                    three_quarter: Math.round(zoneTime[75] / 1000),
+                    bottom: Math.round(zoneTime[100] / 1000)
+                },
+                url: window.location.pathname
+            });
+            readingReported = true;
+        };
+
+        // Track scroll position changes
+        let scrollTimeout: ReturnType<typeof setTimeout>;
+        window.addEventListener('scroll', () => {
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(checkZone, 100);
+        });
+
+        // Pause tracking when tab is hidden
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                updateZoneTime();
+                isReading = false;
+                sendReadingDepth();
+            } else {
+                isReading = true;
+                zoneStartTime = Date.now();
+            }
+        });
+
+        // Send on page unload
+        window.addEventListener('pagehide', sendReadingDepth);
+
+        // Periodic update while reading
+        setInterval(() => {
+            if (!document.hidden && isReading) {
+                updateZoneTime();
+                zoneStartTime = Date.now();
+            }
+        }, 5000);
+    };
+
     const init = () => {
         track('pageview');
         setupOutbound();
@@ -415,6 +550,7 @@
         setupVitals();
         setupErrorTracking();
         setupSiteSearch();
+        setupReadingDepth();
         fetchConfig();
         setTimeout(() => {
             if (document.title.toLowerCase().includes('404')) track('404', { url: window.location.href, referrer: document.referrer });

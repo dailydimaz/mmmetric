@@ -39,3 +39,4 @@ export { GeoMap } from "./GeoMap";
 export { WebVitalsStats } from "./WebVitalsStats";
 export { ErrorTrackingStats } from "./ErrorTrackingStats";
 export { SiteSearchStats } from "./SiteSearchStats";
+export { ReadingDepthStats } from "./ReadingDepthStats";

@@ -624,7 +624,7 @@ const features: Feature[] = [
     name: "Reading Depth",
     description: "Track actual reading engagement vs scroll-through behavior",
     icon: BookOpen,
-    implemented: false,
+    implemented: true,
     difficulty: "medium",
     category: "analytics",
   },
