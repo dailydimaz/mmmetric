@@ -25,7 +25,8 @@ import {
     WebVitalsStats,
     ErrorTrackingStats,
     SiteSearchStats,
-    ReadingDepthStats
+    ReadingDepthStats,
+    SocialShareStats
 } from "@/components/analytics";
 import {
     AnalyticsFilter,
@@ -227,6 +228,9 @@ export function SiteAnalytics({
 
                 {/* Reading Depth */}
                 {shouldShow('reading_depth') && <ReadingDepthStats siteId={site.id} dateRange={dateRange} />}
+
+                {/* Social Share Tracking */}
+                {shouldShow('social_shares') && <SocialShareStats siteId={site.id} dateRange={dateRange} />}
             </TabsContent>
 
             <TabsContent value="twitter" className="animate-fade-in-up">

@@ -668,7 +668,7 @@ const features: Feature[] = [
     name: "Social Share Tracking",
     description: "Track when users share your content to social platforms",
     icon: Share2,
-    implemented: false,
+    implemented: true,
     difficulty: "medium",
     category: "analytics",
   },

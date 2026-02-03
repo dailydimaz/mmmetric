@@ -324,6 +324,108 @@
         }
     };
 
+    // Social Share Tracking - Detect shares to social platforms
+    const setupSocialShare = () => {
+        // Known social share URL patterns
+        const sharePatterns: Record<string, RegExp> = {
+            twitter: /twitter\.com\/(intent\/tweet|share)|x\.com\/(intent\/tweet|share)/i,
+            facebook: /facebook\.com\/(sharer|share\.php|dialog\/share)/i,
+            linkedin: /linkedin\.com\/(shareArticle|sharing\/share-offsite)/i,
+            pinterest: /pinterest\.com\/pin\/create/i,
+            reddit: /reddit\.com\/submit/i,
+            whatsapp: /wa\.me|api\.whatsapp\.com|whatsapp:\/\//i,
+            telegram: /t\.me\/share|telegram\.me\/share/i,
+            email: /^mailto:/i,
+        };
+
+        // Track share link clicks
+        document.addEventListener('click', (e) => {
+            const target = (e.target as HTMLElement).closest('a');
+            if (!target?.href) return;
+
+            try {
+                const href = target.href;
+                
+                for (const [platform, pattern] of Object.entries(sharePatterns)) {
+                    if (pattern.test(href)) {
+                        track('social_share', {
+                            platform,
+                            method: 'click',
+                            shared_url: extractSharedUrl(href, platform),
+                            url: window.location.pathname
+                        });
+                        break;
+                    }
+                }
+            } catch { }
+        }, true);
+
+        // Track native Web Share API usage
+        if (navigator.share) {
+            const originalShare = navigator.share.bind(navigator);
+            navigator.share = async function(data) {
+                track('social_share', {
+                    platform: 'native',
+                    method: 'web_share_api',
+                    shared_url: data?.url || window.location.href,
+                    shared_title: data?.title?.substring(0, 100),
+                    url: window.location.pathname
+                });
+                return originalShare(data);
+            };
+        }
+
+        // Track copy-to-clipboard for share purposes (common pattern)
+        document.addEventListener('click', (e) => {
+            const target = e.target as HTMLElement;
+            const button = target.closest('button, [role="button"]');
+            if (!button) return;
+
+            // Check for common "copy link" / "share" button patterns
+            const text = (button.textContent || '').toLowerCase();
+            const ariaLabel = (button.getAttribute('aria-label') || '').toLowerCase();
+            const classList = button.className.toLowerCase();
+
+            const copyIndicators = ['copy link', 'copy url', 'copy to clipboard', 'share link'];
+            const isCopyButton = copyIndicators.some(indicator => 
+                text.includes(indicator) || ariaLabel.includes(indicator) || classList.includes('copy')
+            );
+
+            if (isCopyButton) {
+                track('social_share', {
+                    platform: 'copy',
+                    method: 'clipboard',
+                    url: window.location.pathname
+                });
+            }
+        }, true);
+    };
+
+    // Helper to extract the shared URL from share links
+    const extractSharedUrl = (href: string, platform: string): string => {
+        try {
+            const url = new URL(href);
+            const params = url.searchParams;
+            
+            switch (platform) {
+                case 'twitter':
+                    return params.get('url') || params.get('text') || window.location.href;
+                case 'facebook':
+                    return params.get('u') || params.get('href') || window.location.href;
+                case 'linkedin':
+                    return params.get('url') || window.location.href;
+                case 'pinterest':
+                    return params.get('url') || window.location.href;
+                case 'reddit':
+                    return params.get('url') || window.location.href;
+                default:
+                    return window.location.href;
+            }
+        } catch {
+            return window.location.href;
+        }
+    };
+
     // Config injection (simplified)
     const fetchConfig = () => {
         fetch(apiUrl.replace('/track', '/get-config'), {
@@ -551,6 +653,7 @@
         setupErrorTracking();
         setupSiteSearch();
         setupReadingDepth();
+        setupSocialShare();
         fetchConfig();
         setTimeout(() => {
             if (document.title.toLowerCase().includes('404')) track('404', { url: window.location.href, referrer: document.referrer });
