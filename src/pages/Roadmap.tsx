@@ -608,7 +608,7 @@ const features: Feature[] = [
     name: "Site Search Analytics",
     description: "Track internal search queries and zero-results patterns",
     icon: Search,
-    implemented: false,
+    implemented: true,
     difficulty: "medium",
     category: "analytics",
   },

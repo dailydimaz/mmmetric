@@ -342,6 +342,70 @@
         }).catch(() => { });
     };
 
+    // Site Search Tracking
+    const setupSiteSearch = () => {
+        // Auto-detect common search inputs
+        const searchSelectors = [
+            'input[type="search"]',
+            'input[name="q"]',
+            'input[name="query"]',
+            'input[name="search"]',
+            'input[name="s"]',
+            '[role="searchbox"]',
+            '.search-input',
+            '#search',
+            '#searchInput'
+        ];
+
+        let lastSearchQuery = '';
+        let searchDebounce: ReturnType<typeof setTimeout>;
+
+        const trackSearch = (query: string, resultCount?: number) => {
+            if (!query || query.length < 2) return;
+            if (query === lastSearchQuery) return;
+            lastSearchQuery = query;
+
+            track('site_search', {
+                query: query.substring(0, 200), // Limit query length
+                result_count: resultCount ?? -1, // -1 means unknown
+                url: window.location.pathname
+            });
+        };
+
+        // Listen to form submissions
+        document.addEventListener('submit', (e) => {
+            const form = e.target as HTMLFormElement;
+            const searchInput = form.querySelector(searchSelectors.join(',')) as HTMLInputElement;
+            if (searchInput?.value) {
+                trackSearch(searchInput.value.trim());
+            }
+        }, true);
+
+        // Listen to Enter key on search inputs
+        document.addEventListener('keydown', (e) => {
+            if (e.key !== 'Enter') return;
+            const target = e.target as HTMLElement;
+            if (target.matches(searchSelectors.join(','))) {
+                const input = target as HTMLInputElement;
+                if (input.value) {
+                    trackSearch(input.value.trim());
+                }
+            }
+        }, true);
+
+        // Expose global function for manual tracking with result count
+        (window as any).mmmetric = (eventName: string, props?: Record<string, unknown>) => {
+            if (eventName === 'site_search' && props?.query) {
+                trackSearch(
+                    String(props.query),
+                    typeof props.result_count === 'number' ? props.result_count : undefined
+                );
+            } else {
+                track(eventName, props || {});
+            }
+        };
+    };
+
     const init = () => {
         track('pageview');
         setupOutbound();
@@ -350,6 +414,7 @@
         setupForms();
         setupVitals();
         setupErrorTracking();
+        setupSiteSearch();
         fetchConfig();
         setTimeout(() => {
             if (document.title.toLowerCase().includes('404')) track('404', { url: window.location.href, referrer: document.referrer });
