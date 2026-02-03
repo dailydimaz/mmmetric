@@ -1612,6 +1612,60 @@ export type Database = {
         }
         Relationships: []
       }
+      events_y2026m07: {
+        Row: {
+          browser: string | null
+          city: string | null
+          country: string | null
+          created_at: string
+          device_type: string | null
+          event_name: string
+          id: string
+          language: string | null
+          os: string | null
+          properties: Json | null
+          referrer: string | null
+          session_id: string | null
+          site_id: string
+          url: string | null
+          visitor_id: string | null
+        }
+        Insert: {
+          browser?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          device_type?: string | null
+          event_name?: string
+          id?: string
+          language?: string | null
+          os?: string | null
+          properties?: Json | null
+          referrer?: string | null
+          session_id?: string | null
+          site_id: string
+          url?: string | null
+          visitor_id?: string | null
+        }
+        Update: {
+          browser?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          device_type?: string | null
+          event_name?: string
+          id?: string
+          language?: string | null
+          os?: string | null
+          properties?: Json | null
+          referrer?: string | null
+          session_id?: string | null
+          site_id?: string
+          url?: string | null
+          visitor_id?: string | null
+        }
+        Relationships: []
+      }
       experiment_assignments: {
         Row: {
           converted: boolean | null

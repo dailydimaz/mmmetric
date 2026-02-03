@@ -592,7 +592,7 @@ const features: Feature[] = [
     name: "Core Web Vitals",
     description: "Track LCP, CLS, FID, TTFB per page for SEO & performance",
     icon: Activity,
-    implemented: false,
+    implemented: true,
     difficulty: "medium",
     category: "analytics",
   },
