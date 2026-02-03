@@ -429,6 +429,71 @@ export type Database = {
         }
         Relationships: []
       }
+      content_decay_monitors: {
+        Row: {
+          baseline_pageviews: number
+          baseline_period_end: string | null
+          baseline_period_start: string | null
+          baseline_visitors: number
+          comparison_period_days: number
+          created_at: string
+          current_decay_percent: number | null
+          decay_threshold_percent: number
+          id: string
+          is_enabled: boolean
+          last_alert_at: string | null
+          last_checked_at: string | null
+          site_id: string
+          status: string | null
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          baseline_pageviews?: number
+          baseline_period_end?: string | null
+          baseline_period_start?: string | null
+          baseline_visitors?: number
+          comparison_period_days?: number
+          created_at?: string
+          current_decay_percent?: number | null
+          decay_threshold_percent?: number
+          id?: string
+          is_enabled?: boolean
+          last_alert_at?: string | null
+          last_checked_at?: string | null
+          site_id: string
+          status?: string | null
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          baseline_pageviews?: number
+          baseline_period_end?: string | null
+          baseline_period_start?: string | null
+          baseline_visitors?: number
+          comparison_period_days?: number
+          created_at?: string
+          current_decay_percent?: number | null
+          decay_threshold_percent?: number
+          id?: string
+          is_enabled?: boolean
+          last_alert_at?: string | null
+          last_checked_at?: string | null
+          site_id?: string
+          status?: string | null
+          updated_at?: string
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_decay_monitors_site_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: false
+            referencedRelation: "sites"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       custom_dashboards: {
         Row: {
           created_at: string
@@ -3078,6 +3143,18 @@ export type Database = {
               sites_processed: number
             }[]
           }
+      check_content_decay: {
+        Args: { p_site_id: string }
+        Returns: {
+          baseline_pageviews: number
+          current_pageviews: number
+          decay_percent: number
+          is_decaying: boolean
+          monitor_id: string
+          threshold_percent: number
+          url: string
+        }[]
+      }
       create_future_partitions: { Args: never; Returns: undefined }
       get_attribution_stats: {
         Args: {
@@ -3470,12 +3547,20 @@ export type Database = {
           country: string
         }[]
       }
+      setup_content_decay_monitors: {
+        Args: {
+          p_decay_threshold?: number
+          p_site_id: string
+          p_top_n?: number
+        }
+        Returns: number
+      }
     }
     Enums: {
       alert_channel: "email" | "slack" | "webhook"
       alert_comparison: "gt" | "lt"
       alert_metric: "visitors" | "pageviews" | "bounce_rate"
-      alert_type: "traffic_spike" | "traffic_drop" | "uptime"
+      alert_type: "traffic_spike" | "traffic_drop" | "uptime" | "content_decay"
       experiment_status: "draft" | "active" | "paused" | "ended"
       integration_provider:
         | "google_analytics"
@@ -3618,7 +3703,7 @@ export const Constants = {
       alert_channel: ["email", "slack", "webhook"],
       alert_comparison: ["gt", "lt"],
       alert_metric: ["visitors", "pageviews", "bounce_rate"],
-      alert_type: ["traffic_spike", "traffic_drop", "uptime"],
+      alert_type: ["traffic_spike", "traffic_drop", "uptime", "content_decay"],
       experiment_status: ["draft", "active", "paused", "ended"],
       integration_provider: [
         "google_analytics",
