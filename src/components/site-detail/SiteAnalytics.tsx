@@ -22,7 +22,8 @@ import {
     FormStats,
     TwitterStats,
     HeatmapView,
-    WebVitalsStats
+    WebVitalsStats,
+    ErrorTrackingStats
 } from "@/components/analytics";
 import {
     AnalyticsFilter,
@@ -215,6 +216,9 @@ export function SiteAnalytics({
 
                 {/* Core Web Vitals */}
                 {shouldShow('web_vitals') && <WebVitalsStats siteId={site.id} dateRange={dateRange} />}
+
+                {/* Error Tracking */}
+                {shouldShow('error_tracking') && <ErrorTrackingStats siteId={site.id} dateRange={dateRange} />}
             </TabsContent>
 
             <TabsContent value="twitter" className="animate-fade-in-up">

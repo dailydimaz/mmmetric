@@ -258,6 +258,72 @@
         }
     };
 
+    // Error Tracking - Privacy-first approach
+    const setupErrorTracking = () => {
+        // Global error handler for uncaught errors
+        window.addEventListener('error', (event) => {
+            // Skip cross-origin script errors (no useful info)
+            if (event.message === 'Script error.' && !event.filename) return;
+            
+            track('js_error', {
+                message: sanitizeErrorMessage(event.message || 'Unknown error'),
+                filename: sanitizeFilename(event.filename),
+                lineno: event.lineno,
+                colno: event.colno,
+                type: 'uncaught',
+                url: window.location.pathname
+            });
+        });
+
+        // Promise rejection handler
+        window.addEventListener('unhandledrejection', (event) => {
+            const reason = event.reason;
+            let message = 'Unhandled Promise Rejection';
+            
+            if (reason instanceof Error) {
+                message = reason.message;
+            } else if (typeof reason === 'string') {
+                message = reason;
+            }
+
+            track('js_error', {
+                message: sanitizeErrorMessage(message),
+                type: 'unhandled_rejection',
+                url: window.location.pathname
+            });
+        });
+    };
+
+    // Privacy: Remove potential PII from error messages
+    const sanitizeErrorMessage = (msg: string): string => {
+        if (!msg) return 'Unknown error';
+        // Truncate long messages
+        let sanitized = msg.substring(0, 500);
+        // Remove emails
+        sanitized = sanitized.replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g, '[email]');
+        // Remove potential API keys/tokens (long alphanumeric strings)
+        sanitized = sanitized.replace(/[a-zA-Z0-9_-]{32,}/g, '[token]');
+        // Remove URLs with query params that might contain sensitive data
+        sanitized = sanitized.replace(/https?:\/\/[^\s]+\?[^\s]*/g, (url) => {
+            try {
+                const u = new URL(url);
+                return u.origin + u.pathname + '?[params]';
+            } catch { return '[url]'; }
+        });
+        return sanitized;
+    };
+
+    // Privacy: Only keep filename, not full path
+    const sanitizeFilename = (filename: string | undefined): string => {
+        if (!filename) return 'unknown';
+        try {
+            const url = new URL(filename);
+            return url.pathname.split('/').pop() || url.pathname;
+        } catch {
+            return filename.split('/').pop() || filename;
+        }
+    };
+
     // Config injection (simplified)
     const fetchConfig = () => {
         fetch(apiUrl.replace('/track', '/get-config'), {
@@ -283,6 +349,7 @@
         setupScroll();
         setupForms();
         setupVitals();
+        setupErrorTracking();
         fetchConfig();
         setTimeout(() => {
             if (document.title.toLowerCase().includes('404')) track('404', { url: window.location.href, referrer: document.referrer });

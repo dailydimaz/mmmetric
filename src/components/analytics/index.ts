@@ -37,3 +37,4 @@ export { FormStats } from "./FormStats";
 export { HeatmapView } from "./HeatmapView";
 export { GeoMap } from "./GeoMap";
 export { WebVitalsStats } from "./WebVitalsStats";
+export { ErrorTrackingStats } from "./ErrorTrackingStats";

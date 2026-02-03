@@ -600,7 +600,7 @@ const features: Feature[] = [
     name: "Error Tracking",
     description: "Privacy-first JavaScript error monitoring without Sentry",
     icon: Bug,
-    implemented: false,
+    implemented: true,
     difficulty: "medium",
     category: "analytics",
   },
