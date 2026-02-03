@@ -21,7 +21,8 @@ import {
     EntryExitStats,
     FormStats,
     TwitterStats,
-    HeatmapView
+    HeatmapView,
+    WebVitalsStats
 } from "@/components/analytics";
 import {
     AnalyticsFilter,
@@ -211,6 +212,9 @@ export function SiteAnalytics({
 
                 {/* Form Analytics */}
                 {shouldShow('forms') && <FormStats siteId={site.id} dateRange={dateRange} />}
+
+                {/* Core Web Vitals */}
+                {shouldShow('web_vitals') && <WebVitalsStats siteId={site.id} dateRange={dateRange} />}
             </TabsContent>
 
             <TabsContent value="twitter" className="animate-fade-in-up">
