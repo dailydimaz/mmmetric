@@ -40,3 +40,4 @@ export { WebVitalsStats } from "./WebVitalsStats";
 export { ErrorTrackingStats } from "./ErrorTrackingStats";
 export { SiteSearchStats } from "./SiteSearchStats";
 export { ReadingDepthStats } from "./ReadingDepthStats";
+export { SocialShareStats } from "./SocialShareStats";
