@@ -632,7 +632,7 @@ const features: Feature[] = [
     name: "Video Analytics",
     description: "Track play, pause, and completion rates for embedded videos",
     icon: Play,
-    implemented: false,
+    implemented: true,
     difficulty: "medium",
     category: "analytics",
   },
