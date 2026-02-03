@@ -26,7 +26,8 @@ import {
     ErrorTrackingStats,
     SiteSearchStats,
     ReadingDepthStats,
-    SocialShareStats
+    SocialShareStats,
+    VideoAnalyticsStats
 } from "@/components/analytics";
 import {
     AnalyticsFilter,
@@ -231,6 +232,9 @@ export function SiteAnalytics({
 
                 {/* Social Share Tracking */}
                 {shouldShow('social_shares') && <SocialShareStats siteId={site.id} dateRange={dateRange} />}
+
+                {/* Video Analytics */}
+                {shouldShow('video_analytics') && <VideoAnalyticsStats siteId={site.id} dateRange={dateRange} />}
             </TabsContent>
 
             <TabsContent value="twitter" className="animate-fade-in-up">

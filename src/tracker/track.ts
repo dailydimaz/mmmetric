@@ -426,6 +426,267 @@
         }
     };
 
+    // Video Analytics - Track HTML5 video, YouTube, and Vimeo
+    const setupVideoAnalytics = () => {
+        const trackedVideos = new WeakSet<HTMLVideoElement>();
+        const videoProgress = new Map<string, Set<number>>();
+        const progressMilestones = [25, 50, 75];
+
+        // Generate a video ID from element
+        const getVideoId = (video: HTMLVideoElement | HTMLIFrameElement): string => {
+            return video.id || 
+                   video.getAttribute('data-video-id') || 
+                   video.getAttribute('src')?.split('/').pop()?.split('?')[0] || 
+                   `video_${Math.random().toString(36).slice(2, 8)}`;
+        };
+
+        // Get video title
+        const getVideoTitle = (video: HTMLVideoElement | HTMLIFrameElement): string => {
+            return video.getAttribute('title') || 
+                   video.getAttribute('data-title') || 
+                   video.getAttribute('aria-label') || 
+                   getVideoId(video);
+        };
+
+        // Track HTML5 videos
+        const trackHTML5Video = (video: HTMLVideoElement) => {
+            if (trackedVideos.has(video)) return;
+            trackedVideos.add(video);
+
+            const videoId = getVideoId(video);
+            const videoTitle = getVideoTitle(video);
+            
+            if (!videoProgress.has(videoId)) {
+                videoProgress.set(videoId, new Set());
+            }
+
+            video.addEventListener('play', () => {
+                track('video', {
+                    action: 'play',
+                    video_id: videoId,
+                    video_title: videoTitle,
+                    provider: 'html5',
+                    duration: Math.round(video.duration) || 0,
+                    current_time: Math.round(video.currentTime),
+                    url: window.location.pathname
+                });
+            });
+
+            video.addEventListener('pause', () => {
+                // Don't track pause at the very end (it's a completion)
+                if (video.currentTime < video.duration - 1) {
+                    track('video', {
+                        action: 'pause',
+                        video_id: videoId,
+                        video_title: videoTitle,
+                        provider: 'html5',
+                        progress: Math.round((video.currentTime / video.duration) * 100),
+                        duration: Math.round(video.duration),
+                        url: window.location.pathname
+                    });
+                }
+            });
+
+            video.addEventListener('ended', () => {
+                track('video', {
+                    action: 'complete',
+                    video_id: videoId,
+                    video_title: videoTitle,
+                    provider: 'html5',
+                    duration: Math.round(video.duration),
+                    url: window.location.pathname
+                });
+            });
+
+            // Track progress milestones
+            video.addEventListener('timeupdate', () => {
+                if (!video.duration) return;
+                const progress = (video.currentTime / video.duration) * 100;
+                const tracked = videoProgress.get(videoId)!;
+
+                progressMilestones.forEach(milestone => {
+                    if (progress >= milestone && !tracked.has(milestone)) {
+                        tracked.add(milestone);
+                        track('video', {
+                            action: 'progress',
+                            video_id: videoId,
+                            video_title: videoTitle,
+                            provider: 'html5',
+                            progress: milestone,
+                            duration: Math.round(video.duration),
+                            url: window.location.pathname
+                        });
+                    }
+                });
+            });
+        };
+
+        // Observe for dynamically added videos
+        const observeVideos = () => {
+            // Track existing videos
+            document.querySelectorAll('video').forEach(trackHTML5Video);
+
+            // Watch for new videos
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    mutation.addedNodes.forEach((node) => {
+                        if (node instanceof HTMLVideoElement) {
+                            trackHTML5Video(node);
+                        } else if (node instanceof HTMLElement) {
+                            node.querySelectorAll('video').forEach(trackHTML5Video);
+                        }
+                    });
+                });
+            });
+
+            observer.observe(document.body, {
+                childList: true,
+                subtree: true
+            });
+        };
+
+        // YouTube API integration
+        const setupYouTubeTracking = () => {
+            // Listen for YouTube iframe API
+            (window as any).onYouTubeIframeAPIReady = () => {
+                document.querySelectorAll('iframe[src*="youtube.com"], iframe[src*="youtube-nocookie.com"]').forEach((iframe) => {
+                    try {
+                        const videoId = getVideoId(iframe as HTMLIFrameElement);
+                        const videoTitle = getVideoTitle(iframe as HTMLIFrameElement);
+                        
+                        if (!videoProgress.has(videoId)) {
+                            videoProgress.set(videoId, new Set());
+                        }
+
+                        const player = new (window as any).YT.Player(iframe, {
+                            events: {
+                                'onStateChange': (event: any) => {
+                                    const states: Record<number, string> = {
+                                        1: 'play',
+                                        2: 'pause',
+                                        0: 'complete'
+                                    };
+                                    const action = states[event.data];
+                                    if (action) {
+                                        track('video', {
+                                            action,
+                                            video_id: videoId,
+                                            video_title: videoTitle,
+                                            provider: 'youtube',
+                                            duration: player.getDuration ? Math.round(player.getDuration()) : 0,
+                                            progress: player.getCurrentTime && player.getDuration 
+                                                ? Math.round((player.getCurrentTime() / player.getDuration()) * 100)
+                                                : 0,
+                                            url: window.location.pathname
+                                        });
+                                    }
+                                }
+                            }
+                        });
+                    } catch { }
+                });
+            };
+
+            // Load YouTube API if YouTube iframes exist
+            if (document.querySelector('iframe[src*="youtube.com"], iframe[src*="youtube-nocookie.com"]')) {
+                if (!(window as any).YT) {
+                    const tag = document.createElement('script');
+                    tag.src = 'https://www.youtube.com/iframe_api';
+                    const firstScript = document.getElementsByTagName('script')[0];
+                    firstScript?.parentNode?.insertBefore(tag, firstScript);
+                }
+            }
+        };
+
+        // Vimeo tracking via postMessage
+        const setupVimeoTracking = () => {
+            const vimeoFrames = document.querySelectorAll('iframe[src*="vimeo.com"]');
+            
+            vimeoFrames.forEach((iframe) => {
+                const videoId = getVideoId(iframe as HTMLIFrameElement);
+                const videoTitle = getVideoTitle(iframe as HTMLIFrameElement);
+                
+                if (!videoProgress.has(videoId)) {
+                    videoProgress.set(videoId, new Set());
+                }
+
+                // Listen for Vimeo player events via postMessage
+                window.addEventListener('message', (event) => {
+                    if (!event.origin.includes('vimeo.com')) return;
+                    
+                    try {
+                        const data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
+                        
+                        if (data.event === 'play') {
+                            track('video', {
+                                action: 'play',
+                                video_id: videoId,
+                                video_title: videoTitle,
+                                provider: 'vimeo',
+                                url: window.location.pathname
+                            });
+                        } else if (data.event === 'pause') {
+                            track('video', {
+                                action: 'pause',
+                                video_id: videoId,
+                                video_title: videoTitle,
+                                provider: 'vimeo',
+                                progress: data.data?.percent ? Math.round(data.data.percent * 100) : 0,
+                                url: window.location.pathname
+                            });
+                        } else if (data.event === 'ended') {
+                            track('video', {
+                                action: 'complete',
+                                video_id: videoId,
+                                video_title: videoTitle,
+                                provider: 'vimeo',
+                                url: window.location.pathname
+                            });
+                        } else if (data.event === 'playProgress' && data.data?.percent) {
+                            const progress = Math.round(data.data.percent * 100);
+                            const tracked = videoProgress.get(videoId)!;
+                            
+                            progressMilestones.forEach(milestone => {
+                                if (progress >= milestone && !tracked.has(milestone)) {
+                                    tracked.add(milestone);
+                                    track('video', {
+                                        action: 'progress',
+                                        video_id: videoId,
+                                        video_title: videoTitle,
+                                        provider: 'vimeo',
+                                        progress: milestone,
+                                        url: window.location.pathname
+                                    });
+                                }
+                            });
+                        }
+                    } catch { }
+                });
+
+                // Enable Vimeo API on iframe
+                try {
+                    const src = (iframe as HTMLIFrameElement).src;
+                    if (!src.includes('api=1')) {
+                        (iframe as HTMLIFrameElement).src = src + (src.includes('?') ? '&' : '?') + 'api=1';
+                    }
+                } catch { }
+            });
+        };
+
+        // Initialize
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                observeVideos();
+                setupYouTubeTracking();
+                setupVimeoTracking();
+            });
+        } else {
+            observeVideos();
+            setupYouTubeTracking();
+            setupVimeoTracking();
+        }
+    };
+
     // Config injection (simplified)
     const fetchConfig = () => {
         fetch(apiUrl.replace('/track', '/get-config'), {
@@ -654,6 +915,7 @@
         setupSiteSearch();
         setupReadingDepth();
         setupSocialShare();
+        setupVideoAnalytics();
         fetchConfig();
         setTimeout(() => {
             if (document.title.toLowerCase().includes('404')) track('404', { url: window.location.href, referrer: document.referrer });
