@@ -24,7 +24,8 @@ import {
     HeatmapView,
     WebVitalsStats,
     ErrorTrackingStats,
-    SiteSearchStats
+    SiteSearchStats,
+    ReadingDepthStats
 } from "@/components/analytics";
 import {
     AnalyticsFilter,
@@ -223,6 +224,9 @@ export function SiteAnalytics({
 
                 {/* Site Search Analytics */}
                 {shouldShow('site_search') && <SiteSearchStats siteId={site.id} dateRange={dateRange} />}
+
+                {/* Reading Depth */}
+                {shouldShow('reading_depth') && <ReadingDepthStats siteId={site.id} dateRange={dateRange} />}
             </TabsContent>
 
             <TabsContent value="twitter" className="animate-fade-in-up">
