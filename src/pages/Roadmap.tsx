@@ -642,7 +642,7 @@ const features: Feature[] = [
     name: "Mobile SDK",
     description: "React Native and Flutter SDK for mobile app analytics",
     icon: Smartphone,
-    implemented: false,
+    implemented: true,
     difficulty: "hard",
     category: "cloud",
   },
