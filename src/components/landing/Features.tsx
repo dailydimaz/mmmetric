@@ -51,6 +51,11 @@ import {
   FileText,
   PieChart,
   Combine,
+  Activity,
+  Bug,
+  BookOpen,
+  Play,
+  ExternalLink,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
@@ -487,6 +492,158 @@ const WhiteLabelIllustration = () => (
       <div className="w-8 h-8 rounded bg-primary/20 animate-pulse"></div>
       <div className="w-full h-2 bg-muted rounded"></div>
       <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-secondary border-2 border-background"></div>
+    </div>
+  </div>
+);
+
+const LanguagesIllustration = () => (
+  <div className="absolute inset-0 flex items-center justify-center gap-2">
+    <div className="px-2 py-1 bg-blue-500/10 text-blue-500 rounded text-xs font-bold border border-blue-500/20">EN</div>
+    <div className="px-2 py-1 bg-red-500/10 text-red-500 rounded text-xs font-bold border border-red-500/20">ES</div>
+    <div className="px-2 py-1 bg-green-500/10 text-green-500 rounded text-xs font-bold border border-green-500/20">DE</div>
+    <div className="px-2 py-1 bg-purple-500/10 text-purple-500 rounded text-xs font-bold border border-purple-500/20">FR</div>
+  </div>
+);
+
+const GoalsIllustration = () => (
+  <div className="absolute inset-0 flex items-center justify-center">
+    <div className="relative w-20 h-20 flex items-center justify-center">
+      <div className="absolute inset-0 rounded-full border-4 border-muted/30"></div>
+      <div className="absolute inset-0 rounded-full border-4 border-primary border-t-transparent animate-spin-slow"></div>
+      <Target className="w-8 h-8 text-primary" />
+    </div>
+  </div>
+);
+
+const InsightsIllustration = () => (
+  <div className="absolute inset-0 flex items-center justify-center p-6">
+    <div className="w-full space-y-2">
+      <div className="h-2 w-full bg-muted rounded overflow-hidden">
+        <div className="h-full w-3/4 bg-primary/50"></div>
+      </div>
+      <div className="h-2 w-full bg-muted rounded overflow-hidden">
+        <div className="h-full w-1/2 bg-secondary/50"></div>
+      </div>
+      <div className="h-2 w-full bg-muted rounded overflow-hidden">
+        <div className="h-full w-5/6 bg-green-500/50"></div>
+      </div>
+    </div>
+  </div>
+);
+
+const OutboundLinkIllustration = () => (
+  <div className="absolute inset-0 flex items-center justify-center">
+    <div className="relative group">
+      <div className="w-16 h-8 bg-muted rounded border border-border flex items-center justify-center text-xs text-muted-foreground mr-4">
+        Ex. Site
+      </div>
+      <ExternalLink className="absolute -top-2 -right-2 w-6 h-6 text-primary animate-bounce" />
+    </div>
+  </div>
+);
+
+const WebVitalsIllustration = () => (
+  <div className="absolute inset-0 flex items-center justify-center gap-4">
+    <div className="flex flex-col items-center gap-1">
+      <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center text-green-600 font-bold text-xs border border-green-500/30">98</div>
+      <span className="text-[10px] text-muted-foreground font-mono">LCP</span>
+    </div>
+    <div className="flex flex-col items-center gap-1">
+      <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center text-green-600 font-bold text-xs border border-green-500/30">0.01</div>
+      <span className="text-[10px] text-muted-foreground font-mono">CLS</span>
+    </div>
+  </div>
+);
+
+const ErrorTrackingIllustration = () => (
+  <div className="absolute inset-0 flex items-center justify-center">
+    <div className="w-48 h-24 bg-red-950/10 rounded-lg border border-red-500/20 font-mono text-[10px] p-3 text-red-500/80 overflow-hidden">
+      {">"} Uncaught TypeError<br />
+      &nbsp;&nbsp;at render (app.js:2)<br />
+      &nbsp;&nbsp;at hydrate (dom.js:45)
+    </div>
+  </div>
+);
+
+const SiteSearchIllustration = () => (
+  <div className="absolute inset-x-8 top-16 h-8 bg-background rounded-full border border-border flex items-center px-3 gap-2 shadow-sm">
+    <Search className="w-3 h-3 text-muted-foreground" />
+    <span className="text-xs text-primary font-medium animate-pulse">"pricing plan"</span>
+  </div>
+);
+
+const ReadingDepthIllustration = () => (
+  <div className="absolute inset-x-12 top-12 bottom-4 bg-background border border-border rounded shadow-sm overflow-hidden p-2 space-y-2">
+    <div className="w-full h-2 bg-muted rounded"></div>
+    <div className="w-5/6 h-2 bg-muted rounded"></div>
+    <div className="w-full h-2 bg-primary/20 rounded"></div>
+    <div className="w-4/5 h-2 bg-primary/40 rounded"></div>
+    <div className="w-full h-2 bg-primary/60 rounded"></div>
+  </div>
+);
+
+const VideoIllustration = () => (
+  <div className="absolute inset-0 flex items-center justify-center">
+    <div className="w-32 h-20 bg-muted/50 rounded-lg border border-border flex items-center justify-center relative overflow-hidden group">
+      <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 to-transparent"></div>
+      <div className="w-10 h-10 bg-background/80 rounded-full flex items-center justify-center backdrop-blur-sm shadow-sm group-hover:scale-110 transition-transform">
+        <Play className="w-4 h-4 text-primary ml-1" fill="currentColor" />
+      </div>
+      <div className="absolute bottom-0 left-0 h-1 bg-primary w-2/3"></div>
+    </div>
+  </div>
+);
+
+const MobileSDKIllustration = () => (
+  <div className="absolute inset-0 flex items-center justify-center gap-4 opacity-70">
+    <Smartphone className="w-12 h-12 text-primary" />
+    <div className="font-mono text-xs flex flex-col gap-1">
+      <span className="bg-blue-500/10 text-blue-600 px-1 rounded">React Native</span>
+      <span className="bg-cyan-500/10 text-cyan-600 px-1 rounded">Flutter</span>
+      <span className="bg-orange-500/10 text-orange-600 px-1 rounded">Swift</span>
+    </div>
+  </div>
+);
+
+const SocialShareIllustration = () => (
+  <div className="absolute inset-0 flex items-center justify-center">
+    <div className="flex gap-2 relative">
+      <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white"><Share2 className="w-4 h-4" /></div>
+      <div className="absolute -top-4 -right-8 bg-card border border-border px-2 py-1 rounded shadow-sm text-xs font-bold">+125</div>
+      <motion.div
+        initial={{ scale: 0 }}
+        whileInView={{ scale: 1 }}
+        transition={{ delay: 0.2 }}
+        className="absolute top-8 -left-4 w-6 h-6 rounded-full bg-sky-400 flex items-center justify-center text-white text-[10px]"
+      >
+        <Twitter className="w-3 h-3 fill-current" />
+      </motion.div>
+      <motion.div
+        initial={{ scale: 0 }}
+        whileInView={{ scale: 1 }}
+        transition={{ delay: 0.4 }}
+        className="absolute top-6 -right-6 w-6 h-6 rounded-full bg-blue-700 flex items-center justify-center text-white text-[10px]"
+      >
+        <span className="font-serif font-bold">f</span>
+      </motion.div>
+    </div>
+  </div>
+);
+
+const ContentDecayIllustration = () => (
+  <div className="absolute inset-x-8 bottom-4 h-24 flex items-end justify-between gap-1 overflow-hidden opacity-80">
+    {[80, 85, 90, 80, 70, 60, 50, 40].map((h, i) => (
+      <div
+        key={i}
+        className={cn(
+          "w-full rounded-t-sm transition-all",
+          i > 4 ? "bg-red-500/40" : "bg-green-500/40"
+        )}
+        style={{ height: `${h}%` }}
+      />
+    ))}
+    <div className="absolute top-1/2 right-1/4 animate-bounce">
+      <TrendingDown className="w-6 h-6 text-red-500" />
     </div>
   </div>
 );
@@ -1076,6 +1233,129 @@ export function Features() {
               description="Enterprise-grade Single Sign-On integration."
               illustration={SSOIllustration}
               delay={0.6}
+            />
+
+
+            {/* --- RECENTLY ADDED FROM ROADMAP --- */}
+
+            {/* Card: New Languages */}
+            <BentoCard
+              className="md:col-span-1"
+              icon={Languages}
+              title="Languages"
+              description="Most popular languages among your visitors."
+              illustration={LanguagesIllustration}
+              delay={0.2}
+            />
+
+            {/* Card: Goals */}
+            <BentoCard
+              className="md:col-span-1"
+              icon={Target}
+              title="Goals & Revenue"
+              description="Track custom goals with revenue properties and AOV."
+              illustration={GoalsIllustration}
+              delay={0.3}
+            />
+
+            {/* Card: Insights */}
+            <BentoCard
+              className="md:col-span-1"
+              icon={Lightbulb}
+              title="Custom Reports"
+              description="Build and share custom reports with specific filters."
+              illustration={InsightsIllustration}
+              delay={0.4}
+            />
+
+            {/* Card: Outbound Links */}
+            <BentoCard
+              className="md:col-span-1"
+              icon={ExternalLink}
+              title="Outbound Links"
+              description="Auto-track clicks on external links leaving your site."
+              illustration={OutboundLinkIllustration}
+              delay={0.5}
+            />
+
+            {/* Card: Core Web Vitals */}
+            <BentoCard
+              className="md:col-span-1"
+              icon={Activity}
+              title="Core Web Vitals"
+              description="Track LCP, CLS, FID, TTFB per page for SEO & performance."
+              illustration={WebVitalsIllustration}
+              delay={0.6}
+            />
+
+            {/* Card: Error Tracking */}
+            <BentoCard
+              className="md:col-span-1"
+              icon={Bug}
+              title="Error Tracking"
+              description="Privacy-first JavaScript error monitoring without Sentry."
+              illustration={ErrorTrackingIllustration}
+              delay={0.7}
+            />
+
+            {/* Card: Site Search */}
+            <BentoCard
+              className="md:col-span-1"
+              icon={Search}
+              title="Site Search"
+              description="Track internal search queries and zero-results patterns."
+              illustration={SiteSearchIllustration}
+              delay={0.5}
+            />
+
+            {/* Card: Reading Depth */}
+            <BentoCard
+              className="md:col-span-1"
+              icon={BookOpen}
+              title="Reading Depth"
+              description="Track actual reading engagement vs scroll-through behavior."
+              illustration={ReadingDepthIllustration}
+              delay={0.6}
+            />
+
+            {/* Card: Video Analytics */}
+            <BentoCard
+              className="md:col-span-1"
+              icon={Play}
+              title="Video Analytics"
+              description="Track play, pause, and completion rates for embedded videos."
+              illustration={VideoIllustration}
+              delay={0.7}
+            />
+
+            {/* Card: Mobile SDK */}
+            <BentoCard
+              className="md:col-span-1"
+              icon={Smartphone}
+              title="Mobile SDK"
+              description="React Native and Flutter SDKs for mobile app analytics."
+              illustration={MobileSDKIllustration}
+              delay={0.5}
+            />
+
+            {/* Card: Social Share */}
+            <BentoCard
+              className="md:col-span-1"
+              icon={Share2}
+              title="Social Sharing"
+              description="Track when users share your content to social platforms."
+              illustration={SocialShareIllustration}
+              delay={0.6}
+            />
+
+            {/* Card: Content Decay */}
+            <BentoCard
+              className="md:col-span-1"
+              icon={TrendingDown}
+              title="Content Decay"
+              description="Get notified when high-performing pages start declining."
+              illustration={ContentDecayIllustration}
+              delay={0.7}
             />
           </div>
         </div>
