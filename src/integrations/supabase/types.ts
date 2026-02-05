@@ -2742,6 +2742,7 @@ export type Database = {
           remove_branding: boolean | null
           timezone: string | null
           tracking_id: string
+          tracking_tier: string
           updated_at: string
           user_id: string
         }
@@ -2757,6 +2758,7 @@ export type Database = {
           remove_branding?: boolean | null
           timezone?: string | null
           tracking_id?: string
+          tracking_tier?: string
           updated_at?: string
           user_id: string
         }
@@ -2772,6 +2774,7 @@ export type Database = {
           remove_branding?: boolean | null
           timezone?: string | null
           tracking_id?: string
+          tracking_tier?: string
           updated_at?: string
           user_id?: string
         }
