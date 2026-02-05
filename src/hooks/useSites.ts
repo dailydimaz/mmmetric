@@ -9,6 +9,7 @@ export interface Site {
   domain: string | null;
   tracking_id: string;
   timezone: string;
+  tracking_tier: 'lite' | 'standard' | 'full';
   created_at: string;
   updated_at: string;
 }
@@ -58,7 +59,7 @@ export function useSites() {
       const allSites = [...(ownedSites || []), ...teamSites];
       const uniqueSites = allSites.reduce((acc, site) => {
         if (!acc.find((s) => s.id === site.id)) {
-          acc.push(site);
+          acc.push(site as Site);
         }
         return acc;
       }, [] as Site[]);
@@ -103,10 +104,10 @@ export function useSites() {
   });
 
   const updateSite = useMutation({
-    mutationFn: async ({ id, name, domain, timezone }: { id: string; name?: string; domain?: string; timezone?: string }) => {
+    mutationFn: async ({ id, name, domain, timezone, tracking_tier }: { id: string; name?: string; domain?: string; timezone?: string; tracking_tier?: 'lite' | 'standard' | 'full' }) => {
       const { data, error } = await supabase
         .from("sites")
-        .update({ name, domain, timezone })
+        .update({ name, domain, timezone, tracking_tier })
         .eq("id", id)
         .select()
         .single();

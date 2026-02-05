@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
     Clock,
     Copy,
@@ -15,10 +15,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Site } from "@/hooks/useSites";
+import { Site, useSites } from "@/hooks/useSites";
 import { getAppUrl, getTrackingApiUrl, getPixelUrl } from "@/lib/config";
 import { LogImportCard } from "@/components/settings/LogImportCard";
 import { LookerStudioCard } from "@/components/settings/LookerStudioCard";
+import { TrackingTierSelector, getScriptFilename, type TrackingTier } from "@/components/settings/TrackingTierSelector";
 
 interface SiteSettingsPanelProps {
     site: Site;
@@ -30,12 +31,36 @@ interface SiteSettingsPanelProps {
 export function SiteSettingsPanel({ site, onEdit, onDelete, deletePending }: SiteSettingsPanelProps) {
     const [copied, setCopied] = useState(false);
     const [testStatus, setTestStatus] = useState<'idle' | 'testing' | 'success' | 'error'>('idle');
+    const [selectedTier, setSelectedTier] = useState<TrackingTier>(site.tracking_tier || 'standard');
+    const [savingTier, setSavingTier] = useState(false);
     const { toast } = useToast();
+    const { updateSite } = useSites();
+
+    // Sync with site prop changes
+    useEffect(() => {
+        setSelectedTier(site.tracking_tier || 'standard');
+    }, [site.tracking_tier]);
 
     // Generate tracking script with dynamic URLs
-    const trackScriptUrl = `${getAppUrl()}/track.js`;
+    const trackScriptUrl = `${getAppUrl()}/${getScriptFilename(selectedTier)}`;
     const trackApiUrl = getTrackingApiUrl();
     const trackingScript = `<script defer src="${trackScriptUrl}" data-site="${site.tracking_id}" data-api="${trackApiUrl}"></script>`;
+
+    const handleTierChange = async (tier: TrackingTier) => {
+        setSelectedTier(tier);
+        setSavingTier(true);
+        try {
+            await updateSite.mutateAsync({ id: site.id, tracking_tier: tier });
+            toast({
+                title: "Tracking tier updated",
+                description: `Your site now uses the ${tier} tracking script.`,
+            });
+        } catch {
+            setSelectedTier(site.tracking_tier || 'standard');
+        } finally {
+            setSavingTier(false);
+        }
+    };
 
     const copyTrackingId = async () => {
         await navigator.clipboard.writeText(site.tracking_id);
@@ -180,9 +205,25 @@ export function SiteSettingsPanel({ site, onEdit, onDelete, deletePending }: Sit
 
                 {/* Installation */}
                 <div className="mt-4">
+                    {/* Script Tier Selector */}
+                    <div className="mb-6">
+                        <div className="flex items-center gap-2 mb-3">
+                            <Zap className="h-4 w-4" />
+                            <h4 className="text-sm font-medium">Tracking Script</h4>
+                        </div>
+                        <p className="text-muted-foreground text-sm mb-4">
+                            Choose the tracking script that best fits your needs. Lighter scripts load faster but have fewer features.
+                        </p>
+                        <TrackingTierSelector
+                            value={selectedTier}
+                            onChange={handleTierChange}
+                            disabled={savingTier}
+                        />
+                    </div>
+
                     <div className="flex items-center gap-2 mb-2">
                         <Code className="h-4 w-4" />
-                        <h4 className="text-sm font-medium">Installation</h4>
+                        <h4 className="text-sm font-medium">Installation Code</h4>
                     </div>
                     <p className="text-muted-foreground text-sm">
                         Add this script to your website's <code className="bg-muted px-1 rounded">&lt;head&gt;</code> tag:
@@ -192,7 +233,8 @@ export function SiteSettingsPanel({ site, onEdit, onDelete, deletePending }: Sit
                     </div>
 
                     {/* Cross-Domain Tracking */}
-                    <div className="mt-3 p-3 bg-muted/30 rounded-lg border border-border/30">
+                    {selectedTier !== 'lite' && (
+                        <div className="mt-3 p-3 bg-muted/30 rounded-lg border border-border/30">
                         <h5 className="text-xs font-medium text-muted-foreground mb-1">Cross-Domain Tracking (optional)</h5>
                         <p className="text-xs text-muted-foreground/80 mb-2">
                             To track users across multiple domains, add the <code className="bg-muted px-1 rounded">data-cross-domain</code> attribute:
@@ -200,10 +242,13 @@ export function SiteSettingsPanel({ site, onEdit, onDelete, deletePending }: Sit
                         <code className="text-xs bg-muted px-2 py-1 rounded block overflow-x-auto text-foreground">
                             data-cross-domain="otherdomain.com,anotherdomain.com"
                         </code>
-                    </div>
+                        </div>
+                    )}
 
                     <p className="text-muted-foreground/60 text-xs mt-2">
-                        This lightweight script (~1KB) tracks page views, custom events, and UTM parameters while respecting user privacy.
+                        {selectedTier === 'lite' && 'Ultra-lightweight script for pageviews and sessions only.'}
+                        {selectedTier === 'standard' && 'Balanced script with engagement, scroll depth, and link tracking.'}
+                        {selectedTier === 'full' && 'Complete suite with web vitals, error tracking, video, and more.'}
                     </p>
                     <div className="flex justify-end gap-2 mt-2">
                         <Button

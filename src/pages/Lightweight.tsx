@@ -1,9 +1,36 @@
 import { Link } from "react-router-dom";
-import { ArrowLeft, Zap, Gauge, ArrowRight, Activity, ArrowDown } from "lucide-react";
+import { ArrowLeft, Zap, Gauge, ArrowRight, Activity, BarChart3, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import mmmetricLogo from "@/assets/mmmetric-logo.png";
+
+const tiers = [
+    {
+        name: 'Lite',
+        file: 'track-lite.js',
+        size: '< 1.5 KB',
+        icon: Zap,
+        features: ['Pageviews', 'Sessions & UTM', 'Referrer', 'SPA support', 'Custom events'],
+        best: 'Maximum performance, simple sites',
+    },
+    {
+        name: 'Standard',
+        file: 'track.js',
+        size: '< 3 KB',
+        icon: BarChart3,
+        features: ['+ Scroll depth', '+ Engagement time', '+ Outbound links', '+ File downloads', '+ Cross-domain'],
+        best: 'Balanced tracking for most sites',
+    },
+    {
+        name: 'Full',
+        file: 'track-full.js',
+        size: '< 5 KB',
+        icon: Sparkles,
+        features: ['+ Core Web Vitals', '+ Error tracking', '+ Form analytics', '+ Video analytics', '+ Site search'],
+        best: 'Complete analytics suite',
+    },
+];
 
 export default function Lightweight() {
     return (
@@ -75,7 +102,39 @@ export default function Lightweight() {
                     </Card>
                 </div>
 
-                <div className="bg-card border border-border rounded-3xl p-8 md:p-12 text-left relative overflow-hidden group">
+                {/* Tier Comparison */}
+                <div className="grid md:grid-cols-3 gap-6 mb-16">
+                    {tiers.map((tier) => {
+                        const Icon = tier.icon;
+                        return (
+                            <Card key={tier.name} className="bg-card border-border hover:border-primary/50 transition-colors">
+                                <CardContent className="p-6">
+                                    <div className="flex items-center gap-3 mb-4">
+                                        <div className="p-2.5 bg-primary/10 rounded-xl text-primary">
+                                            <Icon className="h-5 w-5" />
+                                        </div>
+                                        <div>
+                                            <h3 className="font-bold text-lg">{tier.name}</h3>
+                                            <code className="text-xs text-muted-foreground font-mono">{tier.file}</code>
+                                        </div>
+                                    </div>
+                                    <div className="text-3xl font-black text-primary mb-2">{tier.size}</div>
+                                    <p className="text-sm text-muted-foreground mb-4">{tier.best}</p>
+                                    <ul className="space-y-1.5 text-sm">
+                                        {tier.features.map((f, j) => (
+                                            <li key={j} className="flex items-center gap-2 text-muted-foreground">
+                                                <span className="h-1 w-1 rounded-full bg-primary" />
+                                                {f}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </CardContent>
+                            </Card>
+                        );
+                    })}
+                </div>
+
+                <div className="bg-card border border-border rounded-3xl p-8 md:p-12 text-left relative overflow-hidden group mb-16">
                     <div className="absolute top-0 right-0 p-12 opacity-5 group-hover:opacity-10 transition-opacity">
                         <Activity className="w-64 h-64 text-foreground" />
                     </div>
