@@ -535,6 +535,50 @@ export type Database = {
           },
         ]
       }
+      discord_integrations: {
+        Row: {
+          channel_name: string | null
+          created_at: string
+          id: string
+          is_active: boolean
+          notify_on: Json
+          site_id: string
+          updated_at: string
+          user_id: string
+          webhook_url: string
+        }
+        Insert: {
+          channel_name?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          notify_on?: Json
+          site_id: string
+          updated_at?: string
+          user_id: string
+          webhook_url: string
+        }
+        Update: {
+          channel_name?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          notify_on?: Json
+          site_id?: string
+          updated_at?: string
+          user_id?: string
+          webhook_url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "discord_integrations_site_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: true
+            referencedRelation: "sites"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       events: {
         Row: {
           browser: string | null
@@ -3560,7 +3604,7 @@ export type Database = {
       }
     }
     Enums: {
-      alert_channel: "email" | "slack" | "webhook"
+      alert_channel: "email" | "slack" | "webhook" | "discord"
       alert_comparison: "gt" | "lt"
       alert_metric: "visitors" | "pageviews" | "bounce_rate"
       alert_type: "traffic_spike" | "traffic_drop" | "uptime" | "content_decay"
@@ -3703,7 +3747,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      alert_channel: ["email", "slack", "webhook"],
+      alert_channel: ["email", "slack", "webhook", "discord"],
       alert_comparison: ["gt", "lt"],
       alert_metric: ["visitors", "pageviews", "bounce_rate"],
       alert_type: ["traffic_spike", "traffic_drop", "uptime", "content_decay"],

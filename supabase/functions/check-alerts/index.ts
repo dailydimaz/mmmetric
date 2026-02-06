@@ -3,8 +3,43 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-cron-secret',
 };
+
+// Helper to send chat notifications
+async function sendChatNotification(
+    supabase: any,
+    siteId: string,
+    type: string,
+    data: any
+) {
+    try {
+        const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+        const cronSecret = Deno.env.get('CRON_SECRET');
+
+        const response = await fetch(`${supabaseUrl}/functions/v1/chat-notify`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-cron-secret': cronSecret || '',
+            },
+            body: JSON.stringify({
+                siteId,
+                type,
+                data,
+                cronJob: true,
+            }),
+        });
+
+        if (!response.ok) {
+            console.error(`Failed to send chat notification: ${response.status}`);
+        } else {
+            console.log(`Chat notification sent for ${type} on site ${siteId}`);
+        }
+    } catch (err) {
+        console.error('Error sending chat notification:', err);
+    }
+}
 
 serve(async (req) => {
     if (req.method === 'OPTIONS') {
@@ -68,6 +103,16 @@ serve(async (req) => {
                     .eq('id', alert.id);
 
                 results.push({ alert: alert.name, triggered: true, value, type: 'standard' });
+
+                // Send chat notification for triggered alerts
+                const condition = `${alert.metric} ${alert.comparison === 'gt' ? '>' : '<'} ${alert.threshold}`;
+                await sendChatNotification(supabase, alert.site_id, 'alert_triggered', {
+                    alertName: alert.name,
+                    condition,
+                    currentValue: value,
+                    threshold: alert.threshold,
+                    metric: alert.metric,
+                });
             }
         }
 
@@ -146,8 +191,13 @@ serve(async (req) => {
                     type: 'content_decay'
                 });
 
-                // TODO: Send notification (email, Slack, etc.)
-                // This would integrate with the existing notification infrastructure
+                // Send chat notification for content decay
+                await sendChatNotification(supabase, monitor.site_id, 'alert_triggered', {
+                    alertName: `Content Decay: ${monitor.url}`,
+                    condition: `Traffic dropped ${decayPercent}% (threshold: ${monitor.decay_threshold_percent}%)`,
+                    currentValue: current,
+                    baseline: baseline,
+                });
             }
         }
 

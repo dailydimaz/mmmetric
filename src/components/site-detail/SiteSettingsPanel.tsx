@@ -20,6 +20,7 @@ import { getAppUrl, getTrackingApiUrl, getPixelUrl } from "@/lib/config";
 import { LogImportCard } from "@/components/settings/LogImportCard";
 import { LookerStudioCard } from "@/components/settings/LookerStudioCard";
 import { TrackingTierSelector, getScriptFilename, type TrackingTier } from "@/components/settings/TrackingTierSelector";
+import { ChatIntegrationsCard } from "@/components/settings/ChatIntegrationsCard";
 
 interface SiteSettingsPanelProps {
     site: Site;
@@ -309,6 +310,11 @@ export function SiteSettingsPanel({ site, onEdit, onDelete, deletePending }: Sit
                 {/* BI Tools / Looker Studio Connector */}
                 <div className="mt-4 pt-4 border-t border-border">
                     <LookerStudioCard siteId={site.id} />
+                </div>
+
+                {/* Team Chat Notifications (Slack/Discord) */}
+                <div className="mt-4 pt-4 border-t border-border">
+                    <ChatIntegrationsCard siteId={site.id} />
                 </div>
             </div>
         </div>
