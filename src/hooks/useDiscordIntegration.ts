@@ -2,44 +2,43 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 
-// Slack webhook URL validation regex (matches official Slack webhook format)
-const SLACK_WEBHOOK_REGEX = /^https:\/\/hooks\.slack\.com\/services\/T[A-Z0-9]+\/B[A-Z0-9]+\/[a-zA-Z0-9]+$/;
+// Discord webhook URL validation regex
+const DISCORD_WEBHOOK_REGEX = /^https:\/\/(discord|discordapp)\.com\/api\/webhooks\/\d+\/[a-zA-Z0-9_-]+$/;
 
-export function isValidSlackWebhookUrl(url: string): boolean {
-  return SLACK_WEBHOOK_REGEX.test(url);
+export function isValidDiscordWebhookUrl(url: string): boolean {
+  return DISCORD_WEBHOOK_REGEX.test(url);
 }
 
-interface SlackNotifySettings {
+interface DiscordNotifySettings {
   daily_digest: boolean;
   weekly_digest: boolean;
   goal_completed: boolean;
   traffic_spike: boolean;
+  alert_triggered: boolean;
 }
 
-interface SlackIntegration {
+interface DiscordIntegration {
   id: string;
   site_id: string;
   user_id: string;
-  // webhook_url intentionally excluded - kept server-side only for security
   channel_name: string | null;
-  notify_on: SlackNotifySettings;
+  notify_on: DiscordNotifySettings;
   is_active: boolean;
   created_at: string;
   updated_at: string;
 }
 
-export function useSlackIntegration(siteId: string | undefined) {
+export function useDiscordIntegration(siteId: string | undefined) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
   const integrationQuery = useQuery({
-    queryKey: ['slack-integration', siteId],
+    queryKey: ['discord-integration', siteId],
     queryFn: async () => {
       if (!siteId || !user) return null;
 
-      // Select only safe fields - never expose webhook_url to client
       const { data, error } = await supabase
-        .from('slack_integrations')
+        .from('discord_integrations')
         .select('id, site_id, user_id, channel_name, notify_on, is_active, created_at, updated_at')
         .eq('site_id', siteId)
         .maybeSingle();
@@ -54,8 +53,9 @@ export function useSlackIntegration(siteId: string | undefined) {
             weekly_digest: false,
             goal_completed: true,
             traffic_spike: false,
-          }) as unknown as SlackNotifySettings,
-        } as SlackIntegration;
+            alert_triggered: true,
+          }) as unknown as DiscordNotifySettings,
+        } as DiscordIntegration;
       }
       return null;
     },
@@ -70,25 +70,25 @@ export function useSlackIntegration(siteId: string | undefined) {
     }: { 
       webhookUrl: string; 
       channelName?: string;
-      notifyOn?: Partial<SlackNotifySettings>;
+      notifyOn?: Partial<DiscordNotifySettings>;
     }) => {
       if (!user || !siteId) throw new Error('Not authenticated or no site selected');
 
-      // Server-side validation of webhook URL
-      if (!isValidSlackWebhookUrl(webhookUrl)) {
-        throw new Error('Invalid Slack webhook URL format. URL must be a valid Slack incoming webhook URL.');
+      if (!isValidDiscordWebhookUrl(webhookUrl)) {
+        throw new Error('Invalid Discord webhook URL format.');
       }
 
-      const defaultNotifyOn: SlackNotifySettings = {
+      const defaultNotifyOn: DiscordNotifySettings = {
         daily_digest: true,
         weekly_digest: false,
         goal_completed: true,
         traffic_spike: false,
+        alert_triggered: true,
         ...notifyOn,
       };
 
       const { data, error } = await supabase
-        .from('slack_integrations')
+        .from('discord_integrations')
         .upsert({
           site_id: siteId,
           user_id: user.id,
@@ -106,7 +106,7 @@ export function useSlackIntegration(siteId: string | undefined) {
       return data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['slack-integration', siteId] });
+      queryClient.invalidateQueries({ queryKey: ['discord-integration', siteId] });
     },
   });
 
@@ -115,7 +115,7 @@ export function useSlackIntegration(siteId: string | undefined) {
       notifyOn,
       isActive 
     }: { 
-      notifyOn?: Partial<SlackNotifySettings>;
+      notifyOn?: Partial<DiscordNotifySettings>;
       isActive?: boolean;
     }) => {
       if (!user || !siteId) throw new Error('Not authenticated or no site selected');
@@ -132,14 +132,14 @@ export function useSlackIntegration(siteId: string | undefined) {
       }
 
       const { error } = await supabase
-        .from('slack_integrations')
+        .from('discord_integrations')
         .update(updates)
         .eq('site_id', siteId);
 
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['slack-integration', siteId] });
+      queryClient.invalidateQueries({ queryKey: ['discord-integration', siteId] });
     },
   });
 
@@ -148,7 +148,7 @@ export function useSlackIntegration(siteId: string | undefined) {
       if (!siteId) throw new Error('No site selected');
 
       const { data, error } = await supabase.functions.invoke('chat-notify', {
-        body: { siteId, platform: 'slack', test: true },
+        body: { siteId, platform: 'discord', test: true },
       });
 
       if (error) throw error;
@@ -161,14 +161,14 @@ export function useSlackIntegration(siteId: string | undefined) {
       if (!user || !siteId) throw new Error('Not authenticated or no site selected');
 
       const { error } = await supabase
-        .from('slack_integrations')
+        .from('discord_integrations')
         .delete()
         .eq('site_id', siteId);
 
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['slack-integration', siteId] });
+      queryClient.invalidateQueries({ queryKey: ['discord-integration', siteId] });
     },
   });
 

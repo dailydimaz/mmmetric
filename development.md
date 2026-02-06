@@ -6,13 +6,13 @@
 
 **Tech Stack:** React, Vite, TypeScript, Tailwind CSS, Supabase (Lovable Cloud)
 
-**Current Progress:** 45/60 features implemented (75%)
+**Current Progress:** 46/60 features implemented (77%)
 
 ---
 
 ## MVP Feature Checklist
 
-### ✅ Implemented Features (45)
+### ✅ Implemented Features (46)
 
 | Feature | Difficulty | Category | Description |
 |---------|------------|----------|-------------|
@@ -43,6 +43,7 @@
 | Public API | Medium | Cloud | Programmatic access with API keys |
 | Webhooks | Medium | Cloud | Slack notifications for events |
 | Command Menu | Medium | Analytics | Keyboard navigation (Cmd+K) |
+| Slack/Discord Bot | Medium | Cloud | Daily summaries and alert notifications in team chat |
 | Funnels | Hard | Insights | Multi-step conversion tracking |
 | Retention | Hard | Insights | User retention cohort matrix |
 | Goals | Hard | Insights | Conversion goals with revenue tracking & AOV |
@@ -92,7 +93,7 @@
 | Analytics | 22 | 22 | 100% |
 | Insights | 13 | 21 | 62% |
 | Privacy | 4 | 4 | 100% |
-| Cloud | 6 | 13 | 46% |
+| Cloud | 7 | 13 | 54% |
 
 ---
 
