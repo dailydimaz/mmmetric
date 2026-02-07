@@ -12,29 +12,18 @@ import {
   UserPlus,
   Download,
   Route,
-  Layers,
   Command,
-  Check,
-  Search,
-  ArrowRight,
   TrendingDown,
   Smartphone,
   Languages,
-  Filter,
   Database,
   Share2,
   Lightbulb,
-  Link2,
   Image,
-  GitCompare,
   DollarSign,
-  Workflow,
   Magnet,
-  Cookie,
-  Upload,
   Mail,
   Twitter,
-  Bell,
   Globe2,
   FlaskConical,
   Bot,
@@ -56,597 +45,76 @@ import {
   BookOpen,
   Play,
   ExternalLink,
+  Link2,
+  Search,
 } from "lucide-react";
-import { motion } from "framer-motion";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 
-// --- Illustrations ---
+// Import refactored components
+import { BentoCard } from "./features/BentoCard";
+import { ComparisonTable } from "./features/ComparisonTable";
+import { LiveDemoSection } from "./features/LiveDemoSection";
 
-const RealtimeIllustration = () => (
-  <div className="absolute inset-x-4 bottom-4 top-16 bg-background/50 rounded-lg border border-border/50 overflow-hidden flex flex-col p-4 shadow-sm">
-    <div className="flex items-center gap-2 mb-4">
-      <div className="flex items-center gap-1.5">
-        <span className="relative flex h-2 w-2">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-          <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-        </span>
-        <span className="text-xs font-medium">Live Users</span>
-      </div>
-      <div className="ml-auto font-mono text-lg font-bold">142</div>
-    </div>
-    <div className="flex-1 flex items-end justify-between gap-1">
-      {[40, 65, 30, 80, 55, 90, 45, 70, 35, 60, 25].map((h, i) => (
-        <motion.div
-          key={i}
-          initial={{ height: 0 }}
-          whileInView={{ height: `${h}%` }}
-          transition={{ duration: 0.5, delay: i * 0.05 }}
-          className="w-full bg-primary/20 rounded-t-sm relative group"
-        >
-          <div className="absolute inset-x-0 bottom-0 bg-primary/40 h-full rounded-t-sm group-hover:bg-primary/60 transition-colors" style={{ height: '40%' }}></div>
-        </motion.div>
-      ))}
-    </div>
-  </div>
-);
+// Import illustrations
+import {
+  RealtimeIllustration,
+  EventsIllustration,
+  FunnelIllustration,
+  CohortIllustration,
+  GeoIllustration,
+  CommandIllustration,
+  PrivacyIllustration,
+  ScriptSizeIllustration,
+  TeamIllustration,
+  ProjectsIllustration,
+  ExportIllustration,
+} from "./features/illustrations/CoreIllustrations";
 
-const EventsIllustration = () => (
-  <div className="absolute inset-4 top-16 bg-slate-950 rounded-lg border border-border/50 p-4 font-mono text-xs text-slate-300 shadow-md">
-    <div className="flex gap-1.5 mb-3">
-      <div className="w-2.5 h-2.5 rounded-full bg-red-500/50"></div>
-      <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/50"></div>
-      <div className="w-2.5 h-2.5 rounded-full bg-green-500/50"></div>
-    </div>
-    <div className="space-y-1">
-      <p><span className="text-purple-400">await</span> <span className="text-blue-400">metric</span>.<span className="text-yellow-300">track</span>(<span className="text-green-300">'signup'</span>, {'{'}</p>
-      <p className="pl-4"><span className="text-sky-300">plan</span>: <span className="text-green-300">'pro'</span>,</p>
-      <p className="pl-4"><span className="text-sky-300">source</span>: <span className="text-green-300">'landing'</span></p>
-      <p>{'})'}</p>
-    </div>
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.5, duration: 0.3 }}
-      className="absolute bottom-4 right-4 bg-green-500/10 text-green-500 px-2 py-1 rounded text-[10px] flex items-center gap-1"
-    >
-      <Check className="h-3 w-3" /> Sent
-    </motion.div>
-  </div>
-);
+import {
+  JourneyIllustration,
+  HeatmapIllustration,
+  ABTestIllustration,
+  BotIllustration,
+  FormIllustration,
+  ScrollIllustration,
+  TagIllustration,
+  OutboundLinkIllustration,
+  SocialShareIllustration,
+  ContentDecayIllustration,
+  ReadingDepthIllustration,
+  VideoIllustration,
+  SiteSearchIllustration,
+} from "./features/illustrations/AdvancedIllustrations";
 
-const FunnelIllustration = () => (
-  <div className="absolute inset-x-8 top-20 bottom-8 flex flex-col justify-center gap-2">
-    {[100, 75, 40].map((w, i) => (
-      <div key={i} className="flex items-center gap-3">
-        <motion.div
-          initial={{ width: 0 }}
-          whileInView={{ width: `${w}%` }}
-          transition={{ duration: 0.8, delay: i * 0.2, ease: "easeOut" }}
-          className={cn(
-            "h-8 rounded-r-md flex items-center px-3 text-xs font-medium text-white shadow-sm",
-            i === 0 ? "bg-primary" : i === 1 ? "bg-primary/70" : "bg-primary/40"
-          )}
-        >
-          {i === 0 && "Page View"}
-          {i === 1 && "Add to Cart"}
-          {i === 2 && "Purchase"}
-        </motion.div>
-        <span className="text-xs text-muted-foreground">{i === 0 ? "100%" : i === 1 ? "75%" : "40%"}</span>
-      </div>
-    ))}
-  </div>
-);
-
-const CohortIllustration = () => (
-  <div className="absolute inset-x-4 bottom-4 bg-background rounded-md border border-border p-2 shadow-sm grid grid-cols-5 gap-1">
-    {[...Array(20)].map((_, i) => (
-      <motion.div
-        key={i}
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        transition={{ delay: i * 0.02 }}
-        className={cn(
-          "aspect-square rounded-[2px]",
-          i < 5 ? "bg-primary/80" :
-            i < 9 ? "bg-primary/60" :
-              i < 12 ? "bg-primary/40" :
-                i < 14 ? "bg-primary/20" : "bg-muted"
-        )}
-      />
-    ))}
-  </div>
-);
-
-const GeoIllustration = () => (
-  <div className="absolute inset-0 flex items-center justify-center opacity-20 pointer-events-none">
-    <Globe className="w-48 h-48 text-primary" strokeWidth={0.5} />
-    {/* Animated dots */}
-    <motion.div animate={{ scale: [1, 1.2, 1], opacity: [0.5, 1, 0.5] }} transition={{ duration: 3, repeat: Infinity }} className="absolute bg-primary rounded-full w-2 h-2 top-1/3 left-1/3" />
-    <motion.div animate={{ scale: [1, 1.2, 1], opacity: [0.5, 1, 0.5] }} transition={{ duration: 4, repeat: Infinity, delay: 1 }} className="absolute bg-primary rounded-full w-2 h-2 top-1/2 right-1/3" />
-    <motion.div animate={{ scale: [1, 1.2, 1], opacity: [0.5, 1, 0.5] }} transition={{ duration: 2, repeat: Infinity, delay: 0.5 }} className="absolute bg-primary rounded-full w-2 h-2 bottom-1/3 left-1/2" />
-  </div>
-);
-
-const CommandIllustration = () => (
-  <div className="absolute inset-x-8 top-16 h-10 bg-background rounded-lg border border-border shadow-lg flex items-center px-3 gap-2">
-    <Search className="h-4 w-4 text-muted-foreground" />
-    <div className="h-3 w-20 bg-muted rounded-full"></div>
-    <div className="ml-auto flex gap-1">
-      <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
-        <span className="text-xs">⌘</span>K
-      </kbd>
-    </div>
-  </div>
-);
-
-const JourneyIllustration = () => (
-  <div className="absolute inset-0 flex items-center justify-center pointer-events-none p-6">
-    <svg viewBox="0 0 200 100" className="w-full h-full stroke-primary/30 fill-none" strokeWidth="2">
-      <path d="M20,50 C60,50 60,20 100,20 C140,20 140,50 180,50" className="animate-draw-path" strokeDasharray="200" strokeDashoffset="0" />
-      <circle cx="20" cy="50" r="4" className="fill-primary" />
-      <circle cx="100" cy="20" r="4" className="fill-primary" />
-      <circle cx="180" cy="50" r="4" className="fill-primary" />
-    </svg>
-  </div>
-);
-
-const HeatmapIllustration = () => (
-  <div className="absolute inset-0 flex items-center justify-center p-4 opacity-80">
-    <div className="relative w-full h-full bg-background border border-border/50 rounded-lg overflow-hidden grid grid-cols-4 grid-rows-3 gap-1 p-1">
-      {[...Array(12)].map((_, i) => (
-        <motion.div
-          key={i}
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ delay: i * 0.05 }}
-          className={cn(
-            "rounded-[2px]",
-            [2, 5, 6, 9].includes(i) ? "bg-red-500/40" :
-              [0, 3, 7, 10].includes(i) ? "bg-yellow-500/30" : "bg-blue-500/10"
-          )}
-        />
-      ))}
-      <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
-    </div>
-  </div>
-);
-
-const ABTestIllustration = () => (
-  <div className="absolute inset-0 flex items-center justify-center gap-4 p-4">
-    <div className="w-16 h-20 bg-muted/40 rounded border border-border flex flex-col items-center justify-center gap-1 group">
-      <div className="w-8 h-8 rounded-full bg-red-500/20 text-[10px] flex items-center justify-center font-bold text-red-500">A</div>
-      <div className="w-10 h-1 bg-muted-foreground/20 rounded"></div>
-      <div className="w-8 h-1 bg-muted-foreground/20 rounded"></div>
-    </div>
-    <div className="w-16 h-20 bg-primary/10 rounded border border-primary/20 flex flex-col items-center justify-center gap-1 shadow-sm">
-      <div className="absolute -top-2 -right-2 bg-green-500 text-white text-[8px] px-1.5 py-0.5 rounded-full font-bold">WINNER</div>
-      <div className="w-8 h-8 rounded-full bg-green-500/20 text-[10px] flex items-center justify-center font-bold text-green-500">B</div>
-      <div className="w-10 h-1 bg-primary/30 rounded"></div>
-      <div className="w-8 h-1 bg-primary/30 rounded"></div>
-    </div>
-  </div>
-);
-
-const BotIllustration = () => (
-  <div className="absolute inset-0 flex items-center justify-center">
-    <div className="relative">
-      <Bot className="w-16 h-16 text-muted-foreground/30" />
-      <motion.div
-        initial={{ scale: 0 }}
-        whileInView={{ scale: 1 }}
-        className="absolute -right-2 -bottom-2 w-8 h-8 bg-green-500 rounded-full flex items-center justify-center border-2 border-background z-10"
-      >
-        <Shield className="w-4 h-4 text-white fill-white" />
-      </motion.div>
-      <div className="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full animate-ping" />
-    </div>
-  </div>
-);
-
-const FormIllustration = () => (
-  <div className="absolute inset-x-8 top-16 space-y-2">
-    <div className="flex gap-2">
-      <div className="w-1/2 h-4 bg-muted rounded border border-border/50"></div>
-      <div className="w-1/2 h-4 bg-muted rounded border border-border/50"></div>
-    </div>
-    <div className="w-full h-4 bg-primary/10 rounded border border-primary/30 ring-2 ring-primary/10"></div>
-    <div className="w-2/3 h-4 bg-muted rounded border border-border/50 opacity-50"></div>
-    <div className="absolute right-0 top-6 text-xs font-mono text-primary bg-background px-1 border rounded shadow-sm">
-      Typing...
-    </div>
-  </div>
-);
-
-const ScrollIllustration = () => (
-  <div className="absolute inset-x-12 top-12 bottom-4 bg-background border border-border rounded shadow-sm overflow-hidden flex flex-col">
-    <div className="h-full w-full bg-muted/20 relative">
-      <div className="absolute right-1 top-2 bottom-2 w-1 bg-muted rounded-full overflow-hidden">
-        <motion.div
-          initial={{ top: "0%" }}
-          whileInView={{ top: "60%" }}
-          transition={{ duration: 1.5, repeat: Infinity, repeatType: "reverse" }}
-          className="absolute w-full h-1/3 bg-primary rounded-full"
-        />
-      </div>
-      <div className="p-2 space-y-2 opacity-50">
-        <div className="w-3/4 h-2 bg-muted-foreground/20 rounded"></div>
-        <div className="w-full h-2 bg-muted-foreground/20 rounded"></div>
-        <div className="w-full h-20 bg-muted-foreground/10 rounded"></div>
-        <div className="w-5/6 h-2 bg-muted-foreground/20 rounded"></div>
-      </div>
-    </div>
-  </div>
-);
-
-const TagIllustration = () => (
-  <div className="absolute inset-0 flex items-center justify-center">
-    <div className="flex gap-1 items-end">
-      <div className="w-8 h-10 bg-blue-500/20 border border-blue-500/40 rounded flex items-center justify-center">
-        <span className="text-[10px] font-mono font-bold text-blue-600">JS</span>
-      </div>
-      <div className="w-8 h-12 bg-yellow-500/20 border border-yellow-500/40 rounded flex items-center justify-center z-10">
-        <Tag className="w-4 h-4 text-yellow-600" />
-      </div>
-      <div className="w-8 h-9 bg-purple-500/20 border border-purple-500/40 rounded flex items-center justify-center">
-        <span className="text-[10px] font-mono font-bold text-purple-600">GTM</span>
-      </div>
-    </div>
-  </div>
-);
-
-const BentoCard = ({ className, title, description, icon: Icon, illustration: Illustration, delay = 0 }: any) => (
-  <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true, margin: "-50px" }}
-    transition={{ duration: 0.5, delay }}
-    className={cn(
-      "group relative overflow-hidden rounded-3xl bg-card border border-border/40 transition-all hover:shadow-xl hover:border-border/80",
-      className
-    )}
-  >
-    {/* Gradient Background Effect on Hover */}
-    <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-    <div className="relative h-full flex flex-col">
-      {/* Content Top */}
-      <div className="p-6">
-        <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary transition-all group-hover:scale-110 group-hover:bg-primary group-hover:text-primary-foreground">
-          <Icon className="h-5 w-5" />
-        </div>
-        <h3 className="text-lg font-bold tracking-tight text-foreground mb-2">{title}</h3>
-        <p className="text-sm text-muted-foreground leading-relaxed max-w-[90%]">
-          {description}
-        </p>
-      </div>
-
-      {/* Illustration Area */}
-      <div className="flex-1 relative min-h-[140px] w-full overflow-hidden bg-muted/20 border-t border-border/20 group-hover:bg-muted/30 transition-colors">
-        {Illustration && <Illustration />}
-      </div>
-    </div>
-  </motion.div>
-);
-
-
-const BreakdownIllustration = () => (
-  <div className="absolute inset-4 top-12 flex flex-col gap-3">
-    {[
-      { label: "Chrome", val: 65, color: "bg-blue-500" },
-      { label: "Safari", val: 25, color: "bg-sky-500" },
-      { label: "Firefox", val: 10, color: "bg-orange-500" },
-    ].map((item, i) => (
-      <div key={i} className="space-y-1">
-        <div className="flex justify-between text-[10px] text-muted-foreground uppercase font-bold tracking-wider">
-          <span>{item.label}</span>
-          <span>{item.val}%</span>
-        </div>
-        <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
-          <motion.div
-            initial={{ width: 0 }}
-            whileInView={{ width: `${item.val}%` }}
-            transition={{ duration: 1, delay: i * 0.2 }}
-            className={cn("h-full rounded-full", item.color, "opacity-80")}
-          />
-        </div>
-      </div>
-    ))}
-  </div>
-);
-
-const TimeIllustration = () => (
-  <div className="absolute inset-0 flex items-center justify-center">
-    <div className="relative w-24 h-24">
-      {/* Clock Face */}
-      <div className="absolute inset-0 rounded-full border-4 border-muted/50" />
-      <motion.div
-        animate={{ rotate: 360 }}
-        transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-        className="absolute inset-2"
-      >
-        <div className="w-1 h-1/2 bg-primary/50 absolute top-0 left-1/2 -translate-x-1/2 rounded-full origin-bottom" />
-      </motion.div>
-      <div className="absolute inset-0 flex items-center justify-center flex-col">
-        <span className="text-xl font-bold tabular-nums">2m 45s</span>
-        <span className="text-[10px] text-muted-foreground">Avg. Time</span>
-      </div>
-    </div>
-  </div>
-);
-
-const EntryExitIllustration = () => (
-  <div className="absolute inset-x-8 top-16 space-y-4">
-    <div className="flex items-center gap-3">
-      <Badge variant="outline" className="text-[10px] bg-green-500/10 text-green-600 border-green-200/50 px-2">Entry</Badge>
-      <div className="h-6 flex-1 bg-card border border-border/50 rounded flex items-center px-2 text-[10px] text-muted-foreground shadow-sm">/blog/privacy-guide</div>
-    </div>
-    <div className="flex justify-center -my-2">
-      <div className="w-px h-6 border-l border-dashed border-border"></div>
-    </div>
-    <div className="flex items-center gap-3">
-      <Badge variant="outline" className="text-[10px] bg-red-500/10 text-red-600 border-red-200/50 px-2">Exit</Badge>
-      <div className="h-6 flex-1 bg-card border border-border/50 rounded flex items-center px-2 text-[10px] text-muted-foreground shadow-sm">/pricing</div>
-    </div>
-  </div>
-);
-
-const ScaleIllustration = () => (
-  <div className="absolute inset-0 flex items-center justify-center flex-col gap-2">
-    <div className="flex items-end gap-1">
-      <span className="text-4xl font-extrabold tracking-tighter text-foreground">100M</span>
-      <span className="text-xl font-bold text-primary mb-1">+</span>
-    </div>
-    <div className="text-xs text-muted-foreground font-medium uppercase tracking-widest">Events / Month</div>
-    <div className="flex gap-1 h-8 items-end mt-2">
-      {[20, 40, 60, 30, 70, 50, 80, 45].map((h, i) => (
-        <motion.div
-          key={i}
-          animate={{ height: [h / 2, h, h / 2] }}
-          transition={{ duration: 1.5, delay: i * 0.1, repeat: Infinity }}
-          className="w-1.5 bg-primary/20 rounded-t-sm"
-        />
-      ))}
-    </div>
-  </div>
-);
-
-
-const PageOverlayIllustration = () => (
-  <div className="absolute inset-0 flex items-center justify-center">
-    <div className="w-32 h-24 bg-background border border-border rounded shadow-sm relative overflow-hidden">
-      <div className="w-full h-full bg-muted/20"></div>
-      <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
-        whileInView={{ opacity: 1, scale: 1 }}
-        className="absolute top-2 right-2 w-12 h-16 bg-card/90 backdrop-blur border border-primary/20 shadow-lg rounded p-1 flex flex-col gap-1"
-      >
-        <div className="w-full h-2 bg-primary/20 rounded"></div>
-        <div className="w-2/3 h-2 bg-primary/10 rounded"></div>
-      </motion.div>
-    </div>
-  </div>
-);
-
-const SSOIllustration = () => (
-  <div className="absolute inset-0 flex items-center justify-center gap-2">
-    <div className="w-10 h-10 rounded bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
-      <span className="font-bold text-blue-500">G</span>
-    </div>
-    <div className="w-10 h-10 rounded bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center">
-      <span className="font-bold text-indigo-500">Okta</span>
-    </div>
-    <div className="absolute -bottom-2 right-1/2 translate-x-1/2 bg-green-500 text-white text-[10px] px-1.5 py-0.5 rounded-full flex items-center gap-0.5">
-      <Check className="w-2 h-2" /> SSO
-    </div>
-  </div>
-);
-
-const LogAnalyticsIllustration = () => (
-  <div className="absolute inset-4 top-12 bg-slate-950 rounded-lg p-2 font-mono text-[8px] text-slate-400 overflow-hidden flex flex-col gap-1 opacity-80">
-    <div className="flex gap-1"><span className="text-green-500">GET</span> /api/v1/users <span className="text-blue-500">200</span></div>
-    <div className="flex gap-1"><span className="text-yellow-500">POST</span> /auth/login <span className="text-blue-500">200</span></div>
-    <div className="flex gap-1"><span className="text-red-500">GET</span> /admin <span className="text-red-500">403</span></div>
-    <div className="flex gap-1"><span className="text-green-500">GET</span> /dashboard <span className="text-blue-500">200</span></div>
-  </div>
-);
-
-const LookerStudioIllustration = () => (
-  <div className="absolute inset-0 flex items-center justify-center">
-    <div className="flex items-center gap-2">
-      <div className="p-2 bg-card border border-border rounded-lg shadow-sm">
-        <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center"><BarChart3 className="w-3 h-3 text-primary" /></div>
-      </div>
-      <motion.div
-        animate={{ x: [0, 5, 0] }}
-        transition={{ duration: 1.5, repeat: Infinity }}
-        className="h-0.5 w-6 bg-primary"
-      />
-      <div className="p-2 bg-card border border-border rounded-lg shadow-sm">
-        <PieChart className="w-6 h-6 text-blue-500" />
-      </div>
-    </div>
-  </div>
-);
-
-const RollupIllustration = () => (
-  <div className="absolute inset-0 flex items-center justify-center">
-    <div className="grid grid-cols-2 gap-2 scale-75">
-      <div className="w-12 h-8 bg-muted rounded border border-border shadow-sm"></div>
-      <div className="w-12 h-8 bg-muted rounded border border-border shadow-sm"></div>
-      <div className="col-span-2 w-full h-10 bg-primary/10 rounded border border-primary/20 shadow-sm flex items-end p-1 gap-0.5">
-        <div className="w-1/4 h-2/3 bg-primary/40 rounded-t-[1px]"></div>
-        <div className="w-1/4 h-full bg-primary/60 rounded-t-[1px]"></div>
-        <div className="w-1/4 h-1/2 bg-primary/40 rounded-t-[1px]"></div>
-        <div className="w-1/4 h-3/4 bg-primary/80 rounded-t-[1px]"></div>
-      </div>
-    </div>
-  </div>
-);
-
-const WhiteLabelIllustration = () => (
-  <div className="absolute inset-0 flex items-center justify-center">
-    <div className="relative w-24 h-16 bg-card border border-border rounded shadow-sm p-2 flex flex-col gap-2">
-      <div className="w-8 h-8 rounded bg-primary/20 animate-pulse"></div>
-      <div className="w-full h-2 bg-muted rounded"></div>
-      <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-secondary border-2 border-background"></div>
-    </div>
-  </div>
-);
-
-const LanguagesIllustration = () => (
-  <div className="absolute inset-0 flex items-center justify-center gap-2">
-    <div className="px-2 py-1 bg-blue-500/10 text-blue-500 rounded text-xs font-bold border border-blue-500/20">EN</div>
-    <div className="px-2 py-1 bg-red-500/10 text-red-500 rounded text-xs font-bold border border-red-500/20">ES</div>
-    <div className="px-2 py-1 bg-green-500/10 text-green-500 rounded text-xs font-bold border border-green-500/20">DE</div>
-    <div className="px-2 py-1 bg-purple-500/10 text-purple-500 rounded text-xs font-bold border border-purple-500/20">FR</div>
-  </div>
-);
-
-const GoalsIllustration = () => (
-  <div className="absolute inset-0 flex items-center justify-center">
-    <div className="relative w-20 h-20 flex items-center justify-center">
-      <div className="absolute inset-0 rounded-full border-4 border-muted/30"></div>
-      <div className="absolute inset-0 rounded-full border-4 border-primary border-t-transparent animate-spin-slow"></div>
-      <Target className="w-8 h-8 text-primary" />
-    </div>
-  </div>
-);
-
-const InsightsIllustration = () => (
-  <div className="absolute inset-0 flex items-center justify-center p-6">
-    <div className="w-full space-y-2">
-      <div className="h-2 w-full bg-muted rounded overflow-hidden">
-        <div className="h-full w-3/4 bg-primary/50"></div>
-      </div>
-      <div className="h-2 w-full bg-muted rounded overflow-hidden">
-        <div className="h-full w-1/2 bg-secondary/50"></div>
-      </div>
-      <div className="h-2 w-full bg-muted rounded overflow-hidden">
-        <div className="h-full w-5/6 bg-green-500/50"></div>
-      </div>
-    </div>
-  </div>
-);
-
-const OutboundLinkIllustration = () => (
-  <div className="absolute inset-0 flex items-center justify-center">
-    <div className="relative group">
-      <div className="w-16 h-8 bg-muted rounded border border-border flex items-center justify-center text-xs text-muted-foreground mr-4">
-        Ex. Site
-      </div>
-      <ExternalLink className="absolute -top-2 -right-2 w-6 h-6 text-primary animate-bounce" />
-    </div>
-  </div>
-);
-
-const WebVitalsIllustration = () => (
-  <div className="absolute inset-0 flex items-center justify-center gap-4">
-    <div className="flex flex-col items-center gap-1">
-      <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center text-green-600 font-bold text-xs border border-green-500/30">98</div>
-      <span className="text-[10px] text-muted-foreground font-mono">LCP</span>
-    </div>
-    <div className="flex flex-col items-center gap-1">
-      <div className="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center text-green-600 font-bold text-xs border border-green-500/30">0.01</div>
-      <span className="text-[10px] text-muted-foreground font-mono">CLS</span>
-    </div>
-  </div>
-);
-
-const ErrorTrackingIllustration = () => (
-  <div className="absolute inset-0 flex items-center justify-center">
-    <div className="w-48 h-24 bg-red-950/10 rounded-lg border border-red-500/20 font-mono text-[10px] p-3 text-red-500/80 overflow-hidden">
-      {">"} Uncaught TypeError<br />
-      &nbsp;&nbsp;at render (app.js:2)<br />
-      &nbsp;&nbsp;at hydrate (dom.js:45)
-    </div>
-  </div>
-);
-
-const SiteSearchIllustration = () => (
-  <div className="absolute inset-x-8 top-16 h-8 bg-background rounded-full border border-border flex items-center px-3 gap-2 shadow-sm">
-    <Search className="w-3 h-3 text-muted-foreground" />
-    <span className="text-xs text-primary font-medium animate-pulse">"pricing plan"</span>
-  </div>
-);
-
-const ReadingDepthIllustration = () => (
-  <div className="absolute inset-x-12 top-12 bottom-4 bg-background border border-border rounded shadow-sm overflow-hidden p-2 space-y-2">
-    <div className="w-full h-2 bg-muted rounded"></div>
-    <div className="w-5/6 h-2 bg-muted rounded"></div>
-    <div className="w-full h-2 bg-primary/20 rounded"></div>
-    <div className="w-4/5 h-2 bg-primary/40 rounded"></div>
-    <div className="w-full h-2 bg-primary/60 rounded"></div>
-  </div>
-);
-
-const VideoIllustration = () => (
-  <div className="absolute inset-0 flex items-center justify-center">
-    <div className="w-32 h-20 bg-muted/50 rounded-lg border border-border flex items-center justify-center relative overflow-hidden group">
-      <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 to-transparent"></div>
-      <div className="w-10 h-10 bg-background/80 rounded-full flex items-center justify-center backdrop-blur-sm shadow-sm group-hover:scale-110 transition-transform">
-        <Play className="w-4 h-4 text-primary ml-1" fill="currentColor" />
-      </div>
-      <div className="absolute bottom-0 left-0 h-1 bg-primary w-2/3"></div>
-    </div>
-  </div>
-);
-
-const MobileSDKIllustration = () => (
-  <div className="absolute inset-0 flex items-center justify-center gap-4 opacity-70">
-    <Smartphone className="w-12 h-12 text-primary" />
-    <div className="font-mono text-xs flex flex-col gap-1">
-      <span className="bg-blue-500/10 text-blue-600 px-1 rounded">React Native</span>
-      <span className="bg-cyan-500/10 text-cyan-600 px-1 rounded">Flutter</span>
-      <span className="bg-orange-500/10 text-orange-600 px-1 rounded">Swift</span>
-    </div>
-  </div>
-);
-
-const SocialShareIllustration = () => (
-  <div className="absolute inset-0 flex items-center justify-center">
-    <div className="flex gap-2 relative">
-      <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white"><Share2 className="w-4 h-4" /></div>
-      <div className="absolute -top-4 -right-8 bg-card border border-border px-2 py-1 rounded shadow-sm text-xs font-bold">+125</div>
-      <motion.div
-        initial={{ scale: 0 }}
-        whileInView={{ scale: 1 }}
-        transition={{ delay: 0.2 }}
-        className="absolute top-8 -left-4 w-6 h-6 rounded-full bg-sky-400 flex items-center justify-center text-white text-[10px]"
-      >
-        <Twitter className="w-3 h-3 fill-current" />
-      </motion.div>
-      <motion.div
-        initial={{ scale: 0 }}
-        whileInView={{ scale: 1 }}
-        transition={{ delay: 0.4 }}
-        className="absolute top-6 -right-6 w-6 h-6 rounded-full bg-blue-700 flex items-center justify-center text-white text-[10px]"
-      >
-        <span className="font-serif font-bold">f</span>
-      </motion.div>
-    </div>
-  </div>
-);
-
-const ContentDecayIllustration = () => (
-  <div className="absolute inset-x-8 bottom-4 h-24 flex items-end justify-between gap-1 overflow-hidden opacity-80">
-    {[80, 85, 90, 80, 70, 60, 50, 40].map((h, i) => (
-      <div
-        key={i}
-        className={cn(
-          "w-full rounded-t-sm transition-all",
-          i > 4 ? "bg-red-500/40" : "bg-green-500/40"
-        )}
-        style={{ height: `${h}%` }}
-      />
-    ))}
-    <div className="absolute top-1/2 right-1/4 animate-bounce">
-      <TrendingDown className="w-6 h-6 text-red-500" />
-    </div>
-  </div>
-);
+import {
+  BreakdownIllustration,
+  TimeIllustration,
+  EntryExitIllustration,
+  ScaleIllustration,
+  PageOverlayIllustration,
+  SSOIllustration,
+  LogAnalyticsIllustration,
+  LookerStudioIllustration,
+  RollupIllustration,
+  WhiteLabelIllustration,
+  LanguagesIllustration,
+  GoalsIllustration,
+  InsightsIllustration,
+  RevenueIllustration,
+  AttributionIllustration,
+  DeviceIllustration,
+  SocialIllustration,
+  ApiIllustration,
+  EmailIllustration,
+  CrossDomainIllustration,
+  DrilldownIllustration,
+  FileDownloadIllustration,
+  AlertIllustration,
+  PixelIllustration,
+  WebVitalsIllustration,
+  ErrorTrackingIllustration,
+  MobileSDKIllustration,
+} from "./features/illustrations/EnterpriseIllustrations";
 
 export function Features() {
   return (
@@ -715,14 +183,7 @@ export function Features() {
               icon={Shield}
               title="Privacy-First & GDPR Compliant"
               description="No IP tracking. No fingerprints. No cookies. We respect your users' privacy so you don't need any annoying cookie banners."
-              illustration={() => (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="relative">
-                    <Shield className="w-24 h-24 text-green-500/20" fill="currentColor" />
-                    <Check className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 text-green-500" strokeWidth={3} />
-                  </div>
-                </div>
-              )}
+              illustration={PrivacyIllustration}
               delay={0.1}
             />
 
@@ -742,11 +203,7 @@ export function Features() {
               icon={Zap}
               title="Ultralight Script"
               description="< 1KB script. Zero impact on your site's performance scores."
-              illustration={() => (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-br from-yellow-400 to-orange-500">1KB</span>
-                </div>
-              )}
+              illustration={ScriptSizeIllustration}
               delay={0.3}
             />
 
@@ -755,7 +212,7 @@ export function Features() {
               className="md:col-span-2"
               icon={Route}
               title="User Journeys"
-              description="Visualize the exact path users take through your website. optimized navigation flows based on real data."
+              description="Visualize the exact path users take through your website. Optimize navigation flows based on real data."
               illustration={JourneyIllustration}
               delay={0.2}
             />
@@ -776,20 +233,7 @@ export function Features() {
               icon={UserPlus}
               title="Team Access"
               description="Invite your whole team. Share dashboards via public links."
-              illustration={() => (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="flex -space-x-3">
-                    {[1, 2, 3].map(i => (
-                      <div key={i} className="w-10 h-10 rounded-full border-2 border-background bg-muted flex items-center justify-center text-xs font-bold text-muted-foreground shadow-sm">
-                        U{i}
-                      </div>
-                    ))}
-                    <div className="w-10 h-10 rounded-full border-2 border-background bg-primary flex items-center justify-center text-xs font-bold text-primary-foreground shadow-sm">
-                      +
-                    </div>
-                  </div>
-                </div>
-              )}
+              illustration={TeamIllustration}
               delay={0.4}
             />
 
@@ -799,13 +243,7 @@ export function Features() {
               icon={LayoutTemplate}
               title="Unlimited Projects"
               description="Track as many websites as you want from a single account."
-              illustration={() => (
-                <div className="absolute inset-x-8 top-16 space-y-2 opacity-60">
-                  <div className="h-8 bg-background rounded border border-border/60 shadow-sm w-full"></div>
-                  <div className="h-8 bg-background rounded border border-border/60 shadow-sm w-[90%] mx-auto"></div>
-                  <div className="h-8 bg-background rounded border border-border/60 shadow-sm w-[80%] mx-auto"></div>
-                </div>
-              )}
+              illustration={ProjectsIllustration}
               delay={0.5}
             />
 
@@ -815,324 +253,18 @@ export function Features() {
               icon={Download}
               title="Data Ownership"
               description="It's your data. Export it to CSV or import from other tools anytime."
-              illustration={() => (
-                <div className="absolute inset-0 flex items-center justify-center gap-2">
-                  <Button variant="outline" size="sm" className="pointer-events-none">
-                    <Download className="w-4 h-4 mr-2" />
-                    Export
-                  </Button>
-                  <Button variant="outline" size="sm" className="pointer-events-none">
-                    <Upload className="w-4 h-4 mr-2" />
-                    Import
-                  </Button>
-                </div>
-              )}
-              delay={0.6}
-            />
-
-            {/* --- NEWLY ADDED FEATURES FROM ROADMAP --- */}
-
-            {/* Card: Public Dashboards */}
-            <BentoCard
-              className="md:col-span-1"
-              icon={Share2}
-              title="Public Dashboards"
-              description="Share your stats via a secure, password-protected public URL."
-              illustration={() => (
-                <div className="absolute inset-x-8 top-16 h-10 bg-background rounded-lg border border-border shadow-lg flex items-center px-3 gap-2">
-                  <Globe className="h-4 w-4 text-primary" />
-                  <div className="h-3 w-20 bg-muted rounded-full"></div>
-                  <div className="ml-auto">
-                    <Badge variant="outline" className="text-[10px] h-5 px-1">Public</Badge>
-                  </div>
-                </div>
-              )}
+              illustration={ExportIllustration}
               delay={0.2}
             />
 
-            {/* Card: Comparison */}
+            {/* Card: Languages */}
             <BentoCard
               className="md:col-span-1"
-              icon={GitCompare}
-              title="Comparison Mode"
-              description="Compare traffic and metrics against previous periods effortlessly."
-              illustration={() => (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="relative w-24 h-12">
-                    <div className="absolute inset-0 border-b-2 border-muted-foreground/30 transform skew-y-6"></div>
-                    <div className="absolute inset-0 border-b-2 border-primary transform -skew-y-6 translate-y-2"></div>
-                  </div>
-                </div>
-              )}
+              icon={Languages}
+              title="Languages"
+              description="Most popular languages among your visitors."
+              illustration={LanguagesIllustration}
               delay={0.3}
-            />
-
-            {/* Card: Filter & Segments */}
-            <BentoCard
-              className="md:col-span-1"
-              icon={Filter}
-              title="Advanced Filtering"
-              description="Deep dive with filters and save them as Segments for quick access."
-              illustration={() => (
-                <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 opacity-60">
-                  <div className="w-32 h-6 bg-background rounded-md border border-border flex items-center px-2">
-                    <div className="w-4 h-4 rounded-full bg-primary/20"></div>
-                  </div>
-                  <div className="w-32 h-6 bg-background rounded-md border border-border flex items-center px-2">
-                    <div className="w-4 h-4 rounded-full bg-secondary/20"></div>
-                  </div>
-                </div>
-              )}
-              delay={0.4}
-            />
-
-            {/* Card: Tracking */}
-            <BentoCard
-              className="md:col-span-1"
-              icon={Link2}
-              title="Links & UTMs"
-              description="Track outbound clicks, UTM campaigns, and marketing effectiveness."
-              illustration={() => (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <Link2 className="w-16 h-16 text-primary/10" />
-                  <Target className="w-8 h-8 text-primary absolute bottom-1/3 right-1/3" />
-                </div>
-              )}
-              delay={0.5}
-            />
-
-            {/* Card: Revenue */}
-            <BentoCard
-              className="md:col-span-1"
-              icon={DollarSign}
-              title="Revenue Tracking"
-              description="Track ecommerce revenue, average order value, and conversion goals."
-              illustration={() => (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-5xl font-bold text-green-500/20">$</span>
-                  <TrendingDown className="w-8 h-8 text-green-500 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rotate-180" />
-                </div>
-              )}
-              delay={0.2}
-            />
-
-            {/* Card: Attribution */}
-            <BentoCard
-              className="md:col-span-1"
-              icon={Magnet}
-              title="Attribution Models"
-              description="Understand the customer journey with First-touch and Linear models."
-              illustration={() => (
-                <div className="absolute inset-0 flex items-center justify-center gap-1">
-                  <div className="w-2 h-12 bg-muted rounded-full"></div>
-                  <div className="w-2 h-12 bg-muted rounded-full"></div>
-                  <div className="w-2 h-12 bg-primary rounded-full"></div>
-                </div>
-              )}
-              delay={0.3}
-            />
-
-            {/* Card: Devices */}
-            <BentoCard
-              className="md:col-span-1"
-              icon={Smartphone}
-              title="Device & OS"
-              description="Granular breakdown of what devices, browsers, and OS your users use."
-              illustration={() => (
-                <div className="absolute inset-0 flex items-center justify-center gap-3 opacity-50">
-                  <Smartphone className="w-8 h-8" />
-                  <div className="w-12 h-8 border border-foreground rounded" />
-                </div>
-              )}
-              delay={0.4}
-            />
-
-            {/* Card: Social */}
-            <BentoCard
-              className="md:col-span-1"
-              icon={Twitter}
-              title="Social Analytics"
-              description="Track mentions and link clicks from social platforms like X (Twitter)."
-              illustration={() => (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <Twitter className="w-16 h-16 text-blue-400/20" fill="currentColor" />
-                </div>
-              )}
-              delay={0.5}
-            />
-
-            {/* Card: API */}
-            <BentoCard
-              className="md:col-span-1"
-              icon={Code2}
-              title="API & Webhooks"
-              description="Programmatic access to data and Slack/Discord alerts via webhooks."
-              illustration={() => (
-                <div className="absolute inset-0 flex items-center justify-center font-mono text-xs opacity-60">
-                  {'{ "data": [...] }'}
-                </div>
-              )}
-              delay={0.2}
-            />
-
-            {/* Card: Email Reports */}
-            <BentoCard
-              className="md:col-span-1"
-              icon={Mail}
-              title="Email Reports"
-              description="Get weekly or monthly summaries delivered straight to your inbox."
-              illustration={() => (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <Mail className="w-12 h-12 text-primary/20" />
-                  <div className="absolute top-1/2 right-1/3 w-3 h-3 bg-red-500 rounded-full border-2 border-background"></div>
-                </div>
-              )}
-              delay={0.3}
-            />
-
-            {/* Card: Cross Domain */}
-            <BentoCard
-              className="md:col-span-1"
-              icon={Globe2}
-              title="Cross-domain"
-              description="Unified analytics across multiple domains and subdomains."
-              illustration={() => (
-                <div className="absolute inset-0 flex items-center justify-center gap-4">
-                  <Globe className="w-8 h-8 text-primary/40" />
-                  <Link2 className="w-4 h-4 text-muted-foreground" />
-                  <Globe className="w-8 h-8 text-secondary/40" />
-                </div>
-              )}
-              delay={0.4}
-            />
-
-            {/* Card: Insight Drilldown */}
-            <BentoCard
-              className="md:col-span-1"
-              icon={Lightbulb}
-              title="Insight Drilldown"
-              description="Deep dive into custom event properties and parameters."
-              illustration={() => (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <Search className="w-10 h-10 text-primary/20" />
-                </div>
-              )}
-              delay={0.5}
-            />
-
-            {/* --- NEWLY ADDED FEATURES --- */}
-
-            {/* Card: Heatmaps */}
-            <BentoCard
-              className="md:col-span-1"
-              icon={MousePointerClick}
-              title="Heatmaps"
-              description="Visualize where users click, move, and scroll with stunning heatmaps."
-              illustration={HeatmapIllustration}
-              delay={0.6}
-            />
-
-            {/* Card: A/B Testing */}
-            <BentoCard
-              className="md:col-span-1"
-              icon={FlaskConical}
-              title="A/B Testing"
-              description="Test different content and layouts to optimize conversions."
-              illustration={ABTestIllustration}
-              delay={0.7}
-            />
-
-            {/* Card: Bot Detection */}
-            <BentoCard
-              className="md:col-span-1"
-              icon={Bot}
-              title="Bot Protection"
-              description="Automatically filter out bots, spiders, and scrapers from your data."
-              illustration={BotIllustration}
-              delay={0.5}
-            />
-
-            {/* Card: Form Analytics */}
-            <BentoCard
-              className="md:col-span-1"
-              icon={FormInput}
-              title="Form Analytics"
-              description="Identify which fields cause users to abandon your forms."
-              illustration={FormIllustration}
-              delay={0.6}
-            />
-
-            {/* Card: Scroll Depth */}
-            <BentoCard
-              className="md:col-span-1"
-              icon={ArrowDownToLine}
-              title="Scroll Depth"
-              description="See exactly how far users scroll down your pages."
-              illustration={ScrollIllustration}
-              delay={0.7}
-            />
-
-            {/* Card: Tag Manager */}
-            <BentoCard
-              className="md:col-span-1"
-              icon={Tag}
-              title="Tag Manager"
-              description="Manage tracking scripts without touching your code."
-              illustration={TagIllustration}
-              delay={0.4}
-            />
-
-            {/* Card: File Downloads */}
-            <BentoCard
-              className="md:col-span-1"
-              icon={FileDown}
-              title="File Downloads"
-              description="Automatically track PDF, document, and asset downloads."
-              illustration={() => (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <motion.div
-                    animate={{ y: [0, 5, 0] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                    className="p-3 bg-primary/10 rounded-full text-primary"
-                  >
-                    <FileDown className="w-6 h-6" />
-                  </motion.div>
-                </div>
-              )}
-              delay={0.5}
-            />
-
-            {/* Card: Custom Alerts */}
-            <BentoCard
-              className="md:col-span-1"
-              icon={AlertTriangle}
-              title="Custom Alerts"
-              description="Get notified instantly when key metrics spike or drop."
-              illustration={() => (
-                <div className="absolute inset-x-8 top-16 h-10 bg-background rounded-lg border border-border shadow-sm flex items-center px-3 gap-2">
-                  <AlertTriangle className="h-4 w-4 text-orange-500" />
-                  <div className="h-3 w-2/3 bg-muted rounded-full"></div>
-                </div>
-              )}
-              delay={0.6}
-            />
-
-            {/* Card: Pixels */}
-            <BentoCard
-              className="md:col-span-1"
-              icon={Image}
-              title="Tracking Pixels"
-              description="Embed invisible pixels to track views in emails and 3rd party sites."
-              illustration={() => (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-32 h-20 bg-card border border-border shadow-lg rounded-md p-2 space-y-2 relative">
-                    <div className="w-full h-2 bg-muted rounded"></div>
-                    <div className="w-2/3 h-2 bg-muted rounded"></div>
-                    <div className="absolute bottom-2 right-2 w-1.5 h-1.5 bg-primary rounded-full animate-pulse ring-4 ring-primary/20"></div>
-                  </div>
-                </div>
-              )}
-              delay={0.7}
             />
 
             {/* Card: Breakdown */}
@@ -1142,7 +274,159 @@ export function Features() {
               title="Breakdown Analysis"
               description="Slice and dice your data. Breakdown by any property to find hidden trends."
               illustration={BreakdownIllustration}
-              delay={0.6}
+              delay={0.4}
+            />
+
+            {/* Card: Revenue */}
+            <BentoCard
+              className="md:col-span-1"
+              icon={DollarSign}
+              title="Revenue Tracking"
+              description="Track ecommerce revenue, average order value, and conversion goals."
+              illustration={RevenueIllustration}
+              delay={0.2}
+            />
+
+            {/* Card: Attribution */}
+            <BentoCard
+              className="md:col-span-1"
+              icon={Magnet}
+              title="Attribution Models"
+              description="Understand the customer journey with First-touch and Linear models."
+              illustration={AttributionIllustration}
+              delay={0.3}
+            />
+
+            {/* Card: Devices */}
+            <BentoCard
+              className="md:col-span-1"
+              icon={Smartphone}
+              title="Device & OS"
+              description="Granular breakdown of what devices, browsers, and OS your users use."
+              illustration={DeviceIllustration}
+              delay={0.4}
+            />
+
+            {/* Card: Social */}
+            <BentoCard
+              className="md:col-span-1"
+              icon={Twitter}
+              title="Social Analytics"
+              description="Track mentions and link clicks from social platforms like X (Twitter)."
+              illustration={SocialIllustration}
+              delay={0.5}
+            />
+
+            {/* Card: API */}
+            <BentoCard
+              className="md:col-span-1"
+              icon={Code2}
+              title="API & Webhooks"
+              description="Programmatic access to data and Slack/Discord alerts via webhooks."
+              illustration={ApiIllustration}
+              delay={0.2}
+            />
+
+            {/* Card: Email Reports */}
+            <BentoCard
+              className="md:col-span-1"
+              icon={Mail}
+              title="Email Reports"
+              description="Get weekly or monthly summaries delivered straight to your inbox."
+              illustration={EmailIllustration}
+              delay={0.3}
+            />
+
+            {/* Card: Cross Domain */}
+            <BentoCard
+              className="md:col-span-1"
+              icon={Globe2}
+              title="Cross-domain"
+              description="Unified analytics across multiple domains and subdomains."
+              illustration={CrossDomainIllustration}
+              delay={0.4}
+            />
+
+            {/* Card: Insight Drilldown */}
+            <BentoCard
+              className="md:col-span-1"
+              icon={Lightbulb}
+              title="Custom Reports"
+              description="Build and share custom reports with specific filters."
+              illustration={InsightsIllustration}
+              delay={0.5}
+            />
+
+            {/* --- IMPLEMENTED ADVANCED FEATURES --- */}
+
+            {/* Card: A/B Testing */}
+            <BentoCard
+              className="md:col-span-1"
+              icon={FlaskConical}
+              title="A/B Testing"
+              description="Test different content and layouts to optimize conversions."
+              illustration={ABTestIllustration}
+              delay={0.2}
+            />
+
+            {/* Card: Bot Detection */}
+            <BentoCard
+              className="md:col-span-1"
+              icon={Bot}
+              title="Bot Protection"
+              description="Automatically filter out bots, spiders, and scrapers from your data."
+              illustration={BotIllustration}
+              delay={0.3}
+            />
+
+            {/* Card: Form Analytics */}
+            <BentoCard
+              className="md:col-span-1"
+              icon={FormInput}
+              title="Form Analytics"
+              description="Identify which fields cause users to abandon your forms."
+              illustration={FormIllustration}
+              delay={0.4}
+            />
+
+            {/* Card: Scroll Depth */}
+            <BentoCard
+              className="md:col-span-1"
+              icon={ArrowDownToLine}
+              title="Scroll Depth"
+              description="See exactly how far users scroll down your pages."
+              illustration={ScrollIllustration}
+              delay={0.5}
+            />
+
+            {/* Card: File Downloads */}
+            <BentoCard
+              className="md:col-span-1"
+              icon={FileDown}
+              title="File Downloads"
+              description="Automatically track PDF, document, and asset downloads."
+              illustration={FileDownloadIllustration}
+              delay={0.2}
+            />
+
+            {/* Card: Custom Alerts */}
+            <BentoCard
+              className="md:col-span-1"
+              icon={AlertTriangle}
+              title="Custom Alerts"
+              description="Get notified instantly when key metrics spike or drop."
+              illustration={AlertIllustration}
+              delay={0.3}
+            />
+
+            {/* Card: Pixels */}
+            <BentoCard
+              className="md:col-span-1"
+              icon={Image}
+              title="Tracking Pixels"
+              description="Embed invisible pixels to track views in emails and 3rd party sites."
+              illustration={PixelIllustration}
+              delay={0.4}
             />
 
             {/* Card: Time on Page */}
@@ -1152,7 +436,7 @@ export function Features() {
               title="Time Tracking"
               description="Measure engagement with accurate time-on-page metrics."
               illustration={TimeIllustration}
-              delay={0.7}
+              delay={0.5}
             />
 
             {/* Card: Entry/Exit */}
@@ -1162,7 +446,7 @@ export function Features() {
               title="Entry & Exit Pages"
               description="Know your top landing pages and where you lose the most users."
               illustration={EntryExitIllustration}
-              delay={0.5}
+              delay={0.2}
             />
 
             {/* Card: High Performance */}
@@ -1172,80 +456,7 @@ export function Features() {
               title="High Scale"
               description="Built for scale. Optimized rollups that handle billions of records effortlessly."
               illustration={ScaleIllustration}
-              delay={0.6}
-            />
-
-            {/* Card: Page Overlay */}
-            <BentoCard
-              className="md:col-span-1"
-              icon={Layers3}
-              title="Page Overlay"
-              description="Visualize stats directly on your website with an overlay."
-              illustration={PageOverlayIllustration}
-              delay={0.7}
-            />
-
-            {/* Card: White Labeling */}
-            <BentoCard
-              className="md:col-span-1"
-              icon={LayoutTemplate}
-              title="White Labeling"
-              description="Add your own branding and logo to the dashboard."
-              illustration={WhiteLabelIllustration}
-              delay={0.5}
-            />
-
-            {/* Card: Roll-up Reporting */}
-            <BentoCard
-              className="md:col-span-1"
-              icon={Combine}
-              title="Roll-up Reporting"
-              description="Aggregate data across multiple sites in one view."
-              illustration={RollupIllustration}
-              delay={0.6}
-            />
-
-            {/* Card: Log Analytics */}
-            <BentoCard
-              className="md:col-span-1"
-              icon={FileText}
-              title="Log Analytics"
-              description="Import server logs from Apache, Nginx, and IIS."
-              illustration={LogAnalyticsIllustration}
-              delay={0.7}
-            />
-
-            {/* Card: Looker Studio */}
-            <BentoCard
-              className="md:col-span-1"
-              icon={PieChart}
-              title="Looker Studio"
-              description="Connect your analytics data directly to Google Looker Studio."
-              illustration={LookerStudioIllustration}
-              delay={0.5}
-            />
-
-            {/* Card: SSO */}
-            <BentoCard
-              className="md:col-span-1"
-              icon={KeyRound}
-              title="SSO / SAML"
-              description="Enterprise-grade Single Sign-On integration."
-              illustration={SSOIllustration}
-              delay={0.6}
-            />
-
-
-            {/* --- RECENTLY ADDED FROM ROADMAP --- */}
-
-            {/* Card: New Languages */}
-            <BentoCard
-              className="md:col-span-1"
-              icon={Languages}
-              title="Languages"
-              description="Most popular languages among your visitors."
-              illustration={LanguagesIllustration}
-              delay={0.2}
+              delay={0.3}
             />
 
             {/* Card: Goals */}
@@ -1255,17 +466,17 @@ export function Features() {
               title="Goals & Revenue"
               description="Track custom goals with revenue properties and AOV."
               illustration={GoalsIllustration}
-              delay={0.3}
+              delay={0.4}
             />
 
-            {/* Card: Insights */}
+            {/* Card: Roll-up Reporting */}
             <BentoCard
               className="md:col-span-1"
-              icon={Lightbulb}
-              title="Custom Reports"
-              description="Build and share custom reports with specific filters."
-              illustration={InsightsIllustration}
-              delay={0.4}
+              icon={Combine}
+              title="Roll-up Reporting"
+              description="Aggregate data across multiple sites in one view."
+              illustration={RollupIllustration}
+              delay={0.5}
             />
 
             {/* Card: Outbound Links */}
@@ -1275,7 +486,7 @@ export function Features() {
               title="Outbound Links"
               description="Auto-track clicks on external links leaving your site."
               illustration={OutboundLinkIllustration}
-              delay={0.5}
+              delay={0.2}
             />
 
             {/* Card: Core Web Vitals */}
@@ -1285,7 +496,7 @@ export function Features() {
               title="Core Web Vitals"
               description="Track LCP, CLS, FID, TTFB per page for SEO & performance."
               illustration={WebVitalsIllustration}
-              delay={0.6}
+              delay={0.3}
             />
 
             {/* Card: Error Tracking */}
@@ -1295,7 +506,7 @@ export function Features() {
               title="Error Tracking"
               description="Privacy-first JavaScript error monitoring without Sentry."
               illustration={ErrorTrackingIllustration}
-              delay={0.7}
+              delay={0.4}
             />
 
             {/* Card: Site Search */}
@@ -1315,7 +526,7 @@ export function Features() {
               title="Reading Depth"
               description="Track actual reading engagement vs scroll-through behavior."
               illustration={ReadingDepthIllustration}
-              delay={0.6}
+              delay={0.2}
             />
 
             {/* Card: Video Analytics */}
@@ -1325,7 +536,7 @@ export function Features() {
               title="Video Analytics"
               description="Track play, pause, and completion rates for embedded videos."
               illustration={VideoIllustration}
-              delay={0.7}
+              delay={0.3}
             />
 
             {/* Card: Mobile SDK */}
@@ -1335,7 +546,7 @@ export function Features() {
               title="Mobile SDK"
               description="React Native and Flutter SDKs for mobile app analytics."
               illustration={MobileSDKIllustration}
-              delay={0.5}
+              delay={0.4}
             />
 
             {/* Card: Social Share */}
@@ -1345,7 +556,7 @@ export function Features() {
               title="Social Sharing"
               description="Track when users share your content to social platforms."
               illustration={SocialShareIllustration}
-              delay={0.6}
+              delay={0.5}
             />
 
             {/* Card: Content Decay */}
@@ -1355,132 +566,96 @@ export function Features() {
               title="Content Decay"
               description="Get notified when high-performing pages start declining."
               illustration={ContentDecayIllustration}
-              delay={0.7}
+              delay={0.2}
+            />
+
+            {/* --- COMING SOON FEATURES --- */}
+
+            {/* Card: Heatmaps - COMING SOON */}
+            <BentoCard
+              className="md:col-span-1"
+              icon={MousePointerClick}
+              title="Heatmaps"
+              description="Visualize where users click, move, and scroll with stunning heatmaps."
+              illustration={HeatmapIllustration}
+              delay={0.3}
+              comingSoon
+            />
+
+            {/* Card: Page Overlay - COMING SOON */}
+            <BentoCard
+              className="md:col-span-1"
+              icon={Layers3}
+              title="Page Overlay"
+              description="Visualize stats directly on your website with an overlay."
+              illustration={PageOverlayIllustration}
+              delay={0.4}
+              comingSoon
+            />
+
+            {/* Card: Tag Manager - COMING SOON */}
+            <BentoCard
+              className="md:col-span-1"
+              icon={Tag}
+              title="Tag Manager"
+              description="Manage tracking scripts without touching your code."
+              illustration={TagIllustration}
+              delay={0.5}
+              comingSoon
+            />
+
+            {/* Card: Log Analytics - COMING SOON */}
+            <BentoCard
+              className="md:col-span-1"
+              icon={FileText}
+              title="Log Analytics"
+              description="Import server logs from Apache, Nginx, and IIS."
+              illustration={LogAnalyticsIllustration}
+              delay={0.2}
+              comingSoon
+            />
+
+            {/* Card: Looker Studio - COMING SOON */}
+            <BentoCard
+              className="md:col-span-1"
+              icon={PieChart}
+              title="Looker Studio"
+              description="Connect your analytics data directly to Google Looker Studio."
+              illustration={LookerStudioIllustration}
+              delay={0.3}
+              comingSoon
+            />
+
+            {/* Card: White Labeling - COMING SOON */}
+            <BentoCard
+              className="md:col-span-1"
+              icon={LayoutTemplate}
+              title="White Labeling"
+              description="Add your own branding and logo to the dashboard."
+              illustration={WhiteLabelIllustration}
+              delay={0.4}
+              comingSoon
+            />
+
+            {/* Card: SSO - COMING SOON */}
+            <BentoCard
+              className="md:col-span-1"
+              icon={KeyRound}
+              title="SSO / SAML"
+              description="Enterprise-grade Single Sign-On integration."
+              illustration={SSOIllustration}
+              delay={0.5}
+              comingSoon
             />
           </div>
         </div>
       </section>
 
       {/* Comparison Section */}
-      <section className="py-24 bg-muted/30">
-        <div className="container mx-auto px-4 md:px-8">
-          <div className="max-w-3xl mx-auto text-center mb-16">
-            <Badge variant="secondary" className="mb-4">
-              Why switch?
-            </Badge>
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
-              Better than the rest
-            </h2>
-            <p className="text-lg text-muted-foreground">
-              See how mmmetric stacks up against the competition.
-            </p>
-          </div>
-
-          <div className="overflow-x-auto rounded-xl border bg-card shadow-sm">
-            <table className="w-full text-sm text-left">
-              <thead className="bg-muted/50 text-muted-foreground">
-                <tr>
-                  <th className="px-6 py-4 font-medium">Feature</th>
-                  <th className="px-6 py-4 font-bold text-primary">mmmetric</th>
-                  <th className="px-6 py-4 font-medium">Google Analytics 4</th>
-                  <th className="px-6 py-4 font-medium">Plausible</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border/50">
-                <tr className="hover:bg-muted/30 transition-colors">
-                  <td className="px-6 py-4 font-medium">Data Ownership</td>
-                  <td className="px-6 py-4 text-green-600 font-medium">100% Yours</td>
-                  <td className="px-6 py-4 text-red-500">Google's</td>
-                  <td className="px-6 py-4">Yours</td>
-                </tr>
-                <tr className="hover:bg-muted/30 transition-colors">
-                  <td className="px-6 py-4 font-medium">Cookie Banner Required</td>
-                  <td className="px-6 py-4 text-green-600 font-medium">No (Privacy-first)</td>
-                  <td className="px-6 py-4 text-red-500">Yes</td>
-                  <td className="px-6 py-4">No</td>
-                </tr>
-                <tr className="hover:bg-muted/30 transition-colors">
-                  <td className="px-6 py-4 font-medium">Script Size</td>
-                  <td className="px-6 py-4 text-green-600 font-medium">&lt; 1KB</td>
-                  <td className="px-6 py-4 text-red-500">~45KB</td>
-                  <td className="px-6 py-4">~1KB</td>
-                </tr>
-                <tr className="hover:bg-muted/30 transition-colors">
-                  <td className="px-6 py-4 font-medium">Event Tracking</td>
-                  <td className="px-6 py-4 text-green-600 font-medium">Unlimited Properties</td>
-                  <td className="px-6 py-4">Complex</td>
-                  <td className="px-6 py-4">Limited</td>
-                </tr>
-                <tr className="hover:bg-muted/30 transition-colors">
-                  <td className="px-6 py-4 font-medium">Revenue Tracking</td>
-                  <td className="px-6 py-4 text-green-600 font-medium">Built-in</td>
-                  <td className="px-6 py-4">Complex Setup</td>
-                  <td className="px-6 py-4">Basic</td>
-                </tr>
-                <tr className="hover:bg-muted/30 transition-colors">
-                  <td className="px-6 py-4 font-medium">Pricing</td>
-                  <td className="px-6 py-4 text-green-600 font-medium">Open Source / Free</td>
-                  <td className="px-6 py-4">Free (Data Sold)</td>
-                  <td className="px-6 py-4">$9/mo+</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </section>
+      <ComparisonTable />
 
       {/* Live Demo Section */}
-      <section className="py-24 relative overflow-hidden">
-        <div className="container mx-auto px-4 md:px-8">
-          <div className="max-w-2xl mx-auto text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
-              See it in action
-            </h2>
-            <p className="text-lg text-muted-foreground mb-8">
-              Experience the dashboard exactly as your users will see it.
-            </p>
-          </div>
-
-          <div className="relative rounded-xl overflow-hidden border shadow-2xl bg-card max-w-5xl mx-auto aspect-video">
-            {/* Fake Browser Toolbar */}
-            <div className="h-10 bg-muted border-b flex items-center px-4 gap-2">
-              <div className="flex gap-1.5">
-                <div className="w-3 h-3 rounded-full bg-red-400" />
-                <div className="w-3 h-3 rounded-full bg-yellow-400" />
-                <div className="w-3 h-3 rounded-full bg-green-400" />
-              </div>
-              <div className="flex-1 ml-4 bg-background h-6 rounded text-xs flex items-center px-3 text-muted-foreground">
-                mmmetric.lovable.app/dashboard
-              </div>
-            </div>
-
-            {/* Iframe Placeholder - In a real scenario, this would point to a live demo URL */}
-            <div className="w-full h-full bg-muted/10 flex items-center justify-center relative group cursor-pointer">
-              <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 to-secondary/10" />
-
-              {/* Dashboard Mockup Image or actual iframe */}
-              <div className="text-center z-10 p-8">
-                <Button size="lg" className="rounded-full h-12 px-8 text-base shadow-lg animate-pulse-glow" asChild>
-                  <a href="/live">
-                    View Live Demo <ArrowRight className="ml-2 h-4 w-4" />
-                  </a>
-                </Button>
-                <p className="mt-4 text-sm text-muted-foreground">
-                  (Click to create a free account and explore)
-                </p>
-              </div>
-
-              {/* Background elements to look like dashboard */}
-              <div className="absolute inset-0 opacity-20 pointer-events-none p-8 grid grid-cols-4 gap-4 blur-sm">
-                <div className="col-span-4 h-32 bg-foreground/20 rounded-xl" />
-                <div className="col-span-1 h-32 bg-foreground/20 rounded-xl" />
-                <div className="col-span-1 h-32 bg-foreground/20 rounded-xl" />
-                <div className="col-span-2 h-32 bg-foreground/20 rounded-xl" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <LiveDemoSection />
     </>
   );
 }
