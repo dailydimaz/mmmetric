@@ -571,7 +571,7 @@ export function Features() {
 
             {/* --- COMING SOON FEATURES --- */}
 
-            {/* Card: Heatmaps - COMING SOON */}
+            {/* Card: Heatmaps - COMING SOON (basic MVP exists but needs improvement) */}
             <BentoCard
               className="md:col-span-1"
               icon={MousePointerClick}
@@ -582,7 +582,7 @@ export function Features() {
               comingSoon
             />
 
-            {/* Card: Page Overlay - COMING SOON */}
+            {/* Card: Page Overlay */}
             <BentoCard
               className="md:col-span-1"
               icon={Layers3}
@@ -590,10 +590,9 @@ export function Features() {
               description="Visualize stats directly on your website with an overlay."
               illustration={PageOverlayIllustration}
               delay={0.4}
-              comingSoon
             />
 
-            {/* Card: Tag Manager - COMING SOON */}
+            {/* Card: Tag Manager */}
             <BentoCard
               className="md:col-span-1"
               icon={Tag}
@@ -601,10 +600,9 @@ export function Features() {
               description="Manage tracking scripts without touching your code."
               illustration={TagIllustration}
               delay={0.5}
-              comingSoon
             />
 
-            {/* Card: Log Analytics - COMING SOON */}
+            {/* Card: Log Analytics */}
             <BentoCard
               className="md:col-span-1"
               icon={FileText}
@@ -612,21 +610,19 @@ export function Features() {
               description="Import server logs from Apache, Nginx, and IIS."
               illustration={LogAnalyticsIllustration}
               delay={0.2}
-              comingSoon
             />
 
-            {/* Card: Looker Studio - COMING SOON */}
+            {/* Card: Looker Studio / BI Connector */}
             <BentoCard
               className="md:col-span-1"
               icon={PieChart}
-              title="Looker Studio"
-              description="Connect your analytics data directly to Google Looker Studio."
+              title="BI Connector"
+              description="Connect your analytics data to Looker Studio, Tableau, or Power BI."
               illustration={LookerStudioIllustration}
               delay={0.3}
-              comingSoon
             />
 
-            {/* Card: White Labeling - COMING SOON */}
+            {/* Card: White Labeling */}
             <BentoCard
               className="md:col-span-1"
               icon={LayoutTemplate}
@@ -634,10 +630,9 @@ export function Features() {
               description="Add your own branding and logo to the dashboard."
               illustration={WhiteLabelIllustration}
               delay={0.4}
-              comingSoon
             />
 
-            {/* Card: SSO - COMING SOON */}
+            {/* Card: SSO / SAML */}
             <BentoCard
               className="md:col-span-1"
               icon={KeyRound}
@@ -645,7 +640,6 @@ export function Features() {
               description="Enterprise-grade Single Sign-On integration."
               illustration={SSOIllustration}
               delay={0.5}
-              comingSoon
             />
           </div>
         </div>
