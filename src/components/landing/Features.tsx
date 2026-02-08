@@ -571,7 +571,7 @@ export function Features() {
 
             {/* --- COMING SOON FEATURES --- */}
 
-            {/* Card: Heatmaps - COMING SOON (basic MVP exists but needs improvement) */}
+            {/* Card: Heatmaps */}
             <BentoCard
               className="md:col-span-1"
               icon={MousePointerClick}
@@ -579,7 +579,6 @@ export function Features() {
               description="Visualize where users click, move, and scroll with stunning heatmaps."
               illustration={HeatmapIllustration}
               delay={0.3}
-              comingSoon
             />
 
             {/* Card: Page Overlay */}

@@ -904,6 +904,129 @@
         }, 5000);
     };
 
+    // Heatmap Click Tracking
+    const setupHeatmapTracking = () => {
+        // Debounce to prevent spam
+        let clickBuffer: Array<{ x: number; y: number; vw: number; vh: number; selector: string; text: string }> = [];
+        let flushTimeout: ReturnType<typeof setTimeout> | null = null;
+
+        const getElementSelector = (el: Element): string => {
+            if (el.id) return `#${el.id}`;
+            if (el.className && typeof el.className === 'string') {
+                const classes = el.className.trim().split(/\s+/).slice(0, 3).join('.');
+                if (classes) return `${el.tagName.toLowerCase()}.${classes}`;
+            }
+            return el.tagName.toLowerCase();
+        };
+
+        const getElementText = (el: Element): string => {
+            const text = (el.textContent || '').trim().substring(0, 50);
+            return text.replace(/\s+/g, ' ');
+        };
+
+        const flushClicks = () => {
+            if (clickBuffer.length === 0) return;
+            
+            // Send batch of clicks
+            const payload = {
+                site_id: siteId,
+                event_name: 'heatmap_click',
+                url: window.location.pathname,
+                session_id: getSessionId(),
+                properties: {
+                    clicks: clickBuffer,
+                    page_height: Math.max(
+                        document.body.scrollHeight,
+                        document.documentElement.scrollHeight
+                    )
+                }
+            };
+
+            if (navigator.sendBeacon) {
+                const blob = new Blob([JSON.stringify(payload)], { type: 'text/plain' });
+                navigator.sendBeacon(apiUrl, blob);
+            } else {
+                fetch(apiUrl, { method: 'POST', body: JSON.stringify(payload), keepalive: true }).catch(() => {});
+            }
+
+            clickBuffer = [];
+        };
+
+        document.addEventListener('click', (e) => {
+            const target = e.target as Element;
+            if (!target) return;
+
+            // Get position relative to document (not viewport)
+            const scrollX = window.pageXOffset || document.documentElement.scrollLeft;
+            const scrollY = window.pageYOffset || document.documentElement.scrollTop;
+
+            clickBuffer.push({
+                x: Math.round(e.clientX + scrollX),
+                y: Math.round(e.clientY + scrollY),
+                vw: window.innerWidth,
+                vh: window.innerHeight,
+                selector: getElementSelector(target),
+                text: getElementText(target)
+            });
+
+            // Debounce: flush after 2 seconds of no clicks, or if buffer is full
+            if (flushTimeout) clearTimeout(flushTimeout);
+            if (clickBuffer.length >= 20) {
+                flushClicks();
+            } else {
+                flushTimeout = setTimeout(flushClicks, 2000);
+            }
+        }, true);
+
+        // Flush on page hide
+        window.addEventListener('pagehide', flushClicks);
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) flushClicks();
+        });
+    };
+
+    // Heatmap Scroll Tracking
+    const setupScrollHeatmap = () => {
+        const scrollDepths = new Set<number>();
+        let lastScrollTime = 0;
+        const SCROLL_THROTTLE = 1000; // 1 second
+
+        const trackScrollPosition = () => {
+            const now = Date.now();
+            if (now - lastScrollTime < SCROLL_THROTTLE) return;
+            lastScrollTime = now;
+
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            const clientHeight = window.innerHeight;
+            const scrollHeight = Math.max(
+                document.body.scrollHeight,
+                document.documentElement.scrollHeight
+            );
+
+            // Calculate percentage (0-100)
+            const maxScroll = scrollHeight - clientHeight;
+            if (maxScroll <= 0) return;
+
+            const scrollPercent = Math.min(100, Math.round((scrollTop / maxScroll) * 100));
+            
+            // Track every 10% milestone
+            const milestone = Math.floor(scrollPercent / 10) * 10;
+            if (milestone > 0 && !scrollDepths.has(milestone)) {
+                scrollDepths.add(milestone);
+                track('heatmap_scroll', {
+                    percent: milestone,
+                    scroll_y: Math.round(scrollTop),
+                    page_height: scrollHeight,
+                    viewport_height: clientHeight,
+                    url: window.location.pathname
+                });
+            }
+        };
+
+        window.addEventListener('scroll', trackScrollPosition, { passive: true });
+        setTimeout(trackScrollPosition, 1000);
+    };
+
     const init = () => {
         track('pageview');
         setupOutbound();
@@ -916,6 +1039,8 @@
         setupReadingDepth();
         setupSocialShare();
         setupVideoAnalytics();
+        setupHeatmapTracking();
+        setupScrollHeatmap();
         fetchConfig();
         setTimeout(() => {
             if (document.title.toLowerCase().includes('404')) track('404', { url: window.location.href, referrer: document.referrer });

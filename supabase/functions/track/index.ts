@@ -450,20 +450,66 @@ serve(async (req) => {
 
     // Branch based on event type
     if (event_name === 'heatmap_click') {
-      // Insert into heatmap_clicks
-      const { error: hmError } = await supabase
-        .from('heatmap_clicks')
+      // Handle batch clicks from tracker
+      const clicks = properties.clicks;
+      if (Array.isArray(clicks) && clicks.length > 0) {
+        const clickRecords = clicks.map((click: { x: number; y: number; vw: number; vh: number; selector: string; text: string }) => ({
+          site_id: site.id,
+          session_id: session_id,
+          visitor_id: visitor_id,
+          url_path: url || '/',
+          x: click.x,
+          y: click.y,
+          viewport_w: click.vw || 1280,
+          viewport_h: click.vh || 800,
+          element_selector: click.selector || null,
+          element_text: click.text?.substring(0, 100) || null,
+        }));
+
+        const { error: hmError } = await supabase
+          .from('heatmap_clicks')
+          .insert(clickRecords);
+
+        if (hmError) console.error('Heatmap batch insert failed', hmError);
+      } else {
+        // Legacy single click format
+        const { error: hmError } = await supabase
+          .from('heatmap_clicks')
+          .insert({
+            site_id: site.id,
+            session_id: session_id,
+            visitor_id: visitor_id,
+            url_path: url || '/',
+            x: properties.x || 0,
+            y: properties.y || 0,
+            viewport_w: properties.viewport_width || properties.vw || 1280,
+            viewport_h: properties.viewport_height || properties.vh || 800,
+            element_selector: properties.selector || null,
+            element_text: properties.text?.substring(0, 100) || null,
+          });
+        if (hmError) console.error('Heatmap insert failed', hmError);
+      }
+
+      return new Response(JSON.stringify({ success: true }), {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Handle scroll depth heatmap
+    if (event_name === 'heatmap_scroll') {
+      const { error: scrollError } = await supabase
+        .from('heatmap_scrolls')
         .insert({
           site_id: site.id,
-          url: url,
-          x: properties.x,
-          y: properties.y,
-          viewport_width: properties.viewport_width,
-          viewport_height: properties.viewport_height,
-          selector: properties.selector,
-          visitor_id: visitor_id
+          session_id: session_id,
+          visitor_id: visitor_id,
+          url_path: url || '/',
+          max_scroll_percentage: properties.percent || 0,
+          viewport_h: properties.viewport_height || 800,
         });
-      if (hmError) console.error('Heatmap insert failed', hmError);
+
+      if (scrollError) console.error('Heatmap scroll insert failed', scrollError);
 
       return new Response(JSON.stringify({ success: true }), {
         status: 200,
