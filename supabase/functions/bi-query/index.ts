@@ -51,6 +51,35 @@ const AVAILABLE_FIELDS: SchemaField[] = [
     { name: 'avg_session_duration', label: 'Avg Session Duration', dataType: 'NUMBER', semantics: { conceptType: 'METRIC', semanticType: 'DURATION' } },
 ];
 
+// Helper function to validate API key
+async function validateApiKey(supabase: ReturnType<typeof createClient>, apiKey: string): Promise<{ valid: boolean; userId?: string; error?: string }> {
+    const keyHash = await crypto.subtle.digest(
+        'SHA-256',
+        new TextEncoder().encode(apiKey)
+    );
+    const keyHashHex = Array.from(new Uint8Array(keyHash))
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('');
+
+    const { data: apiKeyRecord, error: keyError } = await supabase
+        .from('api_keys')
+        .select('user_id, is_active')
+        .eq('key_hash', keyHashHex)
+        .single();
+
+    if (keyError || !apiKeyRecord || !apiKeyRecord.is_active) {
+        return { valid: false, error: 'Invalid or inactive API key' };
+    }
+
+    // Update last used
+    await supabase
+        .from('api_keys')
+        .update({ last_used_at: new Date().toISOString() })
+        .eq('key_hash', keyHashHex);
+
+    return { valid: true, userId: apiKeyRecord.user_id };
+}
+
 serve(async (req) => {
     if (req.method === 'OPTIONS') {
         return new Response(null, { status: 204, headers: corsHeaders });
@@ -68,10 +97,26 @@ serve(async (req) => {
         const apiKey = req.headers.get('x-api-key');
         
         // Handle different endpoints
-        // GET /bi-query/schema - Returns available fields
-        // POST /bi-query/data - Returns data based on query
+        // GET /bi-query/schema - Returns available fields (requires API key)
+        // POST /bi-query/data - Returns data based on query (requires API key)
 
         if (req.method === 'GET' && pathParts.includes('schema')) {
+            // Validate API key for schema endpoint
+            if (!apiKey) {
+                return new Response(JSON.stringify({ error: 'API key required. Set x-api-key header.' }), {
+                    status: 401,
+                    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+                });
+            }
+
+            const validation = await validateApiKey(supabase, apiKey);
+            if (!validation.valid) {
+                return new Response(JSON.stringify({ error: validation.error }), {
+                    status: 401,
+                    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+                });
+            }
+
             // Return schema for Looker Studio
             return new Response(JSON.stringify({
                 schema: AVAILABLE_FIELDS,
@@ -89,33 +134,14 @@ serve(async (req) => {
                 });
             }
 
-            // Verify API key
-            const keyHash = await crypto.subtle.digest(
-                'SHA-256',
-                new TextEncoder().encode(apiKey)
-            );
-            const keyHashHex = Array.from(new Uint8Array(keyHash))
-                .map(b => b.toString(16).padStart(2, '0'))
-                .join('');
-
-            const { data: apiKeyRecord, error: keyError } = await supabase
-                .from('api_keys')
-                .select('user_id, is_active')
-                .eq('key_hash', keyHashHex)
-                .single();
-
-            if (keyError || !apiKeyRecord || !apiKeyRecord.is_active) {
-                return new Response(JSON.stringify({ error: 'Invalid or inactive API key' }), {
+            // Verify API key using helper function
+            const validation = await validateApiKey(supabase, apiKey);
+            if (!validation.valid) {
+                return new Response(JSON.stringify({ error: validation.error }), {
                     status: 401,
                     headers: { ...corsHeaders, 'Content-Type': 'application/json' },
                 });
             }
-
-            // Update last used
-            await supabase
-                .from('api_keys')
-                .update({ last_used_at: new Date().toISOString() })
-                .eq('key_hash', keyHashHex);
 
             const body: QueryRequest = await req.json();
             const { site_id, metrics, dimensions, start_date, end_date, filters, limit = 10000 } = body;
@@ -141,13 +167,13 @@ serve(async (req) => {
                 });
             }
 
-            if (site.user_id !== apiKeyRecord.user_id) {
+            if (site.user_id !== validation.userId) {
                 // Check team membership
                 const { data: teamMember } = await supabase
                     .from('team_members')
                     .select('role')
                     .eq('site_id', site_id)
-                    .eq('user_id', apiKeyRecord.user_id)
+                    .eq('user_id', validation.userId)
                     .single();
 
                 if (!teamMember) {
