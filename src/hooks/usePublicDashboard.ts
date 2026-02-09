@@ -28,14 +28,24 @@ export function usePublicDashboard(siteId: string | undefined) {
     queryFn: async () => {
       if (!siteId) return null;
 
-      const { data, error } = await supabase
-        .from('public_dashboards')
+      // Use the safe view that excludes password_hash
+      // Cast to any to work around Supabase types not including the view
+      const { data, error } = await (supabase
+        .from('public_dashboards_safe' as any)
         .select('*')
         .eq('site_id', siteId)
-        .maybeSingle();
+        .maybeSingle() as any);
 
       if (error) throw error;
-      return data as PublicDashboardConfig | null;
+      
+      // Transform has_password to expected format
+      if (data) {
+        return {
+          ...data,
+          password_hash: data.has_password ? 'protected' : null, // Indicate protection without exposing hash
+        } as PublicDashboardConfig;
+      }
+      return null;
     },
     enabled: !!siteId,
   });
