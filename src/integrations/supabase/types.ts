@@ -3177,7 +3177,65 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      public_dashboards_safe: {
+        Row: {
+          created_at: string | null
+          has_password: boolean | null
+          id: string | null
+          is_enabled: boolean | null
+          share_token: string | null
+          show_devices: boolean | null
+          show_geo: boolean | null
+          show_pageviews: boolean | null
+          show_referrers: boolean | null
+          show_top_pages: boolean | null
+          show_visitors: boolean | null
+          site_id: string | null
+          title: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          has_password?: never
+          id?: string | null
+          is_enabled?: boolean | null
+          share_token?: string | null
+          show_devices?: boolean | null
+          show_geo?: boolean | null
+          show_pageviews?: boolean | null
+          show_referrers?: boolean | null
+          show_top_pages?: boolean | null
+          show_visitors?: boolean | null
+          site_id?: string | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          has_password?: never
+          id?: string | null
+          is_enabled?: boolean | null
+          share_token?: string | null
+          show_devices?: boolean | null
+          show_geo?: boolean | null
+          show_pageviews?: boolean | null
+          show_referrers?: boolean | null
+          show_top_pages?: boolean | null
+          show_visitors?: boolean | null
+          site_id?: string | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "public_dashboards_site_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: true
+            referencedRelation: "sites"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       aggregate_analytics_data:
@@ -3601,6 +3659,10 @@ export type Database = {
           p_top_n?: number
         }
         Returns: number
+      }
+      verify_dashboard_password: {
+        Args: { _password: string; _share_token: string }
+        Returns: boolean
       }
     }
     Enums: {
