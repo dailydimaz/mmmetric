@@ -1,5 +1,11 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import {
+  validateSAMLResponse,
+  checkReplayAttack,
+  validateEmailDomain,
+  sanitizeDomain,
+} from "./saml-validator.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -8,59 +14,86 @@ const corsHeaders = {
 
 // Simple XML builder for SP metadata
 function buildSpMetadata(entityId: string, acsUrl: string): string {
+  // Escape XML special characters
+  const escapeXml = (str: string) =>
+    str
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&apos;");
+
   return `<?xml version="1.0" encoding="UTF-8"?>
-<EntityDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata" entityID="${entityId}">
+<EntityDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata" entityID="${escapeXml(entityId)}">
   <SPSSODescriptor AuthnRequestsSigned="false" WantAssertionsSigned="true" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
     <NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress</NameIDFormat>
-    <AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="${acsUrl}" index="0" isDefault="true"/>
+    <AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="${escapeXml(acsUrl)}" index="0" isDefault="true"/>
   </SPSSODescriptor>
 </EntityDescriptor>`;
 }
 
-// Simple SAML AuthnRequest builder
-function buildAuthnRequest(issuer: string, acsUrl: string, destination: string): string {
+// Store AuthnRequest IDs for InResponseTo validation
+const pendingRequests = new Map<string, { issueInstant: string; providerId: string }>();
+const REQUEST_EXPIRY_MS = 300000; // 5 minutes
+
+// SAML AuthnRequest builder with ID tracking
+function buildAuthnRequest(issuer: string, acsUrl: string, destination: string): { request: string; id: string } {
   const id = `_${crypto.randomUUID()}`;
   const issueInstant = new Date().toISOString();
-  
-  const request = `<samlp:AuthnRequest xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" ID="${id}" Version="2.0" IssueInstant="${issueInstant}" Destination="${destination}" AssertionConsumerServiceURL="${acsUrl}" ProtocolBinding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST">
-  <saml:Issuer>${issuer}</saml:Issuer>
+
+  // Store request ID for later validation
+  pendingRequests.set(id, { issueInstant, providerId: issuer });
+
+  // Clean up expired requests
+  const now = Date.now();
+  for (const [reqId, data] of pendingRequests.entries()) {
+    if (now - new Date(data.issueInstant).getTime() > REQUEST_EXPIRY_MS) {
+      pendingRequests.delete(reqId);
+    }
+  }
+
+  // Escape XML special characters
+  const escapeXml = (str: string) =>
+    str
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&apos;");
+
+  const request = `<samlp:AuthnRequest xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol" xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" ID="${escapeXml(id)}" Version="2.0" IssueInstant="${escapeXml(issueInstant)}" Destination="${escapeXml(destination)}" AssertionConsumerServiceURL="${escapeXml(acsUrl)}" ProtocolBinding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST">
+  <saml:Issuer>${escapeXml(issuer)}</saml:Issuer>
   <samlp:NameIDPolicy Format="urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress" AllowCreate="true"/>
 </samlp:AuthnRequest>`;
 
-  return request;
+  return { request, id };
 }
 
-// Parse SAML Response (simplified - production would use proper XML parsing)
-function parseSamlResponse(samlResponse: string): { email: string; nameId: string; attributes: Record<string, string> } | null {
-  try {
-    // Decode base64
-    const decoded = atob(samlResponse);
-    
-    // Extract email from NameID or attributes (simplified parsing)
-    const nameIdMatch = decoded.match(/<saml:NameID[^>]*>([^<]+)<\/saml:NameID>/);
-    const emailAttrMatch = decoded.match(/<saml:Attribute Name="(?:email|Email|mail|http:\/\/schemas\.xmlsoap\.org\/ws\/2005\/05\/identity\/claims\/emailaddress)"[^>]*>\s*<saml:AttributeValue[^>]*>([^<]+)<\/saml:AttributeValue>/i);
-    
-    const nameId = nameIdMatch?.[1] || "";
-    const email = emailAttrMatch?.[1] || nameId;
-    
-    if (!email || !email.includes("@")) {
-      console.error("No valid email found in SAML response");
-      return null;
-    }
-    
-    // Extract other attributes
-    const attributes: Record<string, string> = {};
-    const attrRegex = /<saml:Attribute Name="([^"]+)"[^>]*>\s*<saml:AttributeValue[^>]*>([^<]+)<\/saml:AttributeValue>/g;
-    let match;
-    while ((match = attrRegex.exec(decoded)) !== null) {
-      attributes[match[1]] = match[2];
-    }
-    
-    return { email, nameId, attributes };
-  } catch (error) {
-    console.error("Error parsing SAML response:", error);
-    return null;
+// Validate InResponseTo matches a pending request
+function validateInResponseTo(inResponseTo: string | null): boolean {
+  if (!inResponseTo) {
+    // Some IdPs don't include InResponseTo - log warning but allow
+    console.warn("No InResponseTo in SAML response - IdP-initiated flow assumed");
+    return true;
   }
+
+  const pending = pendingRequests.get(inResponseTo);
+  if (!pending) {
+    console.error("InResponseTo does not match any pending request:", inResponseTo);
+    return false;
+  }
+
+  // Remove the pending request (one-time use)
+  pendingRequests.delete(inResponseTo);
+
+  // Check if request has expired
+  const requestAge = Date.now() - new Date(pending.issueInstant).getTime();
+  if (requestAge > REQUEST_EXPIRY_MS) {
+    console.error("SAML request has expired:", inResponseTo);
+    return false;
+  }
+
+  return true;
 }
 
 serve(async (req) => {
@@ -70,7 +103,7 @@ serve(async (req) => {
 
   const url = new URL(req.url);
   const pathParts = url.pathname.split("/").filter(Boolean);
-  
+
   // Expected paths: /sso-saml/metadata/:providerId, /sso-saml/login/:providerId, /sso-saml/acs/:providerId
   const action = pathParts[1]; // metadata, login, or acs
   const providerId = pathParts[2];
@@ -78,12 +111,21 @@ serve(async (req) => {
   const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
   const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
   const appUrl = Deno.env.get("APP_URL") || "https://mmmetric.lovable.app";
-  
+
   const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
   try {
     if (!providerId) {
       return new Response(JSON.stringify({ error: "Provider ID required" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Validate providerId format (UUID)
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(providerId)) {
+      return new Response(JSON.stringify({ error: "Invalid provider ID format" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -135,9 +177,11 @@ serve(async (req) => {
           });
         }
 
-        const authnRequest = buildAuthnRequest(entityId, acsUrl, provider.entry_point);
-        const encodedRequest = btoa(authnRequest);
+        const { request: authnRequest, id: requestId } = buildAuthnRequest(entityId, acsUrl, provider.entry_point);
+        console.log("Generated SAML AuthnRequest with ID:", requestId);
         
+        const encodedRequest = btoa(authnRequest);
+
         // Redirect to IdP with SAML request
         const redirectUrl = new URL(provider.entry_point);
         redirectUrl.searchParams.set("SAMLRequest", encodedRequest);
@@ -147,7 +191,7 @@ serve(async (req) => {
           status: 302,
           headers: {
             ...corsHeaders,
-            "Location": redirectUrl.toString(),
+            Location: redirectUrl.toString(),
           },
         });
       }
@@ -163,51 +207,95 @@ serve(async (req) => {
 
         const formData = await req.formData();
         const samlResponse = formData.get("SAMLResponse") as string;
-        const _relayState = (formData.get("RelayState") as string) || appUrl;
+        const relayState = (formData.get("RelayState") as string) || appUrl;
 
         if (!samlResponse) {
-          return new Response(JSON.stringify({ error: "No SAML response received" }), {
-            status: 400,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          });
-        }
-
-        // Parse SAML response
-        const parsedResponse = parseSamlResponse(samlResponse);
-        if (!parsedResponse) {
-          console.error("Failed to parse SAML response");
+          console.error("No SAML response received");
           return new Response(null, {
             status: 302,
             headers: {
               ...corsHeaders,
-              "Location": `${appUrl}/auth?error=sso_failed&message=Invalid SAML response`,
+              Location: `${appUrl}/auth?error=sso_failed&message=No SAML response received`,
             },
           });
         }
 
-        const { email, nameId: _nameId, attributes } = parsedResponse;
-        console.log("SSO login for email:", email);
+        // Get IdP certificate for signature verification
+        const idpCertificate = provider.cert || "";
+        if (!idpCertificate) {
+          console.warn("No IdP certificate configured for provider:", providerId);
+          // In production, you might want to reject responses without certificate verification
+        }
 
-        // Verify email domain matches provider
-        const emailDomain = email.split("@")[1]?.toLowerCase();
-        if (emailDomain !== provider.domain.toLowerCase()) {
-          console.error("Email domain mismatch:", emailDomain, "vs", provider.domain);
+        // Validate SAML response with full security checks
+        const validationResult = await validateSAMLResponse(samlResponse, {
+          expectedAudience: entityId,
+          expectedRecipient: acsUrl,
+          idpCertificate,
+          clockSkewMs: 120000, // 2 minute clock skew tolerance
+          maxAgeMs: 600000, // 10 minute max assertion age
+        });
+
+        if (!validationResult.success || !validationResult.assertion) {
+          console.error("SAML validation failed:", validationResult.error);
           return new Response(null, {
             status: 302,
             headers: {
               ...corsHeaders,
-              "Location": `${appUrl}/auth?error=sso_failed&message=Email domain not allowed`,
+              Location: `${appUrl}/auth?error=sso_failed&message=${encodeURIComponent(validationResult.error || "Invalid SAML response")}`,
+            },
+          });
+        }
+
+        const { assertion } = validationResult;
+
+        // Check for replay attacks
+        if (assertion.assertionId && checkReplayAttack(assertion.assertionId)) {
+          console.error("Replay attack detected - assertion already used:", assertion.assertionId);
+          return new Response(null, {
+            status: 302,
+            headers: {
+              ...corsHeaders,
+              Location: `${appUrl}/auth?error=sso_failed&message=Security error: replay attack detected`,
+            },
+          });
+        }
+
+        // Validate InResponseTo matches our request
+        if (!validateInResponseTo(assertion.inResponseTo)) {
+          console.error("InResponseTo validation failed");
+          return new Response(null, {
+            status: 302,
+            headers: {
+              ...corsHeaders,
+              Location: `${appUrl}/auth?error=sso_failed&message=Invalid SAML response flow`,
+            },
+          });
+        }
+
+        const { email, attributes } = assertion;
+        console.log("SSO login validated for email:", email);
+
+        // Verify email domain matches provider configuration
+        const providerDomain = sanitizeDomain(provider.domain);
+        if (!validateEmailDomain(email, providerDomain)) {
+          console.error("Email domain mismatch - email:", email, "expected domain:", providerDomain);
+          return new Response(null, {
+            status: 302,
+            headers: {
+              ...corsHeaders,
+              Location: `${appUrl}/auth?error=sso_failed&message=Email domain not allowed for this SSO provider`,
             },
           });
         }
 
         // Check if user exists or create one
         let userId: string;
-        
-        // List users and find by email
+
+        // Find existing user by email
         const { data: userList } = await supabase.auth.admin.listUsers({ page: 1, perPage: 1000 });
-        const existingUser = userList?.users?.find(u => u.email?.toLowerCase() === email.toLowerCase());
-        
+        const existingUser = userList?.users?.find((u) => u.email?.toLowerCase() === email.toLowerCase());
+
         if (existingUser) {
           userId = existingUser.id;
           console.log("Existing user found:", userId);
@@ -229,11 +317,11 @@ serve(async (req) => {
               status: 302,
               headers: {
                 ...corsHeaders,
-                "Location": `${appUrl}/auth?error=sso_failed&message=Failed to create user`,
+                Location: `${appUrl}/auth?error=sso_failed&message=Failed to create user account`,
               },
             });
           }
-          
+
           userId = newUser.user.id;
           console.log("New user created:", userId);
 
@@ -260,7 +348,7 @@ serve(async (req) => {
             status: 302,
             headers: {
               ...corsHeaders,
-              "Location": `${appUrl}/auth?error=sso_failed&message=Failed to generate session`,
+              Location: `${appUrl}/auth?error=sso_failed&message=Failed to generate session`,
             },
           });
         }
@@ -269,7 +357,7 @@ serve(async (req) => {
         await supabase.from("login_history").insert({
           user_id: userId,
           success: true,
-          browser: req.headers.get("user-agent") || "SSO",
+          browser: req.headers.get("user-agent")?.substring(0, 255) || "SSO",
           country: attributes["country"] || null,
         });
 
@@ -277,11 +365,12 @@ serve(async (req) => {
         const tokenHash = linkData.properties.hashed_token;
         const authUrl = `${supabaseUrl}/auth/v1/verify?token=${tokenHash}&type=magiclink&redirect_to=${encodeURIComponent(`${appUrl}/dashboard`)}`;
 
+        console.log("SSO login successful, redirecting user:", userId);
         return new Response(null, {
           status: 302,
           headers: {
             ...corsHeaders,
-            "Location": authUrl,
+            Location: authUrl,
           },
         });
       }
@@ -294,8 +383,8 @@ serve(async (req) => {
     }
   } catch (error: unknown) {
     console.error("SSO SAML Error:", error);
-    const errorMessage = error instanceof Error ? error.message : "Unknown error";
-    return new Response(JSON.stringify({ error: "Internal server error", details: errorMessage }), {
+    // Don't expose internal error details to the client
+    return new Response(JSON.stringify({ error: "Internal server error" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
