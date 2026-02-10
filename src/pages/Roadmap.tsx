@@ -58,7 +58,7 @@ import {
   AlertTriangle,
   KeyRound,
   Combine,
-  UserCircle,
+  
   PieChart,
   Layers3,
   Activity,
@@ -557,14 +557,6 @@ const features: Feature[] = [
     description: "Built-in split testing for conversion optimization",
     icon: FlaskConical,
     implemented: true,
-    difficulty: "hard",
-    category: "insights",
-  },
-  {
-    name: "Visitor Profiles",
-    description: "Individual user history and journey tracking",
-    icon: UserCircle,
-    implemented: false,
     difficulty: "hard",
     category: "insights",
   },
