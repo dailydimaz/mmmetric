@@ -29,7 +29,8 @@ import {
     SocialShareStats,
     VideoAnalyticsStats,
     ContentDecayAlerts,
-    ForecastChart
+    ForecastChart,
+    AnomalyDetectionStats
 } from "@/components/analytics";
 import {
     AnalyticsFilter,
@@ -242,6 +243,15 @@ export function SiteAnalytics({
 
                 {/* Video Analytics */}
                 {shouldShow('video_analytics') && <VideoAnalyticsStats siteId={site.id} dateRange={dateRange} />}
+
+                {/* AI Anomaly Detection */}
+                {shouldShow('anomaly_detection') && (
+                    <AnomalyDetectionStats
+                        timeSeries={timeSeries}
+                        dateRange={dateRange}
+                        isLoading={timeSeriesLoading}
+                    />
+                )}
 
                 {/* Content Decay Alerts */}
                 {shouldShow('content_decay') && <ContentDecayAlerts siteId={site.id} />}
