@@ -43,3 +43,4 @@ export { ReadingDepthStats } from "./ReadingDepthStats";
 export { SocialShareStats } from "./SocialShareStats";
 export { VideoAnalyticsStats } from "./VideoAnalyticsStats";
 export { ContentDecayAlerts } from "./ContentDecayAlerts";
+export { ForecastChart } from "./ForecastChart";
