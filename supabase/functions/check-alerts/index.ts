@@ -49,6 +49,17 @@ serve(async (req) => {
     try {
         const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
         const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+        const cronSecret = Deno.env.get('CRON_SECRET');
+
+        // Require cron secret - this function should only be called by cron jobs
+        const providedCronSecret = req.headers.get('x-cron-secret');
+        if (!cronSecret || providedCronSecret !== cronSecret) {
+            return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+                status: 401,
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            });
+        }
+
         const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
         const results: Array<{ alert: string; triggered: boolean; value: number; type: string }> = [];
