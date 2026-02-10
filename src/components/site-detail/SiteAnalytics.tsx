@@ -28,7 +28,8 @@ import {
     ReadingDepthStats,
     SocialShareStats,
     VideoAnalyticsStats,
-    ContentDecayAlerts
+    ContentDecayAlerts,
+    ForecastChart
 } from "@/components/analytics";
 import {
     AnalyticsFilter,
@@ -145,6 +146,11 @@ export function SiteAnalytics({
                 {/* Visitor Chart */}
                 {shouldShow('visitor_chart') && (
                     <VisitorChart data={timeSeries} isLoading={timeSeriesLoading} showComparison={showComparison} />
+                )}
+
+                {/* Predictive Forecast */}
+                {shouldShow('forecast') && (
+                    <ForecastChart timeSeries={timeSeries} dateRange={dateRange} isLoading={timeSeriesLoading} />
                 )}
 
                 {/* Two Column Layout */}

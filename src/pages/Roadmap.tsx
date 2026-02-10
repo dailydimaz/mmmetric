@@ -676,7 +676,7 @@ const features: Feature[] = [
     name: "Predictive Forecasting",
     description: "ML-based traffic predictions for planning and capacity",
     icon: TrendingUp,
-    implemented: false,
+    implemented: true,
     difficulty: "hard",
     category: "insights",
   },
