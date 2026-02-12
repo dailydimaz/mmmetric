@@ -27,6 +27,7 @@ import GSCDashboard from "./pages/GSCDashboard";
 import SiteGroups from "./pages/SiteGroups";
 import SiteGroupDashboard from "./pages/SiteGroupDashboard";
 import Experiments from "./pages/Experiments";
+import SessionRecordings from "./pages/SessionRecordings";
 
 import NotFound from "./pages/NotFound";
 import CompareGA from "./pages/CompareGA";
@@ -102,6 +103,7 @@ const AppRoutes = () => {
           <Route path="/dashboard/sites/:siteId/links" element={<Links />} />
           <Route path="/dashboard/sites/:siteId/attribution" element={<Attribution />} />
           <Route path="/dashboard/sites/:siteId/experiments" element={<Experiments />} />
+          <Route path="/dashboard/sites/:siteId/recordings" element={<SessionRecordings />} />
           <Route path="/dashboard/settings" element={<Settings />} />
           <Route path="/tools/campaign-builder" element={<CampaignBuilder />} />
           <Route path="/tools/page-overlay" element={<PageOverlay />} />

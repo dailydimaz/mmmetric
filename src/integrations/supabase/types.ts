@@ -2648,6 +2648,80 @@ export type Database = {
           },
         ]
       }
+      session_recordings: {
+        Row: {
+          browser: string | null
+          city: string | null
+          country: string | null
+          created_at: string
+          device_type: string | null
+          duration_seconds: number | null
+          ended_at: string | null
+          id: string
+          os: string | null
+          page_count: number | null
+          pages: string[] | null
+          recording_size_bytes: number | null
+          recording_url: string | null
+          session_id: string
+          site_id: string
+          started_at: string
+          status: string
+          updated_at: string
+          visitor_id: string
+        }
+        Insert: {
+          browser?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          device_type?: string | null
+          duration_seconds?: number | null
+          ended_at?: string | null
+          id?: string
+          os?: string | null
+          page_count?: number | null
+          pages?: string[] | null
+          recording_size_bytes?: number | null
+          recording_url?: string | null
+          session_id: string
+          site_id: string
+          started_at?: string
+          status?: string
+          updated_at?: string
+          visitor_id: string
+        }
+        Update: {
+          browser?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          device_type?: string | null
+          duration_seconds?: number | null
+          ended_at?: string | null
+          id?: string
+          os?: string | null
+          page_count?: number | null
+          pages?: string[] | null
+          recording_size_bytes?: number | null
+          recording_url?: string | null
+          session_id?: string
+          site_id?: string
+          started_at?: string
+          status?: string
+          updated_at?: string
+          visitor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "session_recordings_site_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: false
+            referencedRelation: "sites"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       shopify_orders: {
         Row: {
           amount: number

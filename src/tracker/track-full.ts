@@ -1027,6 +1027,140 @@
         setTimeout(trackScrollPosition, 1000);
     };
 
+    // Session Recording using rrweb-compatible DOM snapshots
+    const setupSessionRecording = () => {
+        const recordingEnabled = script?.getAttribute('data-recording') === 'true';
+        if (!recordingEnabled) return;
+
+        const recordingApiUrl = script?.getAttribute('data-recording-api');
+        if (!recordingApiUrl) return;
+
+        const events: any[] = [];
+        let pagesList: string[] = [window.location.pathname];
+
+        // Simplified DOM snapshot (type 2 = full snapshot)
+        const takeSnapshot = () => {
+            const html = document.documentElement.outerHTML;
+            events.push({
+                type: 2,
+                data: { html },
+                timestamp: Date.now(),
+            });
+        };
+
+        // Track mouse movements (type 3, source 1)
+        let lastMouseTime = 0;
+        document.addEventListener('mousemove', (e) => {
+            const now = Date.now();
+            if (now - lastMouseTime < 100) return; // throttle 100ms
+            lastMouseTime = now;
+            events.push({
+                type: 3,
+                data: { source: 1, positions: [{ x: e.clientX, y: e.clientY }] },
+                timestamp: now,
+            });
+        }, { passive: true });
+
+        // Track clicks (type 3, source 2)
+        document.addEventListener('click', (e) => {
+            events.push({
+                type: 3,
+                data: { source: 2, x: e.clientX, y: e.clientY },
+                timestamp: Date.now(),
+            });
+        }, true);
+
+        // Track scrolls (type 3, source 3)
+        let lastScrollRecordTime = 0;
+        window.addEventListener('scroll', () => {
+            const now = Date.now();
+            if (now - lastScrollRecordTime < 200) return;
+            lastScrollRecordTime = now;
+            events.push({
+                type: 3,
+                data: { source: 3, x: window.scrollX, y: window.scrollY },
+                timestamp: now,
+            });
+        }, { passive: true });
+
+        // Track input changes (type 3, source 5) - sanitized
+        document.addEventListener('input', (e) => {
+            const target = e.target as HTMLInputElement;
+            if (!target) return;
+            const isSensitive = target.type === 'password' || target.type === 'email' || target.name?.includes('card');
+            events.push({
+                type: 3,
+                data: { source: 5, text: isSensitive ? '***' : (target.value || '').substring(0, 100), id: target.id || target.name },
+                timestamp: Date.now(),
+            });
+        }, true);
+
+        // Track DOM mutations via MutationObserver (simplified incremental)
+        const observer = new MutationObserver((mutations) => {
+            for (const mutation of mutations) {
+                if (mutation.type === 'childList' || mutation.type === 'characterData') {
+                    events.push({
+                        type: 3,
+                        data: { source: 0, type: mutation.type },
+                        timestamp: Date.now(),
+                    });
+                    break; // batch into single event per mutation batch
+                }
+            }
+        });
+        observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+
+        // Track page navigations
+        const origPush = window.history.pushState;
+        window.history.pushState = function() {
+            origPush.apply(this, arguments as any);
+            pagesList.push(window.location.pathname);
+            takeSnapshot(); // snapshot on navigation
+        };
+
+        // Take initial snapshot
+        takeSnapshot();
+
+        // Flush recording data periodically and on page exit
+        const flushRecording = () => {
+            if (events.length < 2) return; // need at least snapshot + something
+
+            const duration = events.length > 1
+                ? Math.round((events[events.length - 1].timestamp - events[0].timestamp) / 1000)
+                : 0;
+
+            const payload = {
+                site_id: siteId,
+                session_id: getSessionId(),
+                visitor_id: null, // server generates
+                events: events.splice(0), // drain
+                metadata: {
+                    url: window.location.pathname,
+                    pages: [...new Set(pagesList)],
+                    duration,
+                    browser: navigator.userAgent,
+                    device_type: /Mobile/i.test(navigator.userAgent) ? 'mobile' : /Tablet|iPad/i.test(navigator.userAgent) ? 'tablet' : 'desktop',
+                },
+            };
+
+            if (navigator.sendBeacon) {
+                const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
+                navigator.sendBeacon(recordingApiUrl, blob);
+            } else {
+                fetch(recordingApiUrl, { method: 'POST', body: JSON.stringify(payload), keepalive: true }).catch(() => {});
+            }
+        };
+
+        // Flush every 30 seconds
+        setInterval(flushRecording, 30000);
+
+        // Flush on page exit
+        window.addEventListener('pagehide', flushRecording);
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) flushRecording();
+        });
+    };
+
     const init = () => {
         track('pageview');
         setupOutbound();
@@ -1041,6 +1175,7 @@
         setupVideoAnalytics();
         setupHeatmapTracking();
         setupScrollHeatmap();
+        setupSessionRecording();
         fetchConfig();
         setTimeout(() => {
             if (document.title.toLowerCase().includes('404')) track('404', { url: window.location.href, referrer: document.referrer });
