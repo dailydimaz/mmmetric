@@ -30,8 +30,10 @@ import {
     VideoAnalyticsStats,
     ContentDecayAlerts,
     ForecastChart,
-    AnomalyDetectionStats
+    AnomalyDetectionStats,
+    SessionRecordingsList,
 } from "@/components/analytics";
+import { isSelfHosted } from "@/lib/billing";
 import {
     AnalyticsFilter,
     DateRange,
@@ -111,6 +113,7 @@ export function SiteAnalytics({
     onBreakdown,
     onCreateGoal
 }: SiteAnalyticsProps) {
+    
 
     const shouldShow = (widgetKey: string) => {
         if (!visibleWidgets) return true;
@@ -123,6 +126,9 @@ export function SiteAnalytics({
                 <TabsTrigger value="overview">Overview</TabsTrigger>
                 <TabsTrigger value="twitter">X / Twitter</TabsTrigger>
                 <TabsTrigger value="heatmap">Heatmap</TabsTrigger>
+                {isSelfHosted() && (
+                    <TabsTrigger value="recordings">Recordings</TabsTrigger>
+                )}
             </TabsList>
 
             <TabsContent value="overview" className="space-y-6 animate-fade-in-up">
@@ -264,6 +270,12 @@ export function SiteAnalytics({
             <TabsContent value="heatmap" className="animate-fade-in-up">
                 <HeatmapView siteId={site.id} />
             </TabsContent>
+
+            {isSelfHosted() && (
+                <TabsContent value="recordings" className="animate-fade-in-up">
+                    <SessionRecordingsList siteId={site.id} />
+                </TabsContent>
+            )}
         </Tabs>
     );
 }

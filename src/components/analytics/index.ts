@@ -45,3 +45,5 @@ export { VideoAnalyticsStats } from "./VideoAnalyticsStats";
 export { ContentDecayAlerts } from "./ContentDecayAlerts";
 export { ForecastChart } from "./ForecastChart";
 export { AnomalyDetectionStats } from "./AnomalyDetectionStats";
+export { SessionRecordingsList } from "./SessionRecordingsList";
+export { SessionPlayer } from "./SessionPlayer";
