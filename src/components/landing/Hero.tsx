@@ -7,6 +7,7 @@ import { StatsCards, VisitorChart } from "@/components/analytics";
 import { StatsData } from "@/hooks/useAnalytics";
 import { subDays } from "date-fns";
 import { getAppName, getAppUrl } from "@/lib/config";
+import { TypingEffect } from "./TypingEffect";
 
 const mockStats: StatsData = {
   totalPageviews: 48200,
@@ -64,7 +65,7 @@ export function Hero() {
             <h1 className="text-5xl font-extrabold tracking-tight sm:text-7xl mb-8 text-foreground animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
               Analytics that respect
               <span className="block mt-2 text-transparent bg-clip-text bg-gradient-to-r from-primary via-blue-600 to-indigo-600 pb-2">
-                your users' privacy
+                <TypingEffect words={["your users' privacy", "data ownership", "simplicity", "transparency"]} />
               </span>
             </h1>
 

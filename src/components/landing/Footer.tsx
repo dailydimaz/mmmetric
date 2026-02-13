@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Github, Twitter, Mail, ArrowUpRight } from "lucide-react";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import mmmetricLogo from "@/assets/mmmetric-logo.png";
 
@@ -186,7 +187,15 @@ export function Footer() {
             © {currentYear} mmmetric Analytics. All rights reserved.
           </p>
           <div className="flex items-center gap-1 text-sm text-muted-foreground">
-            <span>Built for</span>
+            <span>Built with</span>
+            <motion.span
+              animate={{ scale: [1, 1.2, 1] }}
+              transition={{ repeat: Infinity, duration: 1.5, repeatDelay: 3 }}
+              className="inline-block"
+            >
+              ❤️
+            </motion.span>
+            <span>for</span>
             <span className="text-primary font-medium">privacy</span>
             <span>·</span>
             <span>Loved by</span>

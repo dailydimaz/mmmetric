@@ -13,6 +13,9 @@ import { useInsights } from "@/hooks/useInsights";
 import { isOverLimit } from "@/lib/billing";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import { GreetingBanner } from "@/components/dashboard/GreetingBanner";
+import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
+import { KonamiEasterEgg } from "@/components/ui/KonamiEasterEgg";
 
 export default function Dashboard() {
   const { user, loading: authLoading } = useAuth();
@@ -24,6 +27,8 @@ export default function Dashboard() {
   const sitesCount = sites.length;
   const sitesLimit = plan.sitesLimit;
   const canCreateSite = isSelfHosted || sitesLimit < 0 || !isOverLimit(sitesCount, sitesLimit);
+
+  useKeyboardShortcuts();
 
   // Get first site for insights quick-link
   const firstSite = sites[0];
@@ -65,6 +70,7 @@ export default function Dashboard() {
 
   return (
     <DashboardLayout>
+      <KonamiEasterEgg />
       <motion.div
         variants={container}
         initial="hidden"
@@ -74,6 +80,11 @@ export default function Dashboard() {
         {/* Usage Alert */}
         <motion.div variants={item}>
           <UsageAlert />
+        </motion.div>
+
+        {/* Greeting */}
+        <motion.div variants={item}>
+          <GreetingBanner />
         </motion.div>
 
         {/* Header */}
