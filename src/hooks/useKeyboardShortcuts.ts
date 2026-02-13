@@ -28,7 +28,6 @@ export function useKeyboardShortcuts() {
           duration: 5000,
         });
         return;
-        return;
       }
 
       // / → Focus search
