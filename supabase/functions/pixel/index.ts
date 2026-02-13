@@ -110,7 +110,10 @@ serve(async (req) => {
 
 // Helper functions (simplified from track/index.ts)
 async function generateVisitorId(ip: string, ua: string): Promise<string> {
-    const str = `${ip}-${ua}`;
+    // Include daily salt rotation for privacy (consistent with main track function)
+    const dailySalt = Deno.env.get('DAILY_SALT_SECRET') || 'default-pixel-salt';
+    const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+    const str = `${ip}-${ua}-${dailySalt}-${today}`;
     const encoder = new TextEncoder();
     const data = encoder.encode(str);
     const hashBuffer = await crypto.subtle.digest('SHA-256', data);
