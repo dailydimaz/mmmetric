@@ -82,10 +82,13 @@ function StatCard({ title, value, change, icon, desc, isLoading, showComparison 
 
         <div className="space-y-1">
           {isLoading ? (
-            <div className="h-8 w-24 bg-muted/20 animate-pulse rounded-md"></div>
+            <div className="space-y-2">
+              <div className="h-8 w-24 bg-muted/20 animate-pulse rounded-md"></div>
+              <div className="h-3 w-16 bg-muted/10 animate-pulse rounded-md"></div>
+            </div>
           ) : (
             <motion.div 
-              className="text-3xl font-bold tracking-tight text-foreground font-display"
+              className="text-3xl font-bold tracking-tight text-foreground font-display tabular-nums"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2 + index * 0.1 }}

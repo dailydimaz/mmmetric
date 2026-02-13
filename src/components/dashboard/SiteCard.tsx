@@ -131,7 +131,7 @@ export function SiteCard({ site }: SiteCardProps) {
                 <BarChart2 className="h-5 w-5 text-muted-foreground" />
               </div>
               <p className="text-sm font-medium text-foreground">No data yet</p>
-              <p className="text-xs text-muted-foreground mt-1">Add script to start tracking</p>
+              <p className="text-xs text-muted-foreground mt-1">Add the tracking script to get started 🚀</p>
             </div>
           )}
         </CardContent>
