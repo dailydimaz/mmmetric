@@ -546,9 +546,9 @@ const features: Feature[] = [
   },
   {
     name: "Session Recordings",
-    description: "Video replays of user sessions and interactions",
+    description: "Video replays of user sessions and interactions (self-hosted)",
     icon: Video,
-    implemented: false,
+    implemented: true,
     difficulty: "hard",
     category: "insights",
   },
@@ -606,9 +606,9 @@ const features: Feature[] = [
   },
   {
     name: "AI Anomaly Detection",
-    description: "Auto-detect unusual traffic spikes and drops with ML",
+    description: "Auto-detect unusual traffic spikes and drops with local ML",
     icon: Sparkles,
-    implemented: false,
+    implemented: true,
     difficulty: "hard",
     category: "insights",
   },
