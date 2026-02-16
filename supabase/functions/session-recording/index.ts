@@ -214,6 +214,23 @@ serve(async (req) => {
         });
       }
 
+      // Validate events array size to prevent resource exhaustion
+      const MAX_EVENTS_PER_REQUEST = 10000;
+      if (!Array.isArray(events) || events.length > MAX_EVENTS_PER_REQUEST) {
+        return new Response(JSON.stringify({ error: 'Events array too large (max 10000)' }), {
+          status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
+      // Validate total payload size (max 5MB)
+      const MAX_PAYLOAD_BYTES = 5 * 1024 * 1024;
+      const payloadSize = JSON.stringify(body).length;
+      if (payloadSize > MAX_PAYLOAD_BYTES) {
+        return new Response(JSON.stringify({ error: 'Payload too large (max 5MB)' }), {
+          status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
       // Verify site exists
       const { data: site } = await supabase
         .from('sites')

@@ -131,7 +131,11 @@ function isBot(userAgent: string): boolean {
 async function generateVisitorId(ip: string, ua: string): Promise<string> {
   // Use a rotating salt based on the current date (UTC)
   const dateSalt = new Date().toISOString().slice(0, 10); // "YYYY-MM-DD"
-  const secretSalt = Deno.env.get('DAILY_SALT_SECRET') || 'default-salt-change-me';
+  const secretSalt = Deno.env.get('DAILY_SALT_SECRET');
+  if (!secretSalt) {
+    console.error('DAILY_SALT_SECRET is not configured');
+    throw new Error('Server configuration error: missing required secret');
+  }
 
   const str = `${ip}-${ua}-${dateSalt}-${secretSalt}`;
   const encoder = new TextEncoder();
