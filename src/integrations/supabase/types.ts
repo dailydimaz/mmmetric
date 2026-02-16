@@ -14,6 +14,60 @@ export type Database = {
   }
   public: {
     Tables: {
+      alert_history: {
+        Row: {
+          alert_id: string
+          channel: string
+          comparison: string
+          created_at: string
+          id: string
+          metric: string
+          metric_value: number
+          notification_sent: boolean | null
+          site_id: string
+          threshold: number
+        }
+        Insert: {
+          alert_id: string
+          channel: string
+          comparison: string
+          created_at?: string
+          id?: string
+          metric: string
+          metric_value: number
+          notification_sent?: boolean | null
+          site_id: string
+          threshold: number
+        }
+        Update: {
+          alert_id?: string
+          channel?: string
+          comparison?: string
+          created_at?: string
+          id?: string
+          metric?: string
+          metric_value?: number
+          notification_sent?: boolean | null
+          site_id?: string
+          threshold?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "alert_history_alert_id_fkey"
+            columns: ["alert_id"]
+            isOneToOne: false
+            referencedRelation: "alerts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "alert_history_site_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: false
+            referencedRelation: "sites"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       alerts: {
         Row: {
           channel: Database["public"]["Enums"]["alert_channel"]
