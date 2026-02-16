@@ -2,11 +2,13 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Plus, Trash, Bell, Check, X, Loader2 } from "lucide-react";
+import { Plus, Trash, Bell, Check, X, Loader2, History, Clock } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -23,16 +25,30 @@ interface Alert {
     comparison: "gt" | "lt";
     channel: "email" | "slack" | "webhook";
     is_enabled: boolean;
+    last_triggered_at: string | null;
+}
+
+interface AlertHistoryEntry {
+    id: string;
+    alert_id: string;
+    metric_value: number;
+    threshold: number;
+    comparison: string;
+    metric: string;
+    channel: string;
+    notification_sent: boolean;
+    created_at: string;
 }
 
 export function AlertsManager({ siteId }: AlertsManagerProps) {
     const { toast } = useToast();
     const [alerts, setAlerts] = useState<Alert[]>([]);
+    const [history, setHistory] = useState<AlertHistoryEntry[]>([]);
     const [loading, setLoading] = useState(true);
+    const [historyLoading, setHistoryLoading] = useState(false);
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isCreating, setIsCreating] = useState(false);
 
-    // Form state
     const [newAlert, setNewAlert] = useState<Partial<Alert>>({
         name: "",
         type: "traffic_spike",
@@ -45,6 +61,7 @@ export function AlertsManager({ siteId }: AlertsManagerProps) {
 
     useEffect(() => {
         fetchAlerts();
+        fetchHistory();
     }, [siteId]);
 
     const fetchAlerts = async () => {
@@ -61,6 +78,25 @@ export function AlertsManager({ siteId }: AlertsManagerProps) {
             console.error("Error fetching alerts:", error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const fetchHistory = async () => {
+        setHistoryLoading(true);
+        try {
+            const { data, error } = await supabase
+                .from("alert_history")
+                .select("*")
+                .eq("site_id", siteId)
+                .order("created_at", { ascending: false })
+                .limit(50);
+
+            if (error) throw error;
+            setHistory(data as AlertHistoryEntry[]);
+        } catch (error) {
+            console.error("Error fetching alert history:", error);
+        } finally {
+            setHistoryLoading(false);
         }
     };
 
@@ -132,6 +168,20 @@ export function AlertsManager({ siteId }: AlertsManagerProps) {
         }
     };
 
+    const getAlertName = (alertId: string) => {
+        return alerts.find(a => a.id === alertId)?.name || 'Deleted Alert';
+    };
+
+    const formatTimeAgo = (dateStr: string) => {
+        const diff = Date.now() - new Date(dateStr).getTime();
+        const mins = Math.floor(diff / 60000);
+        if (mins < 60) return `${mins}m ago`;
+        const hours = Math.floor(mins / 60);
+        if (hours < 24) return `${hours}h ago`;
+        const days = Math.floor(hours / 24);
+        return `${days}d ago`;
+    };
+
     if (loading) return <div className="p-4"><Loader2 className="animate-spin" /></div>;
 
     return (
@@ -139,7 +189,7 @@ export function AlertsManager({ siteId }: AlertsManagerProps) {
             <CardHeader className="flex flex-row items-center justify-between">
                 <div>
                     <CardTitle>Custom Alerts</CardTitle>
-                    <CardDescription>Get notified when anomalies are detected.</CardDescription>
+                    <CardDescription>Get notified when traffic spikes, drops, or anomalies are detected.</CardDescription>
                 </div>
                 <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
                     <DialogTrigger asChild>
@@ -148,7 +198,7 @@ export function AlertsManager({ siteId }: AlertsManagerProps) {
                     <DialogContent>
                         <DialogHeader>
                             <DialogTitle>Create Alert</DialogTitle>
-                            <DialogDescription>Configure your alert conditions.</DialogDescription>
+                            <DialogDescription>Configure your alert conditions. Alerts are checked every 15 minutes.</DialogDescription>
                         </DialogHeader>
                         <div className="grid gap-4 py-4">
                             <div className="grid gap-2">
@@ -191,17 +241,17 @@ export function AlertsManager({ siteId }: AlertsManagerProps) {
                                     </Select>
                                 </div>
                                 <div className="grid gap-2">
-                                    <Label>Threshold</Label>
+                                    <Label>Threshold{newAlert.metric === 'bounce_rate' ? ' (%)' : ''}</Label>
                                     <Input type="number" value={newAlert.threshold} onChange={e => setNewAlert({ ...newAlert, threshold: parseInt(e.target.value) })} />
                                 </div>
                             </div>
                             <div className="grid gap-2">
-                                <Label>Channel</Label>
+                                <Label>Notification Channel</Label>
                                 <Select value={newAlert.channel} onValueChange={(v: any) => setNewAlert({ ...newAlert, channel: v })}>
                                     <SelectTrigger><SelectValue /></SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="email">Email</SelectItem>
-                                        <SelectItem value="slack">Slack</SelectItem>
+                                        <SelectItem value="slack">Slack / Discord</SelectItem>
                                         <SelectItem value="webhook">Webhook</SelectItem>
                                     </SelectContent>
                                 </Select>
@@ -217,46 +267,129 @@ export function AlertsManager({ siteId }: AlertsManagerProps) {
                 </Dialog>
             </CardHeader>
             <CardContent>
-                {alerts.length === 0 ? (
-                    <div className="text-center py-8 text-muted-foreground">
-                        <Bell className="mx-auto h-8 w-8 mb-2 opacity-50" />
-                        <p>No alerts configured yet.</p>
-                    </div>
-                ) : (
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Name</TableHead>
-                                <TableHead>Condition</TableHead>
-                                <TableHead>Channel</TableHead>
-                                <TableHead>Status</TableHead>
-                                <TableHead className="text-right">Actions</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {alerts.map(alert => (
-                                <TableRow key={alert.id}>
-                                    <TableCell className="font-medium">{alert.name}</TableCell>
-                                    <TableCell>
-                                        {alert.metric} {alert.comparison === 'gt' ? '>' : '<'} {alert.threshold}
-                                    </TableCell>
-                                    <TableCell className="capitalize">{alert.channel}</TableCell>
-                                    <TableCell>
-                                        <Button variant="ghost" size="sm" onClick={() => toggleEnabled(alert)} className={alert.is_enabled ? "text-green-500" : "text-muted-foreground"}>
-                                            {alert.is_enabled ? <Check className="h-4 w-4 mr-1" /> : <X className="h-4 w-4 mr-1" />}
-                                            {alert.is_enabled ? "Active" : "Disabled"}
-                                        </Button>
-                                    </TableCell>
-                                    <TableCell className="text-right">
-                                        <Button variant="ghost" size="icon" onClick={() => handleDelete(alert.id)}>
-                                            <Trash className="h-4 w-4" />
-                                        </Button>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                )}
+                <Tabs defaultValue="alerts">
+                    <TabsList className="mb-4">
+                        <TabsTrigger value="alerts">
+                            <Bell className="w-4 h-4 mr-2" />
+                            Alerts ({alerts.length})
+                        </TabsTrigger>
+                        <TabsTrigger value="history">
+                            <History className="w-4 h-4 mr-2" />
+                            History ({history.length})
+                        </TabsTrigger>
+                    </TabsList>
+
+                    <TabsContent value="alerts">
+                        {alerts.length === 0 ? (
+                            <div className="text-center py-8 text-muted-foreground">
+                                <Bell className="mx-auto h-8 w-8 mb-2 opacity-50" />
+                                <p>No alerts configured yet.</p>
+                                <p className="text-xs mt-1">Create an alert to get notified about traffic changes.</p>
+                            </div>
+                        ) : (
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Name</TableHead>
+                                        <TableHead>Condition</TableHead>
+                                        <TableHead>Channel</TableHead>
+                                        <TableHead>Last Triggered</TableHead>
+                                        <TableHead>Status</TableHead>
+                                        <TableHead className="text-right">Actions</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {alerts.map(alert => (
+                                        <TableRow key={alert.id}>
+                                            <TableCell className="font-medium">{alert.name}</TableCell>
+                                            <TableCell>
+                                                <code className="text-xs bg-muted px-1.5 py-0.5 rounded">
+                                                    {alert.metric} {alert.comparison === 'gt' ? '>' : '<'} {alert.threshold}{alert.metric === 'bounce_rate' ? '%' : ''}
+                                                </code>
+                                            </TableCell>
+                                            <TableCell>
+                                                <Badge variant="outline" className="capitalize text-xs">{alert.channel}</Badge>
+                                            </TableCell>
+                                            <TableCell className="text-xs text-muted-foreground">
+                                                {alert.last_triggered_at ? (
+                                                    <span className="flex items-center gap-1">
+                                                        <Clock className="h-3 w-3" />
+                                                        {formatTimeAgo(alert.last_triggered_at)}
+                                                    </span>
+                                                ) : 'Never'}
+                                            </TableCell>
+                                            <TableCell>
+                                                <Button variant="ghost" size="sm" onClick={() => toggleEnabled(alert)} className={alert.is_enabled ? "text-green-500" : "text-muted-foreground"}>
+                                                    {alert.is_enabled ? <Check className="h-4 w-4 mr-1" /> : <X className="h-4 w-4 mr-1" />}
+                                                    {alert.is_enabled ? "Active" : "Disabled"}
+                                                </Button>
+                                            </TableCell>
+                                            <TableCell className="text-right">
+                                                <Button variant="ghost" size="icon" onClick={() => handleDelete(alert.id)}>
+                                                    <Trash className="h-4 w-4" />
+                                                </Button>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        )}
+                    </TabsContent>
+
+                    <TabsContent value="history">
+                        {historyLoading ? (
+                            <div className="flex justify-center py-8"><Loader2 className="animate-spin" /></div>
+                        ) : history.length === 0 ? (
+                            <div className="text-center py-8 text-muted-foreground">
+                                <History className="mx-auto h-8 w-8 mb-2 opacity-50" />
+                                <p>No alerts have been triggered yet.</p>
+                            </div>
+                        ) : (
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>Alert</TableHead>
+                                        <TableHead>Value</TableHead>
+                                        <TableHead>Threshold</TableHead>
+                                        <TableHead>Channel</TableHead>
+                                        <TableHead>Notified</TableHead>
+                                        <TableHead>When</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {history.map(entry => (
+                                        <TableRow key={entry.id}>
+                                            <TableCell className="font-medium text-sm">
+                                                {getAlertName(entry.alert_id)}
+                                            </TableCell>
+                                            <TableCell>
+                                                <span className="font-mono text-sm">
+                                                    {entry.metric === 'bounce_rate' ? `${Number(entry.metric_value).toFixed(1)}%` : Number(entry.metric_value)}
+                                                </span>
+                                            </TableCell>
+                                            <TableCell className="text-muted-foreground text-sm">
+                                                {entry.comparison === 'gt' ? '>' : '<'} {Number(entry.threshold)}{entry.metric === 'bounce_rate' ? '%' : ''}
+                                            </TableCell>
+                                            <TableCell>
+                                                <Badge variant="outline" className="capitalize text-xs">{entry.channel}</Badge>
+                                            </TableCell>
+                                            <TableCell>
+                                                {entry.notification_sent ? (
+                                                    <Check className="h-4 w-4 text-green-500" />
+                                                ) : (
+                                                    <X className="h-4 w-4 text-muted-foreground" />
+                                                )}
+                                            </TableCell>
+                                            <TableCell className="text-xs text-muted-foreground">
+                                                {formatTimeAgo(entry.created_at)}
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        )}
+                    </TabsContent>
+                </Tabs>
             </CardContent>
         </Card>
     );
