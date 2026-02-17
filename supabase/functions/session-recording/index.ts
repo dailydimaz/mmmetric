@@ -27,7 +27,7 @@ async function uploadToR3(
 
   async function hmac(key: ArrayBuffer | Uint8Array, data: string): Promise<ArrayBuffer> {
     const cryptoKey = await crypto.subtle.importKey(
-      'raw', key instanceof Uint8Array ? key : new Uint8Array(key),
+      'raw', key instanceof Uint8Array ? key.buffer as ArrayBuffer : key,
       { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']
     );
     return crypto.subtle.sign('HMAC', cryptoKey, encoder.encode(data));
@@ -96,7 +96,7 @@ async function getPresignedUrl(
 
   async function hmac(key: ArrayBuffer | Uint8Array, data: string): Promise<ArrayBuffer> {
     const cryptoKey = await crypto.subtle.importKey(
-      'raw', key instanceof Uint8Array ? key : new Uint8Array(key),
+      'raw', key instanceof Uint8Array ? key.buffer as ArrayBuffer : key,
       { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']
     );
     return crypto.subtle.sign('HMAC', cryptoKey, encoder.encode(data));
