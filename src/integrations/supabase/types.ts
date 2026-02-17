@@ -2658,6 +2658,24 @@ export type Database = {
           },
         ]
       }
+      rate_limit_counters: {
+        Row: {
+          ip_hash: string
+          request_count: number
+          window_start: string
+        }
+        Insert: {
+          ip_hash: string
+          request_count?: number
+          window_start?: string
+        }
+        Update: {
+          ip_hash?: string
+          request_count?: number
+          window_start?: string
+        }
+        Relationships: []
+      }
       segments: {
         Row: {
           created_at: string
@@ -3305,6 +3323,50 @@ export type Database = {
       }
     }
     Views: {
+      integrations_safe: {
+        Row: {
+          created_at: string | null
+          expires_at: string | null
+          id: string | null
+          is_active: boolean | null
+          last_sync_at: string | null
+          metadata: Json | null
+          provider: Database["public"]["Enums"]["integration_provider"] | null
+          site_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string | null
+          is_active?: boolean | null
+          last_sync_at?: string | null
+          metadata?: Json | null
+          provider?: Database["public"]["Enums"]["integration_provider"] | null
+          site_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          expires_at?: string | null
+          id?: string | null
+          is_active?: boolean | null
+          last_sync_at?: string | null
+          metadata?: Json | null
+          provider?: Database["public"]["Enums"]["integration_provider"] | null
+          site_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "integrations_site_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: false
+            referencedRelation: "sites"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       public_dashboards_safe: {
         Row: {
           created_at: string | null
@@ -3385,6 +3447,10 @@ export type Database = {
           threshold_percent: number
           url: string
         }[]
+      }
+      check_rate_limit: {
+        Args: { p_ip_hash: string; p_max_requests?: number }
+        Returns: boolean
       }
       create_future_partitions: { Args: never; Returns: undefined }
       get_attribution_stats: {
