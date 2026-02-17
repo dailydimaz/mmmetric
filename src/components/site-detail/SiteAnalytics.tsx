@@ -1,5 +1,17 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
+    LayoutDashboard,
+    Magnet,
+    FileText,
+    Users,
+    MousePointerClick,
+    Target,
+    Monitor,
+    Twitter,
+    Flame,
+    Video
+} from "lucide-react";
+import {
     StatsCards,
     VisitorChart,
     TopPages,
@@ -113,7 +125,7 @@ export function SiteAnalytics({
     onBreakdown,
     onCreateGoal
 }: SiteAnalyticsProps) {
-    
+
 
     const shouldShow = (widgetKey: string) => {
         if (!visibleWidgets) return true;
@@ -122,17 +134,53 @@ export function SiteAnalytics({
 
     return (
         <Tabs defaultValue="overview" className="space-y-6">
-            <TabsList>
-                <TabsTrigger value="overview">Overview</TabsTrigger>
-                <TabsTrigger value="twitter">X / Twitter</TabsTrigger>
-                <TabsTrigger value="heatmap">Heatmap</TabsTrigger>
+            <TabsList className="w-full justify-start overflow-x-auto no-scrollbar">
+                <TabsTrigger value="overview" className="gap-2">
+                    <LayoutDashboard className="h-4 w-4" />
+                    Overview
+                </TabsTrigger>
+                <TabsTrigger value="acquisition" className="gap-2">
+                    <Magnet className="h-4 w-4" />
+                    Acquisition
+                </TabsTrigger>
+                <TabsTrigger value="content" className="gap-2">
+                    <FileText className="h-4 w-4" />
+                    Content
+                </TabsTrigger>
+                <TabsTrigger value="audience" className="gap-2">
+                    <Users className="h-4 w-4" />
+                    Audience
+                </TabsTrigger>
+                <TabsTrigger value="engagement" className="gap-2">
+                    <MousePointerClick className="h-4 w-4" />
+                    Engagement
+                </TabsTrigger>
+                <TabsTrigger value="conversions" className="gap-2">
+                    <Target className="h-4 w-4" />
+                    Conversions
+                </TabsTrigger>
+                <TabsTrigger value="tech" className="gap-2">
+                    <Monitor className="h-4 w-4" />
+                    Tech
+                </TabsTrigger>
+                <TabsTrigger value="twitter" className="gap-2">
+                    <Twitter className="h-4 w-4" />
+                    X / Twitter
+                </TabsTrigger>
+                <TabsTrigger value="heatmap" className="gap-2">
+                    <Flame className="h-4 w-4" />
+                    Heatmap
+                </TabsTrigger>
                 {isSelfHosted() && (
-                    <TabsTrigger value="recordings">Recordings</TabsTrigger>
+                    <TabsTrigger value="recordings" className="gap-2">
+                        <Video className="h-4 w-4" />
+                        Recordings
+                    </TabsTrigger>
                 )}
             </TabsList>
 
+            {/* Overview Tab */}
             <TabsContent value="overview" className="space-y-6 animate-fade-in-up">
-                {/* Real-time Section */}
                 {shouldShow('realtime') && (
                     <div className="grid gap-6 lg:grid-cols-2">
                         <RealtimeStats siteId={site.id} />
@@ -140,7 +188,6 @@ export function SiteAnalytics({
                     </div>
                 )}
 
-                {/* Stats Overview */}
                 {(shouldShow('visitors') || shouldShow('pageviews') || shouldShow('bounce_rate') || shouldShow('avg_duration')) && (
                     <StatsCards
                         stats={stats}
@@ -150,53 +197,60 @@ export function SiteAnalytics({
                     />
                 )}
 
-                {/* Visitor Chart */}
                 {shouldShow('visitor_chart') && (
                     <VisitorChart data={timeSeries} isLoading={timeSeriesLoading} showComparison={showComparison} />
                 )}
 
-                {/* Predictive Forecast */}
                 {shouldShow('forecast') && (
                     <ForecastChart timeSeries={timeSeries} dateRange={dateRange} isLoading={timeSeriesLoading} />
                 )}
 
-                {/* Two Column Layout */}
-                <div className="grid gap-6 lg:grid-cols-2">
-                    {shouldShow('top_pages') && <TopPages pages={topPages} isLoading={pagesLoading} onBreakdown={(url) => onBreakdown('url', url)} />}
-                    {shouldShow('top_referrers') && <TopReferrers referrers={topReferrers} isLoading={referrersLoading} onBreakdown={(ref) => onBreakdown('referrer', ref)} />}
-                </div>
-
-                {/* Funnels */}
-                {shouldShow('funnels') && <FunnelList siteId={site.id} />}
-
-                {/* Goals, Retention & Custom Events */}
-                <div className="grid gap-6 lg:grid-cols-3">
-                    {shouldShow('goals') && (
-                        <GoalsCard
-                            siteId={site.id}
-                            dateRange={dateRange}
-                            onCreateGoal={onCreateGoal}
-                        />
-                    )}
-                    {shouldShow('retention') && <RetentionCard siteId={site.id} dateRange={dateRange} />}
-                    {shouldShow('custom_events') && <CustomEvents siteId={site.id} dateRange={dateRange} />}
-                </div>
-
-                {/* Device Stats */}
-                {shouldShow('device_stats') && (
-                    <DeviceStats
-                        browsers={deviceStats?.browsers}
-                        operatingSystems={deviceStats?.operatingSystems}
-                        devices={deviceStats?.devices}
-                        isLoading={devicesLoading}
-                        onBreakdown={(type, value) => onBreakdown(type, value)}
+                {shouldShow('anomaly_detection') && (
+                    <AnomalyDetectionStats
+                        timeSeries={timeSeries}
+                        dateRange={dateRange}
+                        isLoading={timeSeriesLoading}
                     />
                 )}
+            </TabsContent>
 
-                {/* UTM Campaign Stats */}
+            {/* Acquisition Tab */}
+            <TabsContent value="acquisition" className="space-y-6 animate-fade-in-up">
+                {shouldShow('top_referrers') && (
+                    <TopReferrers
+                        referrers={topReferrers}
+                        isLoading={referrersLoading}
+                        onBreakdown={(ref) => onBreakdown('referrer', ref)}
+                    />
+                )}
                 {shouldShow('utm_campaigns') && <UTMStats utmStats={utmStats} isLoading={utmLoading} />}
+            </TabsContent>
 
-                {/* Geo & Language Stats */}
+            {/* Content Tab */}
+            <TabsContent value="content" className="space-y-6 animate-fade-in-up">
+                <div className="grid gap-6 lg:grid-cols-2">
+                    {shouldShow('top_pages') && (
+                        <TopPages
+                            pages={topPages}
+                            isLoading={pagesLoading}
+                            onBreakdown={(url) => onBreakdown('url', url)}
+                        />
+                    )}
+                    {shouldShow('entry_exit') && <EntryExitStats siteId={site.id} dateRange={dateRange} />}
+                </div>
+
+                {shouldShow('site_search') && <SiteSearchStats siteId={site.id} dateRange={dateRange} />}
+
+                <div className="grid gap-6 lg:grid-cols-2">
+                    {shouldShow('links') && <OutboundLinksStats siteId={site.id} dateRange={dateRange} />}
+                    {shouldShow('downloads') && <FileDownloadsStats siteId={site.id} dateRange={dateRange} />}
+                </div>
+
+                {shouldShow('content_decay') && <ContentDecayAlerts siteId={site.id} />}
+            </TabsContent>
+
+            {/* Audience Tab */}
+            <TabsContent value="audience" className="space-y-6 animate-fade-in-up">
                 <div className="grid gap-6 lg:grid-cols-2">
                     {shouldShow('geo_stats') && (
                         <GeoStats
@@ -214,55 +268,58 @@ export function SiteAnalytics({
                     )}
                 </div>
 
-                {/* Outbound Links */}
-                {shouldShow('links') && <OutboundLinksStats siteId={site.id} dateRange={dateRange} />}
-
-                {/* File Downloads */}
-                {shouldShow('downloads') && <FileDownloadsStats siteId={site.id} dateRange={dateRange} />}
-
-                {/* Scroll Depth */}
-                {shouldShow('scroll_depth') && <ScrollDepthStats siteId={site.id} dateRange={dateRange} />}
-
-                {/* Engagement */}
-                {shouldShow('engagement') && <EngagementStats siteId={site.id} dateRange={dateRange} />}
-
-                {/* Entry/Exit Pages */}
-                {shouldShow('entry_exit') && <EntryExitStats siteId={site.id} dateRange={dateRange} />}
-
-                {/* Form Analytics */}
-                {shouldShow('forms') && <FormStats siteId={site.id} dateRange={dateRange} />}
-
-                {/* Core Web Vitals */}
-                {shouldShow('web_vitals') && <WebVitalsStats siteId={site.id} dateRange={dateRange} />}
-
-                {/* Error Tracking */}
-                {shouldShow('error_tracking') && <ErrorTrackingStats siteId={site.id} dateRange={dateRange} />}
-
-                {/* Site Search Analytics */}
-                {shouldShow('site_search') && <SiteSearchStats siteId={site.id} dateRange={dateRange} />}
-
-                {/* Reading Depth */}
-                {shouldShow('reading_depth') && <ReadingDepthStats siteId={site.id} dateRange={dateRange} />}
-
-                {/* Social Share Tracking */}
-                {shouldShow('social_shares') && <SocialShareStats siteId={site.id} dateRange={dateRange} />}
-
-                {/* Video Analytics */}
-                {shouldShow('video_analytics') && <VideoAnalyticsStats siteId={site.id} dateRange={dateRange} />}
-
-                {/* AI Anomaly Detection */}
-                {shouldShow('anomaly_detection') && (
-                    <AnomalyDetectionStats
-                        timeSeries={timeSeries}
-                        dateRange={dateRange}
-                        isLoading={timeSeriesLoading}
+                {shouldShow('device_stats') && (
+                    <DeviceStats
+                        browsers={deviceStats?.browsers}
+                        operatingSystems={deviceStats?.operatingSystems}
+                        devices={deviceStats?.devices}
+                        isLoading={devicesLoading}
+                        onBreakdown={(type, value) => onBreakdown(type, value)}
                     />
                 )}
 
-                {/* Content Decay Alerts */}
-                {shouldShow('content_decay') && <ContentDecayAlerts siteId={site.id} />}
+                {shouldShow('retention') && <RetentionCard siteId={site.id} dateRange={dateRange} />}
             </TabsContent>
 
+            {/* Engagement Tab */}
+            <TabsContent value="engagement" className="space-y-6 animate-fade-in-up">
+                {shouldShow('engagement') && <EngagementStats siteId={site.id} dateRange={dateRange} />}
+
+                <div className="grid gap-6 lg:grid-cols-2">
+                    {shouldShow('scroll_depth') && <ScrollDepthStats siteId={site.id} dateRange={dateRange} />}
+                    {shouldShow('reading_depth') && <ReadingDepthStats siteId={site.id} dateRange={dateRange} />}
+                </div>
+
+                <div className="grid gap-6 lg:grid-cols-2">
+                    {shouldShow('social_shares') && <SocialShareStats siteId={site.id} dateRange={dateRange} />}
+                    {shouldShow('video_analytics') && <VideoAnalyticsStats siteId={site.id} dateRange={dateRange} />}
+                </div>
+            </TabsContent>
+
+            {/* Conversions Tab */}
+            <TabsContent value="conversions" className="space-y-6 animate-fade-in-up">
+                <div className="grid gap-6 lg:grid-cols-2">
+                    {shouldShow('goals') && (
+                        <GoalsCard
+                            siteId={site.id}
+                            dateRange={dateRange}
+                            onCreateGoal={onCreateGoal}
+                        />
+                    )}
+                    {shouldShow('custom_events') && <CustomEvents siteId={site.id} dateRange={dateRange} />}
+                </div>
+
+                {shouldShow('funnels') && <FunnelList siteId={site.id} />}
+                {shouldShow('forms') && <FormStats siteId={site.id} dateRange={dateRange} />}
+            </TabsContent>
+
+            {/* Tech Tab */}
+            <TabsContent value="tech" className="space-y-6 animate-fade-in-up">
+                {shouldShow('web_vitals') && <WebVitalsStats siteId={site.id} dateRange={dateRange} />}
+                {shouldShow('error_tracking') && <ErrorTrackingStats siteId={site.id} dateRange={dateRange} />}
+            </TabsContent>
+
+            {/* Existing Separate Tabs */}
             <TabsContent value="twitter" className="animate-fade-in-up">
                 <TwitterStats siteId={site.id} dateRange={dateRange} />
             </TabsContent>
