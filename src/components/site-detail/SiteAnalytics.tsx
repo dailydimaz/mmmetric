@@ -234,6 +234,7 @@ export function SiteAnalytics({
                             pages={topPages}
                             isLoading={pagesLoading}
                             onBreakdown={(url) => onBreakdown('url', url)}
+                            className="col-span-full lg:col-span-2"
                         />
                     )}
                     {shouldShow('entry_exit') && <EntryExitStats siteId={site.id} dateRange={dateRange} />}
