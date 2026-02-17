@@ -10,12 +10,12 @@ const corsHeaders = {
   'Access-Control-Max-Age': '86400', // Cache preflight for 24 hours
 };
 
-// Simple in-memory rate limiter (resets on function cold start)
+// Simple in-memory rate limiter (first line of defense, fast path)
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
 const RATE_LIMIT = 200; // requests per minute
 const RATE_WINDOW = 60000; // 1 minute in ms
 
-function checkRateLimit(ip: string): boolean {
+function checkRateLimitMemory(ip: string): boolean {
   const now = Date.now();
   const entry = rateLimitMap.get(ip);
 
@@ -44,6 +44,24 @@ function cleanupRateLimitMap() {
 
 // Run cleanup every 5 minutes
 setInterval(cleanupRateLimitMap, 5 * 60 * 1000);
+
+// Database-backed rate limiting (survives cold starts)
+async function checkRateLimitDb(supabase: ReturnType<typeof createClient>, ipHash: string): Promise<boolean> {
+  try {
+    const { data, error } = await supabase.rpc('check_rate_limit', {
+      p_ip_hash: ipHash,
+      p_max_requests: RATE_LIMIT,
+    });
+    if (error) {
+      console.warn('DB rate limit check failed, falling back to memory-only:', error.message);
+      return true; // Allow on DB failure (memory check already passed)
+    }
+    return data as boolean;
+  } catch (e) {
+    console.warn('DB rate limit exception:', e);
+    return true;
+  }
+}
 
 // Input validation constants
 const MAX_URL_LENGTH = 2000;
@@ -204,9 +222,9 @@ serve(async (req) => {
     req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
     'unknown';
 
-  // Check rate limit
-  if (!checkRateLimit(clientIp)) {
-    console.warn(`Rate limit exceeded for IP: ${clientIp}`);
+  // Check in-memory rate limit (fast path)
+  if (!checkRateLimitMemory(clientIp)) {
+    console.warn(`Rate limit exceeded for IP (memory): ${clientIp}`);
     return new Response(JSON.stringify({ error: 'Rate limit exceeded' }), {
       status: 429,
       headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Retry-After': '60' },
@@ -360,6 +378,20 @@ serve(async (req) => {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+    // Database-backed rate limit check (survives cold starts)
+    // Use a simple SHA-256 hash of IP (no daily salt needed for rate limiting)
+    const ipEncoder = new TextEncoder();
+    const ipHashBuf = await crypto.subtle.digest('SHA-256', ipEncoder.encode(clientIp));
+    const ipHashForRateLimit = Array.from(new Uint8Array(ipHashBuf)).slice(0, 8).map(b => b.toString(16).padStart(2, '0')).join('');
+    const dbRateLimitOk = await checkRateLimitDb(supabase, ipHashForRateLimit);
+    if (!dbRateLimitOk) {
+      console.warn(`Rate limit exceeded for IP (db): ${clientIp}`);
+      return new Response(JSON.stringify({ error: 'Rate limit exceeded' }), {
+        status: 429,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Retry-After': '60' },
+      });
+    }
 
     // First verify the site exists and get domain for origin validation
     const { data: site, error: siteError } = await supabase
