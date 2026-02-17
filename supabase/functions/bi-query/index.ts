@@ -52,7 +52,8 @@ const AVAILABLE_FIELDS: SchemaField[] = [
 ];
 
 // Helper function to validate API key
-async function validateApiKey(supabase: ReturnType<typeof createClient>, apiKey: string): Promise<{ valid: boolean; userId?: string; error?: string }> {
+// deno-lint-ignore no-explicit-any
+async function validateApiKey(supabase: any, apiKey: string): Promise<{ valid: boolean; userId?: string; error?: string }> {
     const keyHash = await crypto.subtle.digest(
         'SHA-256',
         new TextEncoder().encode(apiKey)
