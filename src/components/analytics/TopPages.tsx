@@ -11,6 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface TopPagesProps {
   pages: TopPage[] | undefined;
@@ -43,7 +44,7 @@ export function TopPages({ pages, isLoading, onBreakdown }: TopPagesProps) {
       <Card className="h-full hover:shadow-lg transition-shadow duration-300">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 border-b border-border/50">
           <div className="flex items-center gap-2">
-            <motion.div 
+            <motion.div
               className="p-2 bg-primary/10 rounded-lg text-primary"
               whileHover={{ scale: 1.1, rotate: 5 }}
               transition={{ type: "spring", stiffness: 400 }}
@@ -65,8 +66,8 @@ export function TopPages({ pages, isLoading, onBreakdown }: TopPagesProps) {
             {isLoading ? (
               <div className="p-4 space-y-4">
                 {[...Array(5)].map((_, i) => (
-                  <motion.div 
-                    key={i} 
+                  <motion.div
+                    key={i}
                     className="flex items-center gap-4"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -78,68 +79,70 @@ export function TopPages({ pages, isLoading, onBreakdown }: TopPagesProps) {
                 ))}
               </div>
             ) : pages && pages.length > 0 ? (
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow className="bg-muted/50 hover:bg-muted/50">
-                      <TableHead className="w-full pl-4">Page Path</TableHead>
-                      <TableHead className="text-right">Unique</TableHead>
-                      <TableHead className="text-right pr-4">Views</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {pages.map((page, index) => {
-                      const percentage = maxViews > 0 ? (page.pageviews / maxViews) * 100 : 0;
-                      return (
-                        <motion.tr
-                          key={index}
-                          custom={index}
-                          variants={rowVariants}
-                          initial="hidden"
-                          animate="visible"
-                          whileHover={{ 
-                            backgroundColor: "hsl(var(--muted) / 0.5)",
-                            transition: { duration: 0.15 }
-                          }}
-                          className="group cursor-pointer border-b border-border last:border-0"
-                          onClick={() => onBreakdown?.(page.url)}
-                        >
-                          <TableCell className="pl-4 relative max-w-[200px] md:max-w-xs">
-                            <motion.div
-                              className="absolute inset-y-0 left-0 bg-primary/10"
-                              initial={{ width: 0 }}
-                              animate={{ width: `${percentage}%` }}
-                              transition={{ duration: 0.6, delay: index * 0.05 + 0.2 }}
-                            />
-                            <div className="flex items-center gap-3 relative z-10">
-                              <span className="text-xs text-muted-foreground font-mono w-4">{index + 1}</span>
-                              <div className="flex items-center gap-2 min-w-0" title={page.url}>
-                                <span className="truncate font-medium text-sm text-foreground/90 group-hover:text-primary transition-colors">
-                                  {page.url}
-                                </span>
-                                <motion.a
-                                  href={`${page.url.startsWith('http') ? '' : 'https://'}${page.url}`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-primary"
-                                  onClick={(e) => e.stopPropagation()}
-                                  whileHover={{ x: 3 }}
-                                >
-                                  <ArrowRight className="h-3 w-3" />
-                                </motion.a>
+              <ScrollArea className="h-[350px]">
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="bg-muted/50 hover:bg-muted/50 sticky top-0 z-10 backdrop-blur-sm">
+                        <TableHead className="w-full pl-4">Page Path</TableHead>
+                        <TableHead className="text-right">Unique</TableHead>
+                        <TableHead className="text-right pr-4">Views</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {pages.map((page, index) => {
+                        const percentage = maxViews > 0 ? (page.pageviews / maxViews) * 100 : 0;
+                        return (
+                          <motion.tr
+                            key={index}
+                            custom={index}
+                            variants={rowVariants}
+                            initial="hidden"
+                            animate="visible"
+                            whileHover={{
+                              backgroundColor: "hsl(var(--muted) / 0.5)",
+                              transition: { duration: 0.15 }
+                            }}
+                            className="group cursor-pointer border-b border-border last:border-0"
+                            onClick={() => onBreakdown?.(page.url)}
+                          >
+                            <TableCell className="pl-4 relative max-w-[200px] md:max-w-xs">
+                              <motion.div
+                                className="absolute inset-y-0 left-0 bg-primary/10"
+                                initial={{ width: 0 }}
+                                animate={{ width: `${percentage}%` }}
+                                transition={{ duration: 0.6, delay: index * 0.05 + 0.2 }}
+                              />
+                              <div className="flex items-center gap-3 relative z-10">
+                                <span className="text-xs text-muted-foreground font-mono w-4">{index + 1}</span>
+                                <div className="flex items-center gap-2 min-w-0" title={page.url}>
+                                  <span className="truncate font-medium text-sm text-foreground/90 group-hover:text-primary transition-colors">
+                                    {page.url}
+                                  </span>
+                                  <motion.a
+                                    href={`${page.url.startsWith('http') ? '' : 'https://'}${page.url}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-primary"
+                                    onClick={(e) => e.stopPropagation()}
+                                    whileHover={{ x: 3 }}
+                                  >
+                                    <ArrowRight className="h-3 w-3" />
+                                  </motion.a>
+                                </div>
                               </div>
-                            </div>
-                          </TableCell>
-                          <TableCell className="text-right font-mono text-sm text-muted-foreground">{page.uniqueVisitors}</TableCell>
-                          <TableCell className="text-right pr-4 font-bold text-sm">{page.pageviews}</TableCell>
-                        </motion.tr>
-                      );
-                    })}
-                  </TableBody>
-                </Table>
-              </div>
+                            </TableCell>
+                            <TableCell className="text-right font-mono text-sm text-muted-foreground">{page.uniqueVisitors}</TableCell>
+                            <TableCell className="text-right pr-4 font-bold text-sm">{page.pageviews}</TableCell>
+                          </motion.tr>
+                        );
+                      })}
+                    </TableBody>
+                  </Table>
+                </div>
+              </ScrollArea>
             ) : (
-              <motion.div 
+              <motion.div
                 className="flex flex-col items-center justify-center py-12 text-muted-foreground/40"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
