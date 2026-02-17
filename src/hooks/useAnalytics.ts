@@ -130,6 +130,17 @@ export interface UTMStats {
   campaigns: UTMStat[];
 }
 
+// Types for RPC calls
+type DateRangeParams = {
+  _site_id: string;
+  _start_date: string;
+  _end_date: string;
+  _prev_start_date: string;
+  _prev_end_date: string;
+  _filters?: Record<string, string>;
+  _limit?: number;
+};
+
 // Fetch overall stats using RPC with filter support
 export function useAnalyticsStats({ siteId, dateRange, filters }: AnalyticsParams) {
   const { start, end, prevStart, prevEnd } = getDateRangeFilter(dateRange);
@@ -138,18 +149,21 @@ export function useAnalyticsStats({ siteId, dateRange, filters }: AnalyticsParam
   return useQuery({
     queryKey: ["analytics-stats", siteId, dateRange, filters],
     queryFn: async (): Promise<StatsData> => {
-      const { data, error } = await (supabase.rpc as any)('get_site_stats', {
+      const params: DateRangeParams = {
         _site_id: siteId,
         _start_date: start.toISOString(),
         _end_date: end.toISOString(),
         _prev_start_date: prevStart.toISOString(),
         _prev_end_date: prevEnd.toISOString(),
         _filters: jsonbFilters || {},
-      });
+      };
+
+      const { data, error } = await supabase.rpc('get_site_stats', params);
 
       if (error) throw error;
 
-      const result = data?.[0] || {
+      // Ensure data is typed correctly based on RPC response
+      const result = (data as any)?.[0] || {
         total_pageviews: 0,
         unique_visitors: 0,
         bounce_rate: 0,
@@ -179,24 +193,20 @@ export function useAnalyticsTimeSeries({ siteId, dateRange, filters }: Analytics
   return useQuery({
     queryKey: ["analytics-timeseries", siteId, dateRange, filters],
     queryFn: async (): Promise<TimeSeriesData[]> => {
-      const { data, error } = await (supabase.rpc as any)('get_timeseries_stats', {
+      const params: DateRangeParams = {
         _site_id: siteId,
         _start_date: start.toISOString(),
         _end_date: end.toISOString(),
         _prev_start_date: prevStart.toISOString(),
         _prev_end_date: prevEnd.toISOString(),
         _filters: jsonbFilters || {},
-      });
+      };
+
+      const { data, error } = await supabase.rpc('get_timeseries_stats', params);
 
       if (error) throw error;
 
-      return (data || []).map((row: {
-        date: string;
-        pageviews: number;
-        visitors: number;
-        prev_pageviews: number;
-        prev_visitors: number;
-      }) => ({
+      return (data || []).map((row: any) => ({
         date: row.date,
         pageviews: Number(row.pageviews) || 0,
         visitors: Number(row.visitors) || 0,
@@ -216,21 +226,19 @@ export function useTopPages({ siteId, dateRange, filters }: AnalyticsParams) {
   return useQuery({
     queryKey: ["analytics-pages", siteId, dateRange, filters],
     queryFn: async (): Promise<TopPage[]> => {
-      const { data, error } = await (supabase.rpc as any)('get_top_pages', {
+      const params: DateRangeParams = {
         _site_id: siteId,
         _start_date: start.toISOString(),
         _end_date: end.toISOString(),
         _limit: 10,
         _filters: jsonbFilters || {},
-      });
+      };
+
+      const { data, error } = await supabase.rpc('get_top_pages', params);
 
       if (error) throw error;
 
-      return (data || []).map((row: {
-        url: string;
-        pageviews: number;
-        unique_visitors: number;
-      }) => ({
+      return (data || []).map((row: any) => ({
         url: row.url,
         pageviews: Number(row.pageviews) || 0,
         uniqueVisitors: Number(row.unique_visitors) || 0,
@@ -248,21 +256,19 @@ export function useTopReferrers({ siteId, dateRange, filters }: AnalyticsParams)
   return useQuery({
     queryKey: ["analytics-referrers", siteId, dateRange, filters],
     queryFn: async (): Promise<TopReferrer[]> => {
-      const { data, error } = await (supabase.rpc as any)('get_top_referrers', {
+      const params: DateRangeParams = {
         _site_id: siteId,
         _start_date: start.toISOString(),
         _end_date: end.toISOString(),
         _limit: 10,
         _filters: jsonbFilters || {},
-      });
+      };
+
+      const { data, error } = await supabase.rpc('get_top_referrers', params);
 
       if (error) throw error;
 
-      return (data || []).map((row: {
-        referrer: string;
-        visits: number;
-        percentage: number;
-      }) => ({
+      return (data || []).map((row: any) => ({
         referrer: row.referrer,
         visits: Number(row.visits) || 0,
         percentage: Number(row.percentage) || 0,
@@ -280,12 +286,14 @@ export function useDeviceStats({ siteId, dateRange, filters }: AnalyticsParams) 
   return useQuery({
     queryKey: ["analytics-devices", siteId, dateRange, filters],
     queryFn: async () => {
-      const { data, error } = await (supabase.rpc as any)('get_device_stats', {
+      const params: DateRangeParams = {
         _site_id: siteId,
         _start_date: start.toISOString(),
         _end_date: end.toISOString(),
         _filters: jsonbFilters || {},
-      });
+      };
+
+      const { data, error } = await supabase.rpc('get_device_stats', params);
 
       if (error) throw error;
 
@@ -323,21 +331,19 @@ export function useGeoStats({ siteId, dateRange, filters }: AnalyticsParams) {
   return useQuery({
     queryKey: ["analytics-geo", siteId, dateRange, filters],
     queryFn: async (): Promise<GeoStat[]> => {
-      const { data, error } = await (supabase.rpc as any)('get_geo_stats', {
+      const params: DateRangeParams = {
         _site_id: siteId,
         _start_date: start.toISOString(),
         _end_date: end.toISOString(),
         _limit: 10,
         _filters: jsonbFilters || {},
-      });
+      };
+
+      const { data, error } = await supabase.rpc('get_geo_stats', params);
 
       if (error) throw error;
 
-      return (data || []).map((row: {
-        country: string;
-        visits: number;
-        percentage: number;
-      }) => ({
+      return (data || []).map((row: any) => ({
         country: row.country,
         visits: Number(row.visits) || 0,
         percentage: Number(row.percentage) || 0,
@@ -355,24 +361,19 @@ export function useCityStats({ siteId, dateRange, filters }: AnalyticsParams) {
   return useQuery({
     queryKey: ["analytics-cities", siteId, dateRange, filters],
     queryFn: async (): Promise<CityStat[]> => {
-      const { data, error } = await (supabase.rpc as any)('get_city_stats', {
+      const params: DateRangeParams = {
         _site_id: siteId,
         _start_date: start.toISOString(),
         _end_date: end.toISOString(),
         _limit: 10,
         _filters: jsonbFilters || {},
-      });
+      };
+
+      const { data, error } = await supabase.rpc('get_city_stats', params);
 
       if (error) throw error;
 
-      return (data || []).map((row: {
-        city: string;
-        country: string;
-        visits: number;
-        percentage: number;
-        latitude: number | null;
-        longitude: number | null;
-      }) => ({
+      return (data || []).map((row: any) => ({
         city: row.city,
         country: row.country,
         visits: Number(row.visits) || 0,
@@ -393,21 +394,19 @@ export function useLanguageStats({ siteId, dateRange, filters }: AnalyticsParams
   return useQuery({
     queryKey: ["analytics-languages", siteId, dateRange, filters],
     queryFn: async (): Promise<LanguageStat[]> => {
-      const { data, error } = await (supabase.rpc as any)('get_language_stats', {
+      const params: DateRangeParams = {
         _site_id: siteId,
         _start_date: start.toISOString(),
         _end_date: end.toISOString(),
         _limit: 10,
         _filters: jsonbFilters || {},
-      });
+      };
+
+      const { data, error } = await supabase.rpc('get_language_stats', params);
 
       if (error) throw error;
 
-      return (data || []).map((row: {
-        language: string;
-        visits: number;
-        percentage: number;
-      }) => ({
+      return (data || []).map((row: any) => ({
         language: row.language,
         visits: Number(row.visits) || 0,
         percentage: Number(row.percentage) || 0,
@@ -425,13 +424,15 @@ export function useUTMStats({ siteId, dateRange, filters }: AnalyticsParams) {
   return useQuery({
     queryKey: ["analytics-utm", siteId, dateRange, filters],
     queryFn: async (): Promise<UTMStats> => {
-      const { data, error } = await (supabase.rpc as any)('get_utm_stats', {
+      const params: DateRangeParams = {
         _site_id: siteId,
         _start_date: start.toISOString(),
         _end_date: end.toISOString(),
         _limit: 10,
         _filters: jsonbFilters || {},
-      });
+      };
+
+      const { data, error } = await supabase.rpc('get_utm_stats', params);
 
       if (error) throw error;
 

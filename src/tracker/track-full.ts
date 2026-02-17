@@ -224,6 +224,13 @@
                 track('form_submit', { form_id: form.id || form.name || 'unknown' });
             }
         }, true);
+
+        // Track abandonment
+        window.addEventListener('pagehide', () => {
+            active.forEach(form => {
+                track('form_abandon', { form_id: form.id || form.name || 'unknown' });
+            });
+        });
     };
 
     // Vitals
@@ -264,7 +271,7 @@
         window.addEventListener('error', (event) => {
             // Skip cross-origin script errors (no useful info)
             if (event.message === 'Script error.' && !event.filename) return;
-            
+
             track('js_error', {
                 message: sanitizeErrorMessage(event.message || 'Unknown error'),
                 filename: sanitizeFilename(event.filename),
@@ -279,7 +286,7 @@
         window.addEventListener('unhandledrejection', (event) => {
             const reason = event.reason;
             let message = 'Unhandled Promise Rejection';
-            
+
             if (reason instanceof Error) {
                 message = reason.message;
             } else if (typeof reason === 'string') {
@@ -345,7 +352,7 @@
 
             try {
                 const href = target.href;
-                
+
                 for (const [platform, pattern] of Object.entries(sharePatterns)) {
                     if (pattern.test(href)) {
                         track('social_share', {
@@ -363,7 +370,7 @@
         // Track native Web Share API usage
         if (navigator.share) {
             const originalShare = navigator.share.bind(navigator);
-            navigator.share = async function(data) {
+            navigator.share = async function (data) {
                 track('social_share', {
                     platform: 'native',
                     method: 'web_share_api',
@@ -387,7 +394,7 @@
             const classList = button.className.toLowerCase();
 
             const copyIndicators = ['copy link', 'copy url', 'copy to clipboard', 'share link'];
-            const isCopyButton = copyIndicators.some(indicator => 
+            const isCopyButton = copyIndicators.some(indicator =>
                 text.includes(indicator) || ariaLabel.includes(indicator) || classList.includes('copy')
             );
 
@@ -406,7 +413,7 @@
         try {
             const url = new URL(href);
             const params = url.searchParams;
-            
+
             switch (platform) {
                 case 'twitter':
                     return params.get('url') || params.get('text') || window.location.href;
@@ -434,18 +441,18 @@
 
         // Generate a video ID from element
         const getVideoId = (video: HTMLVideoElement | HTMLIFrameElement): string => {
-            return video.id || 
-                   video.getAttribute('data-video-id') || 
-                   video.getAttribute('src')?.split('/').pop()?.split('?')[0] || 
-                   `video_${Math.random().toString(36).slice(2, 8)}`;
+            return video.id ||
+                video.getAttribute('data-video-id') ||
+                video.getAttribute('src')?.split('/').pop()?.split('?')[0] ||
+                `video_${Math.random().toString(36).slice(2, 8)}`;
         };
 
         // Get video title
         const getVideoTitle = (video: HTMLVideoElement | HTMLIFrameElement): string => {
-            return video.getAttribute('title') || 
-                   video.getAttribute('data-title') || 
-                   video.getAttribute('aria-label') || 
-                   getVideoId(video);
+            return video.getAttribute('title') ||
+                video.getAttribute('data-title') ||
+                video.getAttribute('aria-label') ||
+                getVideoId(video);
         };
 
         // Track HTML5 videos
@@ -455,7 +462,7 @@
 
             const videoId = getVideoId(video);
             const videoTitle = getVideoTitle(video);
-            
+
             if (!videoProgress.has(videoId)) {
                 videoProgress.set(videoId, new Set());
             }
@@ -553,7 +560,7 @@
                     try {
                         const videoId = getVideoId(iframe as HTMLIFrameElement);
                         const videoTitle = getVideoTitle(iframe as HTMLIFrameElement);
-                        
+
                         if (!videoProgress.has(videoId)) {
                             videoProgress.set(videoId, new Set());
                         }
@@ -574,7 +581,7 @@
                                             video_title: videoTitle,
                                             provider: 'youtube',
                                             duration: player.getDuration ? Math.round(player.getDuration()) : 0,
-                                            progress: player.getCurrentTime && player.getDuration 
+                                            progress: player.getCurrentTime && player.getDuration
                                                 ? Math.round((player.getCurrentTime() / player.getDuration()) * 100)
                                                 : 0,
                                             url: window.location.pathname
@@ -601,11 +608,11 @@
         // Vimeo tracking via postMessage
         const setupVimeoTracking = () => {
             const vimeoFrames = document.querySelectorAll('iframe[src*="vimeo.com"]');
-            
+
             vimeoFrames.forEach((iframe) => {
                 const videoId = getVideoId(iframe as HTMLIFrameElement);
                 const videoTitle = getVideoTitle(iframe as HTMLIFrameElement);
-                
+
                 if (!videoProgress.has(videoId)) {
                     videoProgress.set(videoId, new Set());
                 }
@@ -613,10 +620,10 @@
                 // Listen for Vimeo player events via postMessage
                 window.addEventListener('message', (event) => {
                     if (!event.origin.includes('vimeo.com')) return;
-                    
+
                     try {
                         const data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data;
-                        
+
                         if (data.event === 'play') {
                             track('video', {
                                 action: 'play',
@@ -645,7 +652,7 @@
                         } else if (data.event === 'playProgress' && data.data?.percent) {
                             const progress = Math.round(data.data.percent * 100);
                             const tracked = videoProgress.get(videoId)!;
-                            
+
                             progressMilestones.forEach(milestone => {
                                 if (progress >= milestone && !tracked.has(milestone)) {
                                     tracked.add(milestone);
@@ -792,7 +799,7 @@
             if (sh <= ch) return 100; // Short page, all visible
 
             const pct = Math.min(100, Math.round(((st + ch / 2) / sh) * 100)); // Center of viewport
-            
+
             // Map to nearest zone
             if (pct < 12.5) return 0;
             if (pct < 37.5) return 25;
@@ -828,17 +835,17 @@
             // A "skimmer" scrolls quickly through with little time per zone
             const zonesVisited = Object.entries(zoneTime).filter(([_, t]) => t > 2000).length;
             const avgTimePerZone = totalTime / Math.max(1, zonesVisited);
-            
+
             // Score based on:
             // 1. Time spent (more time = higher engagement)
             // 2. Distribution across zones (even distribution = thorough reading)
-            
+
             // Time factor: 30+ seconds is good reading
             const timeFactor = Math.min(1, totalTime / 30000);
-            
+
             // Distribution factor: reading multiple zones thoroughly
             const distFactor = zonesVisited / zones.length;
-            
+
             // Combine factors (weighted average)
             const score = Math.round((timeFactor * 0.6 + distFactor * 0.4) * 100);
             return Math.min(100, score);
@@ -847,7 +854,7 @@
         const sendReadingDepth = () => {
             if (readingReported) return;
             updateZoneTime();
-            
+
             const totalTime = Object.values(zoneTime).reduce((a, b) => a + b, 0);
             if (totalTime < 3000) return; // Minimum 3 seconds on page
 
@@ -926,7 +933,7 @@
 
         const flushClicks = () => {
             if (clickBuffer.length === 0) return;
-            
+
             // Send batch of clicks
             const payload = {
                 site_id: siteId,
@@ -946,7 +953,7 @@
                 const blob = new Blob([JSON.stringify(payload)], { type: 'text/plain' });
                 navigator.sendBeacon(apiUrl, blob);
             } else {
-                fetch(apiUrl, { method: 'POST', body: JSON.stringify(payload), keepalive: true }).catch(() => {});
+                fetch(apiUrl, { method: 'POST', body: JSON.stringify(payload), keepalive: true }).catch(() => { });
             }
 
             clickBuffer = [];
@@ -1008,7 +1015,7 @@
             if (maxScroll <= 0) return;
 
             const scrollPercent = Math.min(100, Math.round((scrollTop / maxScroll) * 100));
-            
+
             // Track every 10% milestone
             const milestone = Math.floor(scrollPercent / 10) * 10;
             if (milestone > 0 && !scrollDepths.has(milestone)) {
@@ -1112,7 +1119,7 @@
 
         // Track page navigations
         const origPush = window.history.pushState;
-        window.history.pushState = function() {
+        window.history.pushState = function () {
             origPush.apply(this, arguments as any);
             pagesList.push(window.location.pathname);
             takeSnapshot(); // snapshot on navigation
@@ -1147,7 +1154,7 @@
                 const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
                 navigator.sendBeacon(recordingApiUrl, blob);
             } else {
-                fetch(recordingApiUrl, { method: 'POST', body: JSON.stringify(payload), keepalive: true }).catch(() => {});
+                fetch(recordingApiUrl, { method: 'POST', body: JSON.stringify(payload), keepalive: true }).catch(() => { });
             }
         };
 

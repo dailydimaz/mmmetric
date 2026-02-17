@@ -27,63 +27,47 @@ export interface RealtimeStats {
   recentEvents: RealtimeEvent[];
 }
 
-const ACTIVE_THRESHOLD = 5 * 60 * 1000; // 5 minutes
 const MAX_RECENT_EVENTS = 50;
 
 export function useRealtimeAnalytics(siteId: string) {
   const [recentEvents, setRecentEvents] = useState<RealtimeEvent[]>([]);
-  const [activeVisitors, setActiveVisitors] = useState<Map<string, ActiveVisitor>>(new Map());
+  const [activeVisitors, setActiveVisitors] = useState<number>(0);
+  const [activePages, setActivePages] = useState<{ url: string; count: number }[]>([]);
   const [isConnected, setIsConnected] = useState(false);
 
-  // Clean up stale visitors
-  const cleanupStaleVisitors = useCallback(() => {
-    const now = new Date();
-    setActiveVisitors(prev => {
-      const updated = new Map(prev);
-      for (const [visitorId, visitor] of updated) {
-        if (now.getTime() - visitor.lastSeen.getTime() > ACTIVE_THRESHOLD) {
-          updated.delete(visitorId);
-        }
-      }
-      return updated;
-    });
-  }, []);
-
-  // Fetch initial recent events
+  // Fetch initial stats via RPC and recent events via query
   useEffect(() => {
     if (!siteId) return;
 
-    const fetchInitialEvents = async () => {
-      const fiveMinutesAgo = new Date(Date.now() - ACTIVE_THRESHOLD).toISOString();
-      
-      const { data, error } = await supabase
+    const fetchInitialData = async () => {
+      // 1. Fetch simplified stats via RPC (accurate count & top pages)
+      const { data: statsData } = await supabase.rpc('get_realtime_stats', {
+        _site_id: siteId
+      });
+
+      if (statsData) {
+        const stats = statsData as unknown as { visitors: number; pages: any[] };
+        setActiveVisitors(stats.visitors || 0);
+        setActivePages((stats.pages || []).map((p: any) => ({
+          url: p.url,
+          count: Number(p.count)
+        })));
+      }
+
+      // 2. Fetch recent events for feed
+      const { data: eventsData } = await supabase
         .from("events")
         .select("id, url, event_name, created_at, country, browser, device_type, referrer, visitor_id")
         .eq("site_id", siteId)
-        .gte("created_at", fiveMinutesAgo)
         .order("created_at", { ascending: false })
         .limit(MAX_RECENT_EVENTS);
 
-      if (!error && data) {
-        setRecentEvents(data);
-        
-        // Build initial active visitors map
-        const visitors = new Map<string, ActiveVisitor>();
-        data.forEach(event => {
-          if (event.visitor_id && !visitors.has(event.visitor_id)) {
-            visitors.set(event.visitor_id, {
-              visitor_id: event.visitor_id,
-              lastSeen: new Date(event.created_at),
-              url: event.url,
-              country: event.country,
-            });
-          }
-        });
-        setActiveVisitors(visitors);
+      if (eventsData) {
+        setRecentEvents(eventsData);
       }
     };
 
-    fetchInitialEvents();
+    fetchInitialData();
   }, [siteId]);
 
   // Subscribe to realtime events
@@ -105,26 +89,20 @@ export function useRealtimeAnalytics(siteId: string) {
           },
           (payload) => {
             const newEvent = payload.new as RealtimeEvent;
-            
-            // Add to recent events
-            setRecentEvents(prev => {
-              const updated = [newEvent, ...prev].slice(0, MAX_RECENT_EVENTS);
-              return updated;
+
+            // Update recent events feed
+            setRecentEvents(prev => [newEvent, ...prev].slice(0, MAX_RECENT_EVENTS));
+
+            // Optimistically update counts (simple increment)
+            // A periodic re-fetch is better for accuracy, but this gives immediate feedback
+            setActiveVisitors(prev => {
+              // We don't have the full set of unique visitors client-side anymore to dedup perfectly
+              // So we'll just increment. The periodic RPC fetch will correct it.
+              return prev + 1;
             });
 
-            // Update active visitors
-            if (newEvent.visitor_id) {
-              setActiveVisitors(prev => {
-                const updated = new Map(prev);
-                updated.set(newEvent.visitor_id!, {
-                  visitor_id: newEvent.visitor_id!,
-                  lastSeen: new Date(newEvent.created_at),
-                  url: newEvent.url,
-                  country: newEvent.country,
-                });
-                return updated;
-              });
-            }
+            // Also update pages optimistically? 
+            // It's tricky without full state. Let's rely on periodic RPC fetch for aggregate accuracy.
           }
         )
         .subscribe((status) => {
@@ -134,33 +112,27 @@ export function useRealtimeAnalytics(siteId: string) {
 
     setupSubscription();
 
-    // Cleanup stale visitors every minute
-    const cleanupInterval = setInterval(cleanupStaleVisitors, 60 * 1000);
+    // Refresh stats every 15 seconds to keep counts accurate
+    const refreshInterval = setInterval(async () => {
+      const { data } = await supabase.rpc('get_realtime_stats', { _site_id: siteId });
+      if (data) {
+        const stats = data as unknown as { visitors: number; pages: any[] };
+        setActiveVisitors(stats.visitors || 0);
+        setActivePages((stats.pages || []).map((p: any) => ({
+          url: p.url,
+          count: Number(p.count)
+        })));
+      }
+    }, 15000);
 
     return () => {
-      if (channel) {
-        supabase.removeChannel(channel);
-      }
-      clearInterval(cleanupInterval);
+      if (channel) supabase.removeChannel(channel);
+      clearInterval(refreshInterval);
     };
-  }, [siteId, cleanupStaleVisitors]);
-
-  // Calculate active pages
-  const activePages = Array.from(activeVisitors.values())
-    .reduce((acc, visitor) => {
-      const url = visitor.url || "/";
-      const existing = acc.find(p => p.url === url);
-      if (existing) {
-        existing.count++;
-      } else {
-        acc.push({ url, count: 1 });
-      }
-      return acc;
-    }, [] as { url: string; count: number }[])
-    .sort((a, b) => b.count - a.count);
+  }, [siteId]);
 
   return {
-    activeVisitors: activeVisitors.size,
+    activeVisitors,
     activePages,
     recentEvents,
     isConnected,

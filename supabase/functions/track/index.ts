@@ -100,6 +100,7 @@ function validateJsonStructure(obj: unknown, depth = 0): void {
 }
 
 // Parse user agent to extract browser, OS, and device type
+// Parse user agent to extract browser, OS, and device type
 function parseUserAgent(ua: string): { browser: string; os: string; device_type: string } {
   let browser = 'Unknown';
   let os = 'Unknown';
@@ -119,11 +120,11 @@ function parseUserAgent(ua: string): { browser: string; os: string; device_type:
   else if (ua.includes('Android')) os = 'Android';
   else if (ua.includes('iPhone') || ua.includes('iPad')) os = 'iOS';
 
-  // Detect device type
-  if (ua.includes('Mobile') || ua.includes('Android') && !ua.includes('Tablet')) {
-    device_type = 'mobile';
-  } else if (ua.includes('Tablet') || ua.includes('iPad')) {
+  // Detect device type (Fixed precedence: Tablet check before Mobile)
+  if (ua.includes('Tablet') || ua.includes('iPad')) {
     device_type = 'tablet';
+  } else if (ua.includes('Mobile') || ua.includes('Android')) {
+    device_type = 'mobile';
   }
 
   return { browser, os, device_type };
@@ -164,9 +165,21 @@ async function generateVisitorId(ip: string, ua: string): Promise<string> {
   return hashArray.slice(0, 8).map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
+// Generate a session ID hash from client provided ID + visitor ID to prevent spoofing
+async function generateSecureSessionId(clientSessionId: string, visitorId: string): Promise<string> {
+  const str = `${clientSessionId}-${visitorId}`;
+  const encoder = new TextEncoder();
+  const data = encoder.encode(str);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  // Use first 16 hex characters for a unique session identifier bound to this visitor
+  return hashArray.slice(0, 8).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
 // Extract geo data from various proxy headers (Implementation moved to detect.ts)
 
 
+// Extract language from Accept-Language header
 // Extract language from Accept-Language header
 function extractLanguage(req: Request): string | null {
   const acceptLanguage = req.headers.get('accept-language') || '';
@@ -177,8 +190,8 @@ function extractLanguage(req: Request): string | null {
   // Get the primary language code (first part before any comma or semicolon)
   const primaryLang = acceptLanguage.split(',')[0]?.split(';')[0]?.trim();
 
-  // Return just the language code (e.g., "en" from "en-US")
-  return primaryLang?.split('-')[0]?.toLowerCase() || null;
+  // Return the full language/locale code (e.g., "en-US") lowercased
+  return primaryLang?.toLowerCase() || null;
 }
 
 // Get allowed development origins from environment (comma-separated)
@@ -370,9 +383,12 @@ serve(async (req) => {
     // Get request origin for validation
     const reqOrigin = req.headers.get('origin');
 
-    // Generate visitor and session IDs (now async with crypto)
+    // Generate visitor ID (now async with crypto)
     const visitor_id = await generateVisitorId(clientIp, userAgent);
-    const session_id = body.session_id || `${visitor_id}-${Date.now()}`;
+
+    // Generate secure session ID: hash(client_session_id + visitor_id) to prevent spoofing
+    const clientSessionId = body.session_id || `${visitor_id}-${Date.now()}`;
+    const session_id = await generateSecureSessionId(clientSessionId, visitor_id);
 
     // Create Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
@@ -447,14 +463,14 @@ serve(async (req) => {
         const isValidOrigin = originHost === siteDomain ||
           originHost === `www.${siteDomain}` ||
           originHost.endsWith(`.${siteDomain}`) ||
-          siteDomain.includes(originHost) || // Handle subdomain cases
           isDevOrigin;
 
         if (!isValidOrigin) {
-          console.warn(`Origin mismatch: ${originHost} vs ${siteDomain} for site ${site_id}`);
-          // Log but allow for now - strict mode can be enabled later
-          // This allows tracking to work while users set up their domains
-          console.log(`Allowing request despite origin mismatch for development convenience`);
+          console.error(`Origin mismatch: ${originHost} vs ${siteDomain} for site ${site_id}`);
+          return new Response(JSON.stringify({ error: 'Origin mismatch' }), {
+            status: 403,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
         }
       } catch (e) {
         // If URL parsing fails, log but allow (could be server-side request)
@@ -567,24 +583,31 @@ serve(async (req) => {
     }
 
     // Insert into original events table (for pageviews, custom events, and experiment assignments too)
-    const { error: insertError } = await supabase
-      .from('events')
-      .insert(eventData);
+    // Use Promise.allSettled to ensure both writes complete before returning
+    // This prevents data loss in Edge Functions if the runtime kills un-awaited promises
+    const [legacyResult, partitionedResult] = await Promise.allSettled([
+      supabase.from('events').insert(eventData),
+      supabase.from('events_partitioned').insert(eventData)
+    ]);
 
-    // Also insert into partitioned table (non-blocking, don't fail if this fails)
-    // Use async IIFE to handle this in background
-    (async () => {
-      try {
-        const { error } = await supabase
-          .from('events_partitioned')
-          .insert(eventData);
-        if (error) {
-          console.warn('Failed to insert into partitioned table:', error.code);
-        }
-      } catch (e: unknown) {
-        console.warn('Partitioned table insert exception:', e);
+    // Check legacy result (primary)
+    let insertError = null;
+    if (legacyResult.status === 'fulfilled') {
+      if (legacyResult.value.error) {
+        insertError = legacyResult.value.error;
       }
-    })();
+    } else {
+      insertError = legacyResult.reason;
+    }
+
+    // Log partitioned result failure if any (but don't fail request)
+    if (partitionedResult.status === 'fulfilled') {
+      if (partitionedResult.value.error) {
+        console.warn('Failed to insert into partitioned table:', partitionedResult.value.error.code);
+      }
+    } else {
+      console.warn('Partitioned table insert exception:', partitionedResult.reason);
+    }
 
     // Upsert city coordinates if we have lat/lng data (async, non-blocking)
     // This allows the map to show city markers for future visualization

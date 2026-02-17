@@ -40,6 +40,8 @@ const ALL_WIDGETS = [
     { id: "geo_stats", label: "Geo Stats", category: "Geography" },
     { id: "language_stats", label: "Language Stats", category: "Geography" },
     { id: "links", label: "Outbound Links", category: "Content" },
+    { id: "forecast", label: "Traffic Forecast", category: "Analysis" },
+    { id: "anomaly_detection", label: "Anomaly Detection", category: "Analysis" },
 ];
 
 const STORAGE_KEY_PREFIX = "mmmetric_dashboard_";
@@ -101,7 +103,7 @@ export function DashboardCustomizer({ open, onOpenChange, currentWidgets, onAppl
     const toggleCategory = useCallback((category: string) => {
         const categoryWidgets = ALL_WIDGETS.filter(w => w.category === category);
         const allSelected = categoryWidgets.every(w => selectedWidgets.includes(w.id));
-        
+
         if (allSelected) {
             setSelectedWidgets(prev => prev.filter(id => !categoryWidgets.some(w => w.id === id)));
         } else {
@@ -167,10 +169,10 @@ export function DashboardCustomizer({ open, onOpenChange, currentWidgets, onAppl
                             const categoryWidgets = ALL_WIDGETS.filter(w => w.category === category);
                             const allSelected = categoryWidgets.every(w => selectedWidgets.includes(w.id));
                             const someSelected = categoryWidgets.some(w => selectedWidgets.includes(w.id));
-                            
+
                             return (
                                 <div key={category} className="space-y-2">
-                                    <div 
+                                    <div
                                         className="flex items-center space-x-2 cursor-pointer hover:text-primary transition-colors"
                                         onClick={() => toggleCategory(category)}
                                     >

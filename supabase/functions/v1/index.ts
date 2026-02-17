@@ -2,8 +2,8 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.38.4";
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
 serve(async (req) => {
@@ -108,19 +108,25 @@ serve(async (req) => {
             else if (range === "90d") startDate.setDate(now.getDate() - 90);
             else startDate.setDate(now.getDate() - 7); // Default
 
-            // Fetch Stats (Using a simplified aggregation for API)
-            const { data: events, error: statsError } = await supabaseAdmin
-                .from("events")
-                .select("visitor_id, session_id")
-                .eq("site_id", siteId)
-                .eq("event_name", "pageview")
-                .gte("created_at", startDate.toISOString())
-                .lte("created_at", now.toISOString());
+            // Calculate Previous Period for diffs (required by RPC signature)
+            const duration = now.getTime() - startDate.getTime();
+            const prevStartDate = new Date(startDate.getTime() - duration);
+            const prevEndDate = startDate;
+
+            // Fetch Stats using RPC (bypass 1000 row limit and use rollups)
+            const { data: statsData, error: statsError } = await supabaseAdmin.rpc('get_site_stats', {
+                _site_id: siteId,
+                _start_date: startDate.toISOString(),
+                _end_date: now.toISOString(),
+                _prev_start_date: prevStartDate.toISOString(),
+                _prev_end_date: prevEndDate.toISOString(),
+                _filters: {}
+            });
 
             if (statsError) throw statsError;
 
-            const pageviews = events?.length || 0;
-            const visitors = new Set(events?.map(e => e.visitor_id)).size;
+            // RPC returns an array with one object
+            const stats = statsData?.[0] || { total_pageviews: 0, unique_visitors: 0 };
 
             return new Response(JSON.stringify({
                 site_id: siteId,
@@ -128,8 +134,8 @@ serve(async (req) => {
                 start_date: startDate.toISOString(),
                 end_date: now.toISOString(),
                 stats: {
-                    pageviews,
-                    visitors
+                    pageviews: Number(stats.total_pageviews || 0),
+                    visitors: Number(stats.unique_visitors || 0)
                 }
             }), {
                 headers: { ...corsHeaders, "Content-Type": "application/json" },

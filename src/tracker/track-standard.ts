@@ -213,11 +213,73 @@
         track(eventName, props || {});
     };
 
+    // Forms
+    const setupForms = () => {
+        const active = new Set();
+        document.addEventListener('focusin', e => {
+            if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) {
+                const form = e.target.form;
+                if (form && !active.has(form)) {
+                    active.add(form);
+                    track('form_start', { form_id: form.id || form.name || 'unknown' });
+                }
+            }
+        }, true);
+
+        document.addEventListener('submit', e => {
+            const form = e.target;
+            if (form?.tagName === 'FORM') {
+                active.delete(form);
+                track('form_submit', { form_id: form.id || form.name || 'unknown' });
+            }
+        }, true);
+
+        window.addEventListener('pagehide', () => {
+            active.forEach(form => {
+                track('form_abandon', { form_id: form.id || form.name || 'unknown' });
+            });
+        });
+    };
+
+    // Vitals
+    const setupVitals = () => {
+        if (typeof PerformanceObserver === 'function') {
+            const send = (m, v) => track('web_vitals', { metric: m, value: m === 'CLS' ? v : Math.round(v), rating: v > (m === 'LCP' ? 2500 : m === 'CLS' ? 0.1 : 200) ? 'poor' : 'good' });
+
+            try {
+                new PerformanceObserver(l => {
+                    const e = l.getEntries().pop();
+                    if (e) window._mm_lcp = e.startTime;
+                }).observe({ type: 'largest-contentful-paint', buffered: true });
+
+                window._mm_cls = 0;
+                new PerformanceObserver(l => {
+                    l.getEntries().forEach(e => { if (!e.hadRecentInput) window._mm_cls += e.value; });
+                }).observe({ type: 'layout-shift', buffered: true });
+
+                window._mm_inp = 0;
+                new PerformanceObserver(l => {
+                    l.getEntries().forEach(e => { if (e.interactionId && e.duration > window._mm_inp) window._mm_inp = e.duration; });
+                }).observe({ type: 'event', durationThreshold: 16, buffered: true });
+
+                const report = () => {
+                    if (window._mm_lcp !== undefined) send('LCP', window._mm_lcp);
+                    if (window._mm_cls !== undefined) send('CLS', window._mm_cls);
+                    if (window._mm_inp !== undefined && window._mm_inp > 0) send('INP', window._mm_inp);
+                };
+                window.addEventListener('visibilitychange', () => { if (document.hidden) report(); });
+                window.addEventListener('pagehide', report);
+            } catch (e) { }
+        }
+    };
+
     const init = () => {
         track('pageview');
         setupOutbound();
         setupDownloads();
         setupScroll();
+        setupForms();
+        setupVitals();
     };
 
     if (document.readyState === 'complete') init();
