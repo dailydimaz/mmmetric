@@ -3366,16 +3366,14 @@ export type Database = {
       }
     }
     Functions: {
-      aggregate_analytics_data:
-        | { Args: never; Returns: undefined }
-        | {
-            Args: { _batch_size?: number }
-            Returns: {
-              events_processed: number
-              hours_aggregated: number
-              sites_processed: number
-            }[]
-          }
+      aggregate_analytics_data: {
+        Args: { _batch_size?: number }
+        Returns: {
+          events_processed: number
+          hours_aggregated: number
+          sites_processed: number
+        }[]
+      }
       check_content_decay: {
         Args: { p_site_id: string }
         Returns: {
