@@ -3452,7 +3452,9 @@ export type Database = {
         Args: { p_ip_hash: string; p_max_requests?: number }
         Returns: boolean
       }
+      check_usage_limit: { Args: { p_site_id: string }; Returns: boolean }
       create_future_partitions: { Args: never; Returns: undefined }
+      delete_expired_events: { Args: never; Returns: number }
       get_attribution_stats: {
         Args: {
           _attribution_model?: string
@@ -3845,6 +3847,7 @@ export type Database = {
           country: string
         }[]
       }
+      refresh_usage_records: { Args: never; Returns: undefined }
       setup_content_decay_monitors: {
         Args: {
           p_decay_threshold?: number
