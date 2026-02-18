@@ -7,8 +7,8 @@ export const PLANS = {
     price: 0,
     eventsLimit: 10_000,
     sitesLimit: 1,
-    retentionDays: 7,
-    features: ['Core web analytics', '7-day data retention', 'Email support'],
+    retentionDays: 30,
+    features: ['Core web analytics', '30-day data retention', 'Email support'],
   },
   pro: {
     name: 'Pro',

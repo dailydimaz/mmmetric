@@ -1,4 +1,5 @@
 import { Badge } from "@/components/ui/badge";
+import { PLANS } from "@/lib/billing";
 
 const comparisonData = [
   {
@@ -38,6 +39,13 @@ const comparisonData = [
     mmmetricHighlight: true,
     ga4: "Complex Setup",
     plausible: "Basic",
+  },
+  {
+    feature: "Free Tier Retention",
+    mmmetric: `${PLANS.free.retentionDays}-day`,
+    mmmetricHighlight: true,
+    ga4: "14 months",
+    plausible: "Unlimited",
   },
   {
     feature: "Pricing",

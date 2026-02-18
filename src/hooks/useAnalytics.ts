@@ -130,15 +130,19 @@ export interface UTMStats {
   campaigns: UTMStat[];
 }
 
-// Types for RPC calls
-type DateRangeParams = {
+// Types for RPC calls - base params without prev dates
+type BaseRpcParams = {
   _site_id: string;
   _start_date: string;
   _end_date: string;
-  _prev_start_date: string;
-  _prev_end_date: string;
   _filters?: Record<string, string>;
   _limit?: number;
+};
+
+// Extended params with comparison period
+type DateRangeParams = BaseRpcParams & {
+  _prev_start_date: string;
+  _prev_end_date: string;
 };
 
 // Fetch overall stats using RPC with filter support
@@ -226,7 +230,7 @@ export function useTopPages({ siteId, dateRange, filters }: AnalyticsParams) {
   return useQuery({
     queryKey: ["analytics-pages", siteId, dateRange, filters],
     queryFn: async (): Promise<TopPage[]> => {
-      const params: DateRangeParams = {
+      const params: BaseRpcParams = {
         _site_id: siteId,
         _start_date: start.toISOString(),
         _end_date: end.toISOString(),
@@ -256,7 +260,7 @@ export function useTopReferrers({ siteId, dateRange, filters }: AnalyticsParams)
   return useQuery({
     queryKey: ["analytics-referrers", siteId, dateRange, filters],
     queryFn: async (): Promise<TopReferrer[]> => {
-      const params: DateRangeParams = {
+      const params: BaseRpcParams = {
         _site_id: siteId,
         _start_date: start.toISOString(),
         _end_date: end.toISOString(),
@@ -286,7 +290,7 @@ export function useDeviceStats({ siteId, dateRange, filters }: AnalyticsParams) 
   return useQuery({
     queryKey: ["analytics-devices", siteId, dateRange, filters],
     queryFn: async () => {
-      const params: DateRangeParams = {
+      const params: BaseRpcParams = {
         _site_id: siteId,
         _start_date: start.toISOString(),
         _end_date: end.toISOString(),
@@ -331,7 +335,7 @@ export function useGeoStats({ siteId, dateRange, filters }: AnalyticsParams) {
   return useQuery({
     queryKey: ["analytics-geo", siteId, dateRange, filters],
     queryFn: async (): Promise<GeoStat[]> => {
-      const params: DateRangeParams = {
+      const params: BaseRpcParams = {
         _site_id: siteId,
         _start_date: start.toISOString(),
         _end_date: end.toISOString(),
@@ -361,7 +365,7 @@ export function useCityStats({ siteId, dateRange, filters }: AnalyticsParams) {
   return useQuery({
     queryKey: ["analytics-cities", siteId, dateRange, filters],
     queryFn: async (): Promise<CityStat[]> => {
-      const params: DateRangeParams = {
+      const params: BaseRpcParams = {
         _site_id: siteId,
         _start_date: start.toISOString(),
         _end_date: end.toISOString(),
@@ -394,7 +398,7 @@ export function useLanguageStats({ siteId, dateRange, filters }: AnalyticsParams
   return useQuery({
     queryKey: ["analytics-languages", siteId, dateRange, filters],
     queryFn: async (): Promise<LanguageStat[]> => {
-      const params: DateRangeParams = {
+      const params: BaseRpcParams = {
         _site_id: siteId,
         _start_date: start.toISOString(),
         _end_date: end.toISOString(),
@@ -424,7 +428,7 @@ export function useUTMStats({ siteId, dateRange, filters }: AnalyticsParams) {
   return useQuery({
     queryKey: ["analytics-utm", siteId, dateRange, filters],
     queryFn: async (): Promise<UTMStats> => {
-      const params: DateRangeParams = {
+      const params: BaseRpcParams = {
         _site_id: siteId,
         _start_date: start.toISOString(),
         _end_date: end.toISOString(),

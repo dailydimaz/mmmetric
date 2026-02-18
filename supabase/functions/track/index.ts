@@ -46,7 +46,8 @@ function cleanupRateLimitMap() {
 setInterval(cleanupRateLimitMap, 5 * 60 * 1000);
 
 // Database-backed rate limiting (survives cold starts)
-async function checkRateLimitDb(supabase: ReturnType<typeof createClient>, ipHash: string): Promise<boolean> {
+// deno-lint-ignore no-explicit-any
+async function checkRateLimitDb(supabase: any, ipHash: string): Promise<boolean> {
   try {
     const { data, error } = await supabase.rpc('check_rate_limit', {
       p_ip_hash: ipHash,
