@@ -160,12 +160,14 @@ export function SSOConfigCard({ siteId }: SSOConfigCardProps) {
           <div className="flex flex-col items-center justify-center p-8 border-2 border-dashed rounded-lg text-center space-y-4">
             <ShieldCheck className="h-10 w-10 text-muted-foreground" />
             <div className="space-y-1">
-              <h3 className="font-medium">Enterprise Only</h3>
+              <h3 className="font-medium">Business Plan Only</h3>
               <p className="text-sm text-muted-foreground max-w-sm">
-                SSO via Google Workspace, Okta, Azure AD, and custom SAML providers is available on the Enterprise plan.
+                SSO via Google Workspace, Okta, Azure AD, and custom SAML providers is available on the Business plan.
               </p>
             </div>
-            <Button variant="outline">Contact Sales to Upgrade</Button>
+            <Button variant="outline" asChild>
+              <a href="/#pricing">Upgrade to Business</a>
+            </Button>
           </div>
         </CardContent>
       </Card>

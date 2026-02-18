@@ -413,12 +413,11 @@ serve(async (req) => {
     // First verify the site exists and get domain for origin validation
     const { data: site, error: siteError } = await supabase
       .from('sites')
-      .select('id, domain')
+      .select('id, domain, user_id')
       .eq('tracking_id', site_id)
       .maybeSingle();
 
     if (siteError) {
-      // Log generic error message only - no error codes or hints in production logs
       console.error('Site verification failed');
       return new Response(JSON.stringify({ error: 'Database error' }), {
         status: 500,
@@ -431,6 +430,25 @@ serve(async (req) => {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
+    }
+
+    // Check usage limit (cached in usage_records, updated every 5 min by cron)
+    try {
+      const { data: withinLimit, error: limitError } = await supabase.rpc('check_usage_limit', {
+        p_site_id: site.id,
+      });
+
+      if (limitError) {
+        console.warn('Usage limit check failed, allowing event:', limitError.message);
+      } else if (withinLimit === false) {
+        console.warn(`Usage limit exceeded for site ${site_id} (owner: ${site.user_id})`);
+        return new Response(JSON.stringify({ error: 'Monthly event limit exceeded. Please upgrade your plan.' }), {
+          status: 429,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Retry-After': '3600' },
+        });
+      }
+    } catch (e) {
+      console.warn('Usage limit check exception, allowing event:', e);
     }
 
     // Validate origin matches site domain (if domain is configured and origin is present)
