@@ -31,7 +31,7 @@ const tiers = [
       "Unlimited websites",
       "Custom event tracking",
       "Funnel analysis",
-      "1-year data retention",
+      `${Math.round(PLANS.pro.retentionDays / 365)}-year data retention`,
       "API access",
       "Priority support"
     ],
@@ -49,7 +49,7 @@ const tiers = [
       "Everything in Pro",
       "Retention cohorts",
       "Team collaboration",
-      "2-year data retention",
+      `${Math.round(PLANS.business.retentionDays / 365)}-year data retention`,
       "Custom dashboards",
       "Slack integration",
       "Dedicated support"
