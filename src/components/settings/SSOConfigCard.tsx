@@ -68,8 +68,8 @@ export function SSOConfigCard({ siteId }: SSOConfigCardProps) {
   const [editCert, setEditCert] = useState("");
   const [editMetadataXml, setEditMetadataXml] = useState("");
 
-  // Enterprise tier check - business plan and above gets SSO
-  const isEnterprise = subscription?.plan === "business" || subscription?.plan === "pro";
+  // Enterprise tier check - business plan only gets SSO
+  const isEnterprise = subscription?.plan === "business";
 
   const resetNewForm = () => {
     setNewProviderType("saml");
