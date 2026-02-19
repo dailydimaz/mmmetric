@@ -13,12 +13,12 @@ import { useSites } from "@/hooks/useSites";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 
-const OVERLAY_SCRIPT_URL = "https://mmmetric.lovable.app/overlay.js";
+const OVERLAY_SCRIPT_URL = typeof window !== 'undefined' ? `${window.location.origin}/overlay.js` : "https://mmmetric.app/overlay.js";
 
 export default function PageOverlay() {
   const [searchParams] = useSearchParams();
   const initialSiteId = searchParams.get("site") || "";
-  
+
   const { sites, isLoading } = useSites();
   const { toast } = useToast();
   const [selectedSiteId, setSelectedSiteId] = useState(initialSiteId);
@@ -176,7 +176,7 @@ export default function PageOverlay() {
                     <p className="text-sm text-muted-foreground">
                       Drag the button below to your browser's bookmarks bar. Then click it while viewing any page on your site to activate the overlay.
                     </p>
-                    
+
                     <div className="flex justify-center py-6">
                       <a
                         href={bookmarkletCode}
@@ -224,9 +224,9 @@ export default function PageOverlay() {
                             value={getOverlayUrl(`https://${selectedSite.domain}`)}
                             className="font-mono text-xs"
                           />
-                          <CopyButton 
-                            text={getOverlayUrl(`https://${selectedSite.domain}`)} 
-                            label="URL" 
+                          <CopyButton
+                            text={getOverlayUrl(`https://${selectedSite.domain}`)}
+                            label="URL"
                           />
                         </div>
                       </div>
@@ -254,9 +254,9 @@ export default function PageOverlay() {
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
                         <Label>Script tag:</Label>
-                        <CopyButton 
-                          text={`<script src="${OVERLAY_SCRIPT_URL}" data-tracking-id="${trackingId}"></script>`} 
-                          label="Script" 
+                        <CopyButton
+                          text={`<script src="${OVERLAY_SCRIPT_URL}" data-tracking-id="${trackingId}"></script>`}
+                          label="Script"
                         />
                       </div>
                       <Textarea

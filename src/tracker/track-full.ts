@@ -694,21 +694,194 @@
         }
     };
 
-    // Config injection (simplified)
+    // A/B Testing
+    const setupExperiments = (experiments: any[]) => {
+        if (!experiments || !experiments.length) return;
+
+        experiments.forEach(exp => {
+            // Check targeting (simple path match)
+            if (!window.location.pathname.includes(exp.target_url)) return;
+
+            const storageKey = `mm_exp_${exp.id}`;
+            let variantId = localStorage.getItem(storageKey);
+            let variant = null;
+
+            // Get or assign variant
+            if (variantId) {
+                variant = exp.variants.find((v: any) => v.id === variantId);
+            }
+
+            if (!variant) {
+                // Weighted random assignment
+                const totalWeight = exp.variants.reduce((sum: number, v: any) => sum + (v.weight || 0), 0);
+                let random = Math.random() * totalWeight;
+                for (const v of exp.variants) {
+                    random -= (v.weight || 0);
+                    if (random <= 0) {
+                        variant = v;
+                        break;
+                    }
+                }
+                if (!variant && exp.variants.length) variant = exp.variants[0]; // Fallback
+
+                if (variant) {
+                    localStorage.setItem(storageKey, variant.id);
+                    // Send exposure event only on new assignment or first visit in session
+                    track('experiment_exposure', {
+                        experiment_id: exp.id,
+                        experiment_name: exp.name,
+                        variant_id: variant.id,
+                        variant_name: variant.name,
+                        url: window.location.pathname
+                    });
+                }
+            }
+
+            // Apply variant config
+            if (variant && variant.config) {
+                try {
+                    // CSS injection
+                    if (variant.config.css) {
+                        const style = document.createElement('style');
+                        style.textContent = variant.config.css;
+                        document.head.appendChild(style);
+                    }
+
+                    // JS injection
+                    if (variant.config.js) {
+                        const script = document.createElement('script');
+                        script.textContent = variant.config.js;
+                        document.body.appendChild(script);
+                    }
+
+                    // Redirect
+                    if (variant.config.redirect_url) {
+                        window.location.replace(variant.config.redirect_url);
+                    }
+
+                    // Element modification (simple text/html replacement)
+                    if (variant.config.modifications && Array.isArray(variant.config.modifications)) {
+                        variant.config.modifications.forEach((mod: any) => {
+                            const el = document.querySelector(mod.selector);
+                            if (el) {
+                                if (mod.action === 'text') el.textContent = mod.value;
+                                if (mod.action === 'html') el.innerHTML = mod.value;
+                                if (mod.action === 'style') el.setAttribute('style', mod.value);
+                                if (mod.action === 'hide') (el as HTMLElement).style.display = 'none';
+                                if (mod.action === 'show') (el as HTMLElement).style.display = '';
+                            }
+                        });
+                    }
+                } catch (e) {
+                    console.error('Experiment application error:', e);
+                }
+            }
+        });
+    };
+
+    // Config injection
     const fetchConfig = () => {
-        fetch(apiUrl.replace('/track', '/get-config'), {
+        // Use get-config endpoint
+        const configUrl = apiUrl.replace('/track', '/get-config');
+
+        fetch(configUrl, {
             method: 'POST',
             body: JSON.stringify({ site_id: siteId }),
             headers: { 'Content-Type': 'application/json' }
         }).then(r => r.json()).then(d => {
-            if (d.tags) d.tags.forEach(t => {
-                try {
-                    if (t.type === 'custom_script' && t.config.url) {
-                        const s = document.createElement('script'); s.src = t.config.url; s.async = true; document.head.appendChild(s);
+            if (d.visual?.custom_css) {
+                const style = document.createElement('style');
+                style.textContent = d.visual.custom_css;
+                document.head.appendChild(style);
+            }
+
+            if (d.experiments) {
+                setupExperiments(d.experiments);
+            }
+
+            if (d.tags && Array.isArray(d.tags)) {
+                d.tags.forEach(t => {
+                    try {
+                        if (!t.is_enabled && t.is_enabled !== undefined) return;
+
+                        switch (t.type) {
+                            case 'custom_html':
+                                if (t.config.html) {
+                                    const div = document.createElement('div');
+                                    div.innerHTML = t.config.html;
+                                    // Execute scripts in the HTML
+                                    Array.from(div.querySelectorAll('script')).forEach(oldScript => {
+                                        const newScript = document.createElement('script');
+                                        Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+                                        newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+                                        oldScript.parentNode.replaceChild(newScript, oldScript);
+                                    });
+                                    document.body.appendChild(div);
+                                }
+                                break;
+
+                            case 'google_analytics':
+                                if (t.config.measurementId) {
+                                    const id = t.config.measurementId;
+                                    const script = document.createElement('script');
+                                    script.src = `https://www.googletagmanager.com/gtag/js?id=${id}`;
+                                    script.async = true;
+                                    document.head.appendChild(script);
+
+                                    window.dataLayer = window.dataLayer || [];
+                                    function gtag() { window.dataLayer.push(arguments); }
+                                    gtag('js', new Date());
+                                    gtag('config', id);
+                                }
+                                break;
+
+                            case 'facebook_pixel':
+                                if (t.config.pixelId) {
+                                    const id = t.config.pixelId;
+                                    !function (f, b, e, v, n, t, s) {
+                                        if (f.fbq) return; n = f.fbq = function () {
+                                            n.callMethod ?
+                                                n.callMethod.apply(n, arguments) : n.queue.push(arguments)
+                                        };
+                                        if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0';
+                                        n.queue = []; t = b.createElement(e); t.async = !0;
+                                        t.src = v; s = b.getElementsByTagName(e)[0];
+                                        s.parentNode.insertBefore(t, s)
+                                    }(window, document, 'script',
+                                        'https://connect.facebook.net/en_US/fbevents.js');
+                                    fbq('init', id);
+                                    fbq('track', 'PageView');
+                                }
+                                break;
+
+                            case 'google_tag_manager':
+                                if (t.config.containerId) {
+                                    const id = t.config.containerId;
+                                    (function (w, d, s, l, i) {
+                                        w[l] = w[l] || []; w[l].push({
+                                            'gtm.start':
+                                                new Date().getTime(), event: 'gtm.js'
+                                        }); var f = d.getElementsByTagName(s)[0],
+                                            j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
+                                                'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
+                                    })(window, document, 'script', 'dataLayer', id);
+                                }
+                                break;
+
+                            case 'custom_script':
+                                if (t.config.url) {
+                                    const s = document.createElement('script');
+                                    s.src = t.config.url;
+                                    s.async = true;
+                                    document.head.appendChild(s);
+                                }
+                                break;
+                        }
+                    } catch (e) {
+                        console.error('Error injecting tag:', t.name, e);
                     }
-                    // ... other tags omitted for size, add back if critical
-                } catch (e) { }
-            });
+                });
+            }
         }).catch(() => { });
     };
 

@@ -7,6 +7,7 @@ const trackers = [
     { entry: 'src/tracker/track-lite.ts', output: 'track-lite.js', name: 'mmmetricLite' },
     { entry: 'src/tracker/track-standard.ts', output: 'track.js', name: 'mmmetric' },
     { entry: 'src/tracker/track-full.ts', output: 'track-full.js', name: 'mmmetricFull' },
+    { entry: 'src/tracker/overlay.tsx', output: 'overlay.js', name: 'mmmetricOverlay' },
 ];
 
 export default defineConfig({

@@ -34,13 +34,13 @@ function parseLogDate(dateStr: string): Date {
         'Jan': 0, 'Feb': 1, 'Mar': 2, 'Apr': 3, 'May': 4, 'Jun': 5,
         'Jul': 6, 'Aug': 7, 'Sep': 8, 'Oct': 9, 'Nov': 10, 'Dec': 11
     };
-    
+
     const match = dateStr.match(/(\d{2})\/(\w{3})\/(\d{4}):(\d{2}):(\d{2}):(\d{2})/);
     if (match) {
         const [, day, monthStr, year, hour, min, sec] = match;
         return new Date(parseInt(year), months[monthStr], parseInt(day), parseInt(hour), parseInt(min), parseInt(sec));
     }
-    
+
     // Fallback to standard parsing
     return new Date(dateStr);
 }
@@ -48,7 +48,7 @@ function parseLogDate(dateStr: string): Date {
 function parseCombinedLog(line: string): ParsedLogEntry | null {
     const match = line.match(COMBINED_LOG_REGEX);
     if (!match) return null;
-    
+
     const [, ip, , dateStr, method, url, statusCode, , referrer, userAgent] = match;
     return {
         ip,
@@ -64,7 +64,7 @@ function parseCombinedLog(line: string): ParsedLogEntry | null {
 function parseCommonLog(line: string): ParsedLogEntry | null {
     const match = line.match(COMMON_LOG_REGEX);
     if (!match) return null;
-    
+
     const [, ip, , dateStr, method, url, statusCode] = match;
     return {
         ip,
@@ -80,10 +80,10 @@ function parseCommonLog(line: string): ParsedLogEntry | null {
 function parseIISLog(line: string): ParsedLogEntry | null {
     // Skip comment lines
     if (line.startsWith('#')) return null;
-    
+
     const match = line.match(IIS_LOG_REGEX);
     if (!match) return null;
-    
+
     const [, date, time, , method, url, ip, userAgent, statusCode] = match;
     return {
         ip,
@@ -99,7 +99,7 @@ function parseIISLog(line: string): ParsedLogEntry | null {
 function parseCSVLog(line: string, headers: string[]): ParsedLogEntry | null {
     const parts = line.split(',').map(p => p.trim().replace(/^"|"$/g, ''));
     if (parts.length < 2) return null;
-    
+
     // Try to map common header names
     const getField = (names: string[]): string => {
         for (const name of names) {
@@ -108,12 +108,12 @@ function parseCSVLog(line: string, headers: string[]): ParsedLogEntry | null {
         }
         return '';
     };
-    
+
     const timestamp = getField(['timestamp', 'date', 'time', 'datetime']);
     const url = getField(['url', 'path', 'uri', 'request']);
-    
+
     if (!timestamp || !url) return null;
-    
+
     return {
         ip: getField(['ip', 'client', 'remote', 'address']) || 'unknown',
         timestamp: new Date(timestamp),
@@ -187,19 +187,31 @@ serve(async (req) => {
             throw new Error("import_id is required");
         }
 
-        // 1. Get import record
-        const { data: importRecord, error: fetchError } = await supabase
+        // 0. Verify Auth
+        const authHeader = req.headers.get('Authorization');
+        if (!authHeader) {
+            throw new Error("Unauthorized: Missing Authorization header");
+        }
+
+        // Create user client to verify ownership
+        const userClient = createClient(supabaseUrl, Deno.env.get('SUPABASE_ANON_KEY')!, {
+            global: { headers: { Authorization: authHeader } }
+        });
+
+        // 1. Get import record (RLS ensures user owns it)
+        const { data: importRecord, error: fetchError } = await userClient
             .from('log_imports')
             .select('*')
             .eq('id', import_id)
             .single();
 
-        if (fetchError || !importRecord) throw new Error("Import record not found");
+        if (fetchError || !importRecord) throw new Error("Import record not found or access denied");
 
-        // Update status to processing
-        await supabase.from('log_imports').update({ 
-            status: 'processing', 
-            started_at: new Date().toISOString() 
+        // Update status to processing (use service role to bypass RLS for updates if needed, though userClient should work)
+        // Switch to service role for heavier processing to avoid RLS overhead on batch inserts
+        await supabase.from('log_imports').update({
+            status: 'processing',
+            started_at: new Date().toISOString()
         }).eq('id', import_id);
 
         // 2. Download file
@@ -219,11 +231,11 @@ serve(async (req) => {
         // Detect format from first non-comment line
         let detectedFormat = format;
         let csvHeaders: string[] = [];
-        
+
         if (format === 'auto') {
             for (const line of lines) {
                 if (line.startsWith('#')) continue;
-                
+
                 if (COMBINED_LOG_REGEX.test(line)) {
                     detectedFormat = 'combined';
                 } else if (COMMON_LOG_REGEX.test(line)) {

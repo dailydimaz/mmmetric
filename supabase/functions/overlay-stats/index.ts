@@ -15,43 +15,43 @@ function extractDomain(url: string | null): string | null {
 // Helper to verify origin matches site domain or is a trusted platform domain
 function verifyOrigin(origin: string | null, referer: string | null, siteDomain: string): boolean {
   const normalizedSiteDomain = siteDomain.replace(/^www\./, '').toLowerCase();
-  
+
   const originDomain = extractDomain(origin);
   const refererDomain = extractDomain(referer);
-  
+
   // Check origin header first
   if (originDomain && originDomain.toLowerCase() === normalizedSiteDomain) {
     return true;
   }
-  
+
   // Fall back to referer
   if (refererDomain && refererDomain.toLowerCase() === normalizedSiteDomain) {
     return true;
   }
-  
+
   // Allow localhost for development
   if (originDomain === 'localhost' || refererDomain === 'localhost') {
     return true;
   }
-  
+
   // Allow Lovable preview and published domains (for testing and demo purposes)
   const trustedDomains = [
     'lovable.app',
     'lovableproject.com',
     'lovable.dev'
   ];
-  
+
   const checkTrusted = (domain: string | null): boolean => {
     if (!domain) return false;
-    return trustedDomains.some(trusted => 
+    return trustedDomains.some(trusted =>
       domain === trusted || domain.endsWith('.' + trusted)
     );
   };
-  
+
   if (checkTrusted(originDomain) || checkTrusted(refererDomain)) {
     return true;
   }
-  
+
   return false;
 }
 
@@ -108,7 +108,7 @@ serve(async (req) => {
     // Security: Verify request origin matches site domain
     const origin = req.headers.get("origin");
     const referer = req.headers.get("referer");
-    
+
     if (!verifyOrigin(origin, referer, site.domain)) {
       console.warn(`Origin mismatch: origin=${origin}, referer=${referer}, expected=${site.domain}`);
       return new Response(JSON.stringify({ error: "Unauthorized origin" }), {
@@ -120,7 +120,7 @@ serve(async (req) => {
     // Calculate date range
     const now = new Date();
     let startDate: Date;
-    
+
     switch (period) {
       case "today":
         startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -158,7 +158,7 @@ serve(async (req) => {
     if (pageUrl) {
       // Normalize URL for matching
       const normalizedUrl = pageUrl.replace(/\/$/, ""); // Remove trailing slash
-      
+
       const { data: pageData, error: pageError } = await supabase
         .from("events")
         .select("id, visitor_id, referrer")
@@ -170,7 +170,7 @@ serve(async (req) => {
       if (!pageError && pageData) {
         const pagePageviews = pageData.length;
         const pageVisitors = new Set(pageData.map(e => e.visitor_id).filter(Boolean)).size;
-        
+
         // Count referrer sources
         const referrerCounts: Record<string, number> = {};
         pageData.forEach(e => {
@@ -205,7 +205,7 @@ serve(async (req) => {
     if (pageUrl) {
       try {
         const urlPath = new URL(pageUrl).pathname;
-        
+
         const { data: clicks, error: clickError } = await supabase
           .from("heatmap_clicks")
           .select("x, y, viewport_w, viewport_h")
@@ -217,7 +217,7 @@ serve(async (req) => {
         if (!clickError && clicks && clicks.length > 0) {
           // Normalize clicks to percentage positions and aggregate
           const clickMap = new Map<string, number>();
-          
+
           clicks.forEach(click => {
             if (click.viewport_w && click.viewport_h) {
               // Normalize to percentage grid (10% buckets)
@@ -276,7 +276,11 @@ serve(async (req) => {
     };
 
     return new Response(JSON.stringify(response), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      headers: {
+        ...corsHeaders,
+        "Content-Type": "application/json",
+        "Cache-Control": "public, max-age=60"
+      },
     });
 
   } catch (error: unknown) {

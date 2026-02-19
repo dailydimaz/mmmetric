@@ -23,6 +23,7 @@ export function HeatmapView({ siteId }: HeatmapViewProps) {
   const [activeTab, setActiveTab] = useState<"click" | "scroll">("click");
   const [selectedPage, setSelectedPage] = useState<string>("");
   const [customUrl, setCustomUrl] = useState<string>("");
+  const [deviceType, setDeviceType] = useState<"all" | "desktop" | "tablet" | "mobile">("all");
   const [dateRange, setDateRange] = useState<{ from: Date; to: Date }>({
     from: subDays(new Date(), 7),
     to: new Date(),
@@ -36,17 +37,19 @@ export function HeatmapView({ siteId }: HeatmapViewProps) {
   // Queries
   const { data: pages, isLoading: pagesLoading } = useHeatmapPages(siteId);
   const urlPath = selectedPage || customUrl || "/";
-  
+
   const { data: clicks, isLoading: clicksLoading, refetch: refetchClicks } = useHeatmapClicks(
     siteId,
     urlPath,
-    dateRange
+    dateRange,
+    deviceType
   );
-  
+
   const { data: scrolls, isLoading: scrollsLoading, refetch: refetchScrolls } = useHeatmapScrolls(
     siteId,
     urlPath,
-    dateRange
+    dateRange,
+    deviceType
   );
 
   const stats = calculateHeatmapStats(clicks || [], scrolls || []);
@@ -64,7 +67,9 @@ export function HeatmapView({ siteId }: HeatmapViewProps) {
     if (!rendererRef.current || !clicks || !containerRef.current) return;
 
     const containerWidth = containerRef.current.clientWidth;
-    const containerHeight = Math.max(800, containerRef.current.clientHeight);
+    // Calculate height based on max click Y or default
+    const maxClickY = clicks.reduce((max, c) => Math.max(max, c.y), 0);
+    const containerHeight = Math.max(800, maxClickY + 200);
 
     // Resize canvas
     rendererRef.current.resize(containerWidth, containerHeight);
@@ -108,6 +113,17 @@ export function HeatmapView({ siteId }: HeatmapViewProps) {
       from: subDays(new Date(), days),
       to: new Date(),
     });
+  };
+
+  const getContainerStyle = () => {
+    switch (deviceType) {
+      case "mobile":
+        return { maxWidth: "400px", margin: "0 auto" };
+      case "tablet":
+        return { maxWidth: "800px", margin: "0 auto" };
+      default:
+        return { width: "100%" };
+    }
   };
 
   return (
@@ -161,6 +177,22 @@ export function HeatmapView({ siteId }: HeatmapViewProps) {
                 value={customUrl}
                 onChange={(e) => { setCustomUrl(e.target.value); setSelectedPage(""); }}
               />
+            </div>
+
+            {/* Device Filter */}
+            <div className="space-y-2">
+              <Label>Device</Label>
+              <Select value={deviceType} onValueChange={(v: any) => setDeviceType(v)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="All Devices" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Devices</SelectItem>
+                  <SelectItem value="desktop">Desktop ({">"} 1024px)</SelectItem>
+                  <SelectItem value="tablet">Tablet (768px - 1024px)</SelectItem>
+                  <SelectItem value="mobile">Mobile ({"<"} 768px)</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             {/* Date Range */}
@@ -275,35 +307,43 @@ export function HeatmapView({ siteId }: HeatmapViewProps) {
               </p>
             </div>
           ) : activeTab === "click" ? (
-            <div ref={containerRef} className="relative min-h-[600px] border rounded-lg bg-muted/30 overflow-hidden">
-              {clicks?.length === 0 ? (
-                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <MousePointerClick className="h-12 w-12 text-muted-foreground/50 mb-4" />
-                  <h3 className="font-medium">No click data yet</h3>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Click tracking data will appear once users interact with this page.
-                  </p>
-                </div>
-              ) : (
-                <>
-                  <canvas
-                    ref={canvasRef}
-                    className="absolute top-0 left-0 w-full"
-                    style={{ pointerEvents: "none" }}
-                  />
-                  <div className="absolute bottom-4 right-4 flex items-center gap-2 bg-background/80 backdrop-blur-sm px-3 py-2 rounded-lg border text-sm">
-                    <div className="flex items-center gap-1">
-                      <div className="w-3 h-3 rounded-full bg-blue-500" />
-                      <span>Cold</span>
-                    </div>
-                    <div className="w-16 h-2 rounded-full bg-gradient-to-r from-blue-500 via-green-500 via-yellow-500 to-red-500" />
-                    <div className="flex items-center gap-1">
-                      <div className="w-3 h-3 rounded-full bg-red-500" />
-                      <span>Hot</span>
-                    </div>
+            <div className="border rounded-lg bg-muted/30 overflow-hidden relative">
+              <div
+                ref={containerRef}
+                className="relative min-h-[600px] overflow-hidden bg-background shadow-sm transition-all duration-300"
+                style={getContainerStyle()}
+              >
+                {clicks?.length === 0 ? (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                    <MousePointerClick className="h-12 w-12 text-muted-foreground/50 mb-4" />
+                    <h3 className="font-medium">No click data yet</h3>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Click tracking data will appear once users interact with this page.
+                    </p>
                   </div>
-                </>
-              )}
+                ) : (
+                  <>
+                    <canvas
+                      ref={canvasRef}
+                      className="absolute top-0 left-0 w-full"
+                      style={{ pointerEvents: "none" }}
+                    />
+                    <div className="sticky bottom-4 left-0 right-0 flex justify-end px-4 pointer-events-none">
+                      <div className="flex items-center gap-2 bg-background/80 backdrop-blur-sm px-3 py-2 rounded-lg border text-sm shadow-sm">
+                        <div className="flex items-center gap-1">
+                          <div className="w-3 h-3 rounded-full bg-blue-500" />
+                          <span>Cold</span>
+                        </div>
+                        <div className="w-16 h-2 rounded-full bg-gradient-to-r from-blue-500 via-green-500 via-yellow-500 to-red-500" />
+                        <div className="flex items-center gap-1">
+                          <div className="w-3 h-3 rounded-full bg-red-500" />
+                          <span>Hot</span>
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
           ) : (
             <ScrollDepthVisualization scrolls={scrolls || []} />
@@ -373,16 +413,16 @@ function ScrollDepthVisualization({ scrolls }: { scrolls: Array<{ max_scroll_per
         <span>Scroll Depth Distribution</span>
         <span>{totalSessions.toLocaleString()} sessions</span>
       </div>
-      
+
       <div className="space-y-2">
         {Object.entries(bands).map(([percent, count]) => {
           const pct = parseInt(percent);
           const width = (count / maxCount) * 100;
           const sessionPercent = totalSessions > 0 ? ((count / totalSessions) * 100).toFixed(1) : 0;
-          
+
           // Color gradient from green to red
           const hue = 120 - (pct * 1.2); // 120 (green) to 0 (red)
-          
+
           return (
             <div key={pct} className="flex items-center gap-4">
               <span className="text-sm text-muted-foreground w-12">{pct}%</span>

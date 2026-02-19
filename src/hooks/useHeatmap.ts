@@ -29,24 +29,37 @@ export interface HeatmapStats {
   maxScrollReached: number;
 }
 
+export type DeviceType = "all" | "desktop" | "tablet" | "mobile";
+
 export function useHeatmapClicks(
   siteId: string,
   urlPath: string,
-  dateRange: { from: Date; to: Date } | null
+  dateRange: { from: Date; to: Date } | null,
+  deviceType: DeviceType = "all"
 ) {
   return useQuery({
-    queryKey: ["heatmap-clicks", siteId, urlPath, dateRange?.from, dateRange?.to],
+    queryKey: ["heatmap-clicks", siteId, urlPath, dateRange?.from, dateRange?.to, deviceType],
     queryFn: async () => {
       const from = dateRange?.from || subDays(new Date(), 7);
       const to = dateRange?.to || new Date();
 
-      const { data, error } = await supabase
+      let query = supabase
         .from("heatmap_clicks")
         .select("id, x, y, viewport_w, viewport_h, element_selector, element_text, created_at")
         .eq("site_id", siteId)
         .eq("url_path", urlPath)
         .gte("created_at", from.toISOString())
-        .lte("created_at", to.toISOString())
+        .lte("created_at", to.toISOString());
+
+      if (deviceType === "mobile") {
+        query = query.lt("viewport_w", 768);
+      } else if (deviceType === "tablet") {
+        query = query.gte("viewport_w", 768).lt("viewport_w", 1024);
+      } else if (deviceType === "desktop") {
+        query = query.gte("viewport_w", 1024);
+      }
+
+      const { data, error } = await query
         .order("created_at", { ascending: false })
         .limit(5000);
 
@@ -61,21 +74,38 @@ export function useHeatmapClicks(
 export function useHeatmapScrolls(
   siteId: string,
   urlPath: string,
-  dateRange: { from: Date; to: Date } | null
+  dateRange: { from: Date; to: Date } | null,
+  deviceType: DeviceType = "all"
 ) {
   return useQuery({
-    queryKey: ["heatmap-scrolls", siteId, urlPath, dateRange?.from, dateRange?.to],
+    queryKey: ["heatmap-scrolls", siteId, urlPath, dateRange?.from, dateRange?.to, deviceType],
     queryFn: async () => {
       const from = dateRange?.from || subDays(new Date(), 7);
       const to = dateRange?.to || new Date();
 
-      const { data, error } = await supabase
+      let query = supabase
         .from("heatmap_scrolls")
         .select("id, max_scroll_percentage, viewport_h, created_at")
         .eq("site_id", siteId)
         .eq("url_path", urlPath)
         .gte("created_at", from.toISOString())
-        .lte("created_at", to.toISOString())
+        .lte("created_at", to.toISOString());
+
+      if (deviceType === "mobile") {
+        // approximate viewport width filter is hard for scrolls as we only save viewport_h often
+        // but let's assume we might join or checking viewport_h isn't enough.
+        // Wait, the tracking script sends `viewport_height` but not width in heatmap_scroll event props?
+        // Let's check the migration schema. 
+        // Migration 20260126... says heatmap_scrolls has (id, site_id, url_path, session_id, max_scroll_percentage, viewport_h, created_at)
+        // It does NOT have viewport_w.
+        // So we can't accurately filter scrolls by device type unless we join with events or add viewport_w to the table.
+        // For now, let's skip device filtering for scrolls or use viewport_h as a proxy?
+        // Mobile heights are usually < 900, but desktop can be short.
+        // Let's LEAVE OUT device filtering for scrolls for now to avoid errors, or try to rely on session lookup if expensive.
+        // Actually, let's keep it "all" for scrolls for now unless we modify the schema.
+      }
+
+      const { data, error } = await query
         .order("created_at", { ascending: false })
         .limit(5000);
 
