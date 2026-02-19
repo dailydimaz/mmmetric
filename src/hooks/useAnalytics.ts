@@ -159,7 +159,7 @@ export function useAnalyticsStats({ siteId, dateRange, filters }: AnalyticsParam
         _end_date: end.toISOString(),
         _prev_start_date: prevStart.toISOString(),
         _prev_end_date: prevEnd.toISOString(),
-        _filters: jsonbFilters || {},
+        ...(jsonbFilters ? { _filters: jsonbFilters } : {}),
       };
 
       const { data, error } = await supabase.rpc('get_site_stats', params);
@@ -203,7 +203,7 @@ export function useAnalyticsTimeSeries({ siteId, dateRange, filters }: Analytics
         _end_date: end.toISOString(),
         _prev_start_date: prevStart.toISOString(),
         _prev_end_date: prevEnd.toISOString(),
-        _filters: jsonbFilters || {},
+        ...(jsonbFilters ? { _filters: jsonbFilters } : {}),
       };
 
       const { data, error } = await supabase.rpc('get_timeseries_stats', params);
@@ -235,7 +235,7 @@ export function useTopPages({ siteId, dateRange, filters }: AnalyticsParams) {
         _start_date: start.toISOString(),
         _end_date: end.toISOString(),
         _limit: 10,
-        _filters: jsonbFilters || {},
+        ...(jsonbFilters ? { _filters: jsonbFilters } : {}),
       };
 
       const { data, error } = await supabase.rpc('get_top_pages', params);
@@ -265,7 +265,7 @@ export function useTopReferrers({ siteId, dateRange, filters }: AnalyticsParams)
         _start_date: start.toISOString(),
         _end_date: end.toISOString(),
         _limit: 10,
-        _filters: jsonbFilters || {},
+        ...(jsonbFilters ? { _filters: jsonbFilters } : {}),
       };
 
       const { data, error } = await supabase.rpc('get_top_referrers', params);
@@ -294,7 +294,7 @@ export function useDeviceStats({ siteId, dateRange, filters }: AnalyticsParams) 
         _site_id: siteId,
         _start_date: start.toISOString(),
         _end_date: end.toISOString(),
-        _filters: jsonbFilters || {},
+        ...(jsonbFilters ? { _filters: jsonbFilters } : {}),
       };
 
       const { data, error } = await supabase.rpc('get_device_stats', params);
@@ -340,7 +340,7 @@ export function useGeoStats({ siteId, dateRange, filters }: AnalyticsParams) {
         _start_date: start.toISOString(),
         _end_date: end.toISOString(),
         _limit: 10,
-        _filters: jsonbFilters || {},
+        ...(jsonbFilters ? { _filters: jsonbFilters } : {}),
       };
 
       const { data, error } = await supabase.rpc('get_geo_stats', params);
@@ -370,7 +370,7 @@ export function useCityStats({ siteId, dateRange, filters }: AnalyticsParams) {
         _start_date: start.toISOString(),
         _end_date: end.toISOString(),
         _limit: 10,
-        _filters: jsonbFilters || {},
+        ...(jsonbFilters ? { _filters: jsonbFilters } : {}),
       };
 
       const { data, error } = await supabase.rpc('get_city_stats', params);
@@ -403,7 +403,7 @@ export function useLanguageStats({ siteId, dateRange, filters }: AnalyticsParams
         _start_date: start.toISOString(),
         _end_date: end.toISOString(),
         _limit: 10,
-        _filters: jsonbFilters || {},
+        ...(jsonbFilters ? { _filters: jsonbFilters } : {}),
       };
 
       const { data, error } = await supabase.rpc('get_language_stats', params);
@@ -433,7 +433,7 @@ export function useUTMStats({ siteId, dateRange, filters }: AnalyticsParams) {
         _start_date: start.toISOString(),
         _end_date: end.toISOString(),
         _limit: 10,
-        _filters: jsonbFilters || {},
+        ...(jsonbFilters ? { _filters: jsonbFilters } : {}),
       };
 
       const { data, error } = await supabase.rpc('get_utm_stats', params);
