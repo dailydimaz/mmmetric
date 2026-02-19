@@ -7,6 +7,37 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
 };
 
+// In-memory rate limiter for POST (recording uploads)
+const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
+const RATE_LIMIT = 30; // requests per minute per IP
+const RATE_WINDOW = 60000;
+
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now();
+  const entry = rateLimitMap.get(ip);
+  if (!entry || now > entry.resetTime) {
+    rateLimitMap.set(ip, { count: 1, resetTime: now + RATE_WINDOW });
+    return true;
+  }
+  if (entry.count >= RATE_LIMIT) return false;
+  entry.count++;
+  return true;
+}
+
+// Cleanup every 5 minutes
+setInterval(() => {
+  const now = Date.now();
+  for (const [ip, entry] of rateLimitMap.entries()) {
+    if (now > entry.resetTime) rateLimitMap.delete(ip);
+  }
+}, 5 * 60 * 1000);
+
+// Validate session_id and visitor_id format (alphanumeric + hyphens, max 128 chars)
+function isValidId(id: string | undefined): boolean {
+  if (!id || typeof id !== 'string') return false;
+  return /^[a-zA-Z0-9_-]{1,128}$/.test(id);
+}
+
 // S3-compatible client for R3/R2/S3
 async function uploadToR3(
   endpoint: string,
@@ -205,11 +236,32 @@ serve(async (req) => {
 
     // POST: upload recording events
     if (req.method === 'POST') {
+      // Rate limit by IP
+      const clientIp = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
+      if (!checkRateLimit(clientIp)) {
+        return new Response(JSON.stringify({ error: 'Rate limit exceeded' }), {
+          status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Retry-After': '60' },
+        });
+      }
+
       const body = await req.json();
       const { site_id, session_id, visitor_id, events, metadata } = body;
 
       if (!site_id || !session_id || !events?.length) {
         return new Response(JSON.stringify({ error: 'Missing required fields' }), {
+          status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
+      // Validate ID formats to prevent injection
+      if (!isValidId(session_id) || (visitor_id && !isValidId(visitor_id))) {
+        return new Response(JSON.stringify({ error: 'Invalid session_id or visitor_id format' }), {
+          status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
+      if (typeof site_id !== 'string' || site_id.length > 128) {
+        return new Response(JSON.stringify({ error: 'Invalid site_id' }), {
           status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       }
