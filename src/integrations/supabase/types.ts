@@ -3454,6 +3454,7 @@ export type Database = {
       }
       check_usage_limit: { Args: { p_site_id: string }; Returns: boolean }
       create_future_partitions: { Args: never; Returns: undefined }
+      delete_expired_data: { Args: never; Returns: undefined }
       delete_expired_events: { Args: never; Returns: number }
       get_attribution_stats: {
         Args: {
@@ -3592,6 +3593,14 @@ export type Database = {
               visits: number
             }[]
           }
+      get_overlay_stats: {
+        Args: { _period?: string; _tracking_id: string; _url_path: string }
+        Returns: {
+          pageviews: number
+          top_referrers: Json
+          visitors: number
+        }[]
+      }
       get_public_dashboard_stats:
         | {
             Args: {
@@ -3664,10 +3673,21 @@ export type Database = {
           updated_at: string
         }[]
       }
-      get_site_group_stats: {
-        Args: { _end_date: string; _group_id: string; _start_date: string }
-        Returns: Json
-      }
+      get_site_group_stats:
+        | {
+            Args: { _end_date: string; _group_id: string; _start_date: string }
+            Returns: Json
+          }
+        | {
+            Args: {
+              _end_date: string
+              _group_id: string
+              _prev_end_date?: string
+              _prev_start_date?: string
+              _start_date: string
+            }
+            Returns: Json
+          }
       get_site_stats:
         | {
             Args: {
