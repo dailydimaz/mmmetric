@@ -1,14 +1,10 @@
 import { useMemo, useState } from "react";
-import { ComposableMap, Geographies, Geography, ZoomableGroup, Marker } from "react-simple-maps";
-import { scaleSqrt } from "d3-scale";
-import { geoCentroid } from "d3-geo";
 import { GeoStat, CityStat } from "@/hooks/useAnalytics";
 import { Loader2, Users, Eye, MousePointerClick, TrendingUp, Plus, Minus, RotateCcw, Building2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-
-// TopoJSON for the world map - using a reliable CDN source
-const GEO_URL = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
+import { Map, Overlay } from "pigeon-maps";
+import { maptiler } from 'pigeon-maps/providers';
 
 interface GeoMapProps {
     data: GeoStat[] | undefined;
@@ -17,7 +13,22 @@ interface GeoMapProps {
     onCountryClick?: (countryCode: string) => void;
 }
 
-// Comprehensive country code to name mapping
+// Map Country code to lat/lng for plotting countries over the map, since Pigeon Maps doesn't natively shade countries.
+const countryCentroids: Record<string, [number, number]> = {
+    US: [37.09, -95.71], GB: [55.37, -3.43], DE: [51.16, 10.45], FR: [46.22, 2.21], CA: [56.13, -106.34],
+    AU: [-25.27, 133.77], JP: [36.20, 138.25], CN: [35.86, 104.19], IN: [20.59, 78.96], BR: [-14.23, -51.92],
+    NL: [52.13, 5.29], ES: [40.46, -3.74], IT: [41.87, 12.56], KR: [35.90, 127.76], RU: [61.52, 105.31],
+    MX: [23.63, -102.55], ID: [-0.78, 113.92], SE: [60.12, 18.64], NO: [60.47, 8.46], DK: [56.26, 9.50],
+    FI: [61.92, 25.74], PL: [51.91, 19.14], AT: [47.51, 14.55], CH: [46.81, 8.22], BE: [50.50, 4.46],
+    PT: [39.39, -8.22], IE: [53.41, -8.24], NZ: [-40.90, 174.88], SG: [1.35, 103.81], HK: [22.39, 114.10],
+    AR: [-38.41, -63.61], CL: [-35.67, -71.54], CO: [4.57, -74.29], PH: [12.87, 121.77], TH: [15.87, 100.99],
+    MY: [4.21, 101.97], VN: [14.05, 108.27], ZA: [-30.55, 22.93], NG: [9.08, 8.67], EG: [26.82, 30.80],
+    UA: [48.37, 31.16], CZ: [49.81, 15.47], RO: [45.94, 24.96], HU: [47.16, 19.50], GR: [39.07, 21.82],
+    TR: [38.96, 35.24], IL: [31.04, 34.85], AE: [23.42, 53.84], SA: [23.88, 45.07], PK: [30.37, 69.34],
+    BD: [23.68, 90.35], TW: [23.69, 120.96], KE: [-0.02, 37.90], MA: [31.79, -7.09], DZ: [28.03, 1.65],
+    PE: [-9.18, -75.01], VE: [6.42, -66.58], EC: [-1.83, -78.18], GT: [15.78, -90.23], CR: [9.74, -83.75],
+};
+
 const countryNames: Record<string, string> = {
     US: "United States", GB: "United Kingdom", DE: "Germany", FR: "France", CA: "Canada",
     AU: "Australia", JP: "Japan", CN: "China", IN: "India", BR: "Brazil",
@@ -32,6 +43,9 @@ const countryNames: Record<string, string> = {
     BD: "Bangladesh", TW: "Taiwan", KE: "Kenya", MA: "Morocco", DZ: "Algeria",
     PE: "Peru", VE: "Venezuela", EC: "Ecuador", GT: "Guatemala", CR: "Costa Rica",
 };
+
+// Map Providers matching Mapbox styles approximately utilizing standard options
+const maptilerProvider = maptiler('P01O1TjD4zUvI07wK81L', 'streets');
 
 function getCountryName(code: string): string {
     return countryNames[code?.toUpperCase()] || code || "Unknown";
@@ -52,7 +66,9 @@ function formatCompactNumber(number: number) {
 }
 
 export function GeoMap({ data, cities, isLoading, onCountryClick }: GeoMapProps) {
-    const [position, setPosition] = useState({ coordinates: [0, 20] as [number, number], zoom: 1 });
+    const [center, setCenter] = useState<[number, number]>([20, 0]);
+    const [zoom, setZoom] = useState(2);
+
     const [hoveredCountry, setHoveredCountry] = useState<{
         code: string;
         name: string;
@@ -69,35 +85,21 @@ export function GeoMap({ data, cities, isLoading, onCountryClick }: GeoMapProps)
         x: number;
         y: number;
     } | null>(null);
-    const { colorScale, hasData } = useMemo(() => {
-        if (!data || data.length === 0) {
-            return {
-                colorScale: () => "hsl(var(--muted))",
-                maxVisits: 0,
-                hasData: false,
-            };
-        }
-        const maxVal = Math.max(...data.map(d => d.visits));
 
-        // Use sqrt scale for better distribution of colors
-        const scale = scaleSqrt<string>()
-            .domain([0, maxVal])
-            .range(["hsl(217, 91%, 95%)", "hsl(217, 91%, 40%)"]);
+    const { hasData, maxCountryVisits, maxCityVisits } = useMemo(() => {
+        if (!data || data.length === 0) {
+            return { hasData: false, maxCountryVisits: 0, maxCityVisits: 0 };
+        }
+
+        const maxCountries = Math.max(...data.map(d => d.visits), 1);
+        const maxCities = Math.max(...(cities?.map(c => c.visits) || [1]));
 
         return {
-            colorScale: scale,
-            maxVisits: maxVal,
             hasData: true,
+            maxCountryVisits: maxCountries,
+            maxCityVisits: maxCities
         };
-    }, [data]);
-
-    const countryDataMap = useMemo(() => {
-        const map = new Map<string, GeoStat>();
-        data?.forEach(d => {
-            map.set(d.country?.toUpperCase(), d);
-        });
-        return map;
-    }, [data]);
+    }, [data, cities]);
 
     // Get top 5 countries for the legend
     const topCountries = useMemo(() => {
@@ -116,17 +118,16 @@ export function GeoMap({ data, cities, isLoading, onCountryClick }: GeoMapProps)
     };
 
     const handleZoomIn = () => {
-        if (position.zoom >= 4) return;
-        setPosition((pos) => ({ ...pos, zoom: Math.min(pos.zoom * 1.5, 4) }));
+        setZoom(Math.min(zoom + 1, 18));
     };
 
     const handleZoomOut = () => {
-        if (position.zoom <= 1) return;
-        setPosition((pos) => ({ ...pos, zoom: Math.max(pos.zoom / 1.5, 1) }));
+        setZoom(Math.max(zoom - 1, 1));
     };
 
     const handleResetZoom = () => {
-        setPosition({ coordinates: [0, 20], zoom: 1 });
+        setCenter([20, 0]);
+        setZoom(2);
     };
 
     if (isLoading) {
@@ -139,6 +140,19 @@ export function GeoMap({ data, cities, isLoading, onCountryClick }: GeoMapProps)
 
     const topCitiesForHover = hoveredCountry ? getTopCities(hoveredCountry.code) : [];
 
+    // Helper functions for sizing markers logarithmically based on visits
+    const getCountrySize = (visits: number) => {
+        if (!maxCountryVisits) return 12;
+        const ratio = Math.sqrt(visits / maxCountryVisits);
+        return 16 + (ratio * 20); // 16px to 36px 
+    };
+
+    const getCitySize = (visits: number) => {
+        if (!maxCityVisits) return 8;
+        const ratio = Math.sqrt(visits / maxCityVisits);
+        return 10 + (ratio * 16); // 10px to 26px
+    };
+
     return (
         <div className="w-full rounded-lg bg-gradient-to-br from-muted/20 to-muted/5 border border-border/50 relative group">
             {/* Zoom Controls */}
@@ -148,7 +162,7 @@ export function GeoMap({ data, cities, isLoading, onCountryClick }: GeoMapProps)
                     size="icon"
                     className="h-8 w-8 shadow-sm bg-background/80 backdrop-blur hover:bg-background"
                     onClick={handleZoomIn}
-                    disabled={position.zoom >= 4}
+                    disabled={zoom >= 18}
                 >
                     <Plus className="h-4 w-4" />
                 </Button>
@@ -157,7 +171,7 @@ export function GeoMap({ data, cities, isLoading, onCountryClick }: GeoMapProps)
                     size="icon"
                     className="h-8 w-8 shadow-sm bg-background/80 backdrop-blur hover:bg-background"
                     onClick={handleZoomOut}
-                    disabled={position.zoom <= 1}
+                    disabled={zoom <= 1}
                 >
                     <Minus className="h-4 w-4" />
                 </Button>
@@ -172,181 +186,122 @@ export function GeoMap({ data, cities, isLoading, onCountryClick }: GeoMapProps)
             </div>
 
             {/* Map Container */}
-            <div className="h-[400px] relative cursor-move active:cursor-grabbing bg-[#f8fafc] dark:bg-[#0f172a] rounded-t-lg overflow-hidden">
-                <ComposableMap
-                    projectionConfig={{ scale: 147 }}
-                    className="w-full h-full"
+            <div className="h-[400px] relative cursor-move active:cursor-grabbing bg-[#e0e4eb] dark:bg-[#1f2937] rounded-t-lg overflow-hidden pigeon-map-container">
+                {/* 
+                    To implement dark boundaries without breaking pigeon maps standard tiles, we just use invert filter 
+                    on the tile class in global CSS, but here we can just use the natural tiles.
+                */}
+                <Map
+                    center={center}
+                    zoom={zoom}
+                    onBoundsChanged={({ center, zoom }) => {
+                        setCenter(center);
+                        setZoom(zoom);
+                    }}
+                    mouseEvents={true}
+                    touchEvents={true}
+                    minZoom={1}
                 >
-                    <ZoomableGroup
-                        zoom={position.zoom}
-                        center={position.coordinates}
-                        onMoveEnd={({ coordinates, zoom }) => setPosition({ coordinates: coordinates as [number, number], zoom })}
-                        maxZoom={4}
-                    >
-                        <Geographies geography={GEO_URL}>
-                            {({ geographies }) => (
-                                <>
-                                    {geographies.map((geo) => {
-                                        const countryCode = geo.properties.ISO_A2?.toUpperCase();
-                                        const stat = countryDataMap.get(countryCode);
-                                        const hasVisits = !!stat && stat.visits > 0;
 
-                                        // Calculate fill color
-                                        const fill = hasVisits
-                                            ? colorScale(stat.visits)
-                                            : "hsl(var(--muted) / 0.5)";
+                    {/* Render Country Centroids (for broader view) */}
+                    {data?.map(country => {
+                        const centroid = countryCentroids[country.country?.toUpperCase()];
+                        if (!centroid || country.visits === 0) return null;
 
-                                        return (
-                                            <Geography
-                                                key={geo.rsmKey}
-                                                geography={geo}
-                                                onMouseEnter={(e) => {
-                                                    const name = geo.properties.name || getCountryName(countryCode);
-                                                    setHoveredCountry({
-                                                        code: countryCode,
-                                                        name,
-                                                        visits: stat?.visits || 0,
-                                                        percentage: stat?.percentage || 0,
-                                                        x: e.clientX,
-                                                        y: e.clientY,
-                                                    });
-                                                }}
-                                                onMouseLeave={() => {
-                                                    setHoveredCountry(null);
-                                                }}
-                                                onClick={() => {
-                                                    if (countryCode && onCountryClick && hasVisits) {
-                                                        onCountryClick(countryCode);
-                                                    }
-                                                }}
-                                                style={{
-                                                    default: {
-                                                        fill,
-                                                        outline: "none",
-                                                        stroke: "hsl(var(--border) / 0.5)",
-                                                        strokeWidth: 0.5,
-                                                        transition: "fill 0.2s ease",
-                                                    },
-                                                    hover: {
-                                                        fill: hasVisits ? "hsl(var(--primary))" : "hsl(var(--muted))",
-                                                        outline: "none",
-                                                        cursor: hasVisits ? "pointer" : "default",
-                                                        stroke: "hsl(var(--primary))",
-                                                        strokeWidth: hasVisits ? 1 : 0.5,
-                                                    },
-                                                    pressed: {
-                                                        fill: "hsl(var(--primary) / 0.8)",
-                                                        outline: "none",
-                                                    },
-                                                }}
-                                            />
-                                        );
-                                    })}
-                                    {/* Markers Layer */}
-                                    {geographies.map((geo) => {
-                                        const countryCode = geo.properties.ISO_A2?.toUpperCase();
-                                        const stat = countryDataMap.get(countryCode);
-                                        if (!stat || stat.visits <= 0) return null;
+                        // Hide country markers if we are zoomed in closely (cities take over)
+                        if (zoom > 4) return null;
 
-                                        // Only show markers for countries with significant visits or if zoomed in
-                                        // or if there are few countries with data
-                                        const centroid = geoCentroid(geo);
+                        const size = getCountrySize(country.visits);
 
-                                        return (
-                                            <Marker key={`${geo.rsmKey}-marker`} coordinates={centroid}>
-                                                <g
-                                                    onMouseEnter={(e) => {
-                                                        const name = geo.properties.name || getCountryName(countryCode);
-                                                        setHoveredCountry({
-                                                            code: countryCode,
-                                                            name,
-                                                            visits: stat.visits,
-                                                            percentage: stat.percentage,
-                                                            x: e.clientX,
-                                                            y: e.clientY,
-                                                        });
-                                                    }}
-                                                    onMouseLeave={() => setHoveredCountry(null)}
-                                                    onClick={() => onCountryClick?.(countryCode)}
-                                                    className="cursor-pointer hover:opacity-80 transition-opacity"
-                                                >
-                                                    <circle r={4 / position.zoom} fill="hsl(var(--primary))" stroke="bg-background" strokeWidth={1} />
-                                                    <text
-                                                        textAnchor="middle"
-                                                        y={-6 / position.zoom}
-                                                        style={{
-                                                            fontFamily: "system-ui",
-                                                            fill: "hsl(var(--foreground))",
-                                                            fontSize: `${Math.max(8, 10 / position.zoom)}px`,
-                                                            fontWeight: "bold",
-                                                            textShadow: "0px 0px 2px hsl(var(--background))"
-                                                        }}
-                                                    >
-                                                        {formatCompactNumber(stat.visits)}
-                                                    </text>
-                                                </g>
-                                            </Marker>
-                                        );
-                                    })}
-                                    {/* City Markers Layer - only show when zoomed in or when coordinates available */}
-                                    {cities?.filter(c => c.latitude != null && c.longitude != null).map((city) => {
-                                        const cityMaxVisits = Math.max(...(cities?.map(c => c.visits) || [1]));
-                                        const sizeScale = scaleSqrt()
-                                            .domain([0, cityMaxVisits])
-                                            .range([3, 12]);
-                                        const markerSize = sizeScale(city.visits) / position.zoom;
-                                        
-                                        return (
-                                            <Marker 
-                                                key={`city-${city.country}-${city.city}`} 
-                                                coordinates={[city.longitude!, city.latitude!]}
-                                            >
-                                                <g
-                                                    onMouseEnter={(e) => {
-                                                        setHoveredCity({
-                                                            city: city.city,
-                                                            country: city.country,
-                                                            visits: city.visits,
-                                                            percentage: city.percentage,
-                                                            x: e.clientX,
-                                                            y: e.clientY,
-                                                        });
-                                                    }}
-                                                    onMouseLeave={() => setHoveredCity(null)}
-                                                    className="cursor-pointer hover:opacity-80 transition-opacity"
-                                                >
-                                                    <circle 
-                                                        r={markerSize} 
-                                                        fill="hsl(var(--chart-2))" 
-                                                        fillOpacity={0.7}
-                                                        stroke="hsl(var(--background))" 
-                                                        strokeWidth={1.5 / position.zoom} 
-                                                    />
-                                                    {/* Show city name when zoomed in enough */}
-                                                    {position.zoom >= 2 && (
-                                                        <text
-                                                            textAnchor="middle"
-                                                            y={-(markerSize + 4 / position.zoom)}
-                                                            style={{
-                                                                fontFamily: "system-ui",
-                                                                fill: "hsl(var(--foreground))",
-                                                                fontSize: `${Math.max(7, 9 / position.zoom)}px`,
-                                                                fontWeight: 600,
-                                                                textShadow: "0px 0px 3px hsl(var(--background)), 0px 0px 3px hsl(var(--background))"
-                                                            }}
-                                                        >
-                                                            {city.city}
-                                                        </text>
-                                                    )}
-                                                </g>
-                                            </Marker>
-                                        );
-                                    })}
-                                </>
-                            )}
-                        </Geographies>
-                    </ZoomableGroup>
-                </ComposableMap>
+                        return (
+                            <Overlay
+                                key={`country-${country.country}`}
+                                anchor={centroid}
+                                offset={[size / 2, size / 2]}
+                            >
+                                <div
+                                    className="relative flex items-center justify-center group/marker cursor-pointer"
+                                    style={{ width: size, height: size }}
+                                    onMouseEnter={(e) => {
+                                        setHoveredCountry({
+                                            code: country.country,
+                                            name: getCountryName(country.country),
+                                            visits: country.visits,
+                                            percentage: country.percentage,
+                                            x: e.clientX,
+                                            y: e.clientY
+                                        });
+                                    }}
+                                    onMouseLeave={() => setHoveredCountry(null)}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        onCountryClick?.(country.country);
+                                    }}
+                                >
+                                    {/* Ripple Effect */}
+                                    <div className="absolute inset-0 bg-primary/40 rounded-full animate-ping opacity-75" />
+                                    {/* Main Marker */}
+                                    <div className="absolute inset-0 bg-primary rounded-full shadow-md border-2 border-background flex items-center justify-center transition-transform group-hover/marker:scale-110">
+                                        {(size > 24) && (
+                                            <span className="text-primary-foreground font-bold font-mono" style={{ fontSize: size * 0.35 }}>
+                                                {formatCompactNumber(country.visits)}
+                                            </span>
+                                        )}
+                                    </div>
+                                </div>
+                            </Overlay>
+                        );
+                    })}
+
+                    {/* Render City Markers (takes precedence on zoom) */}
+                    {cities?.filter(c => c.latitude != null && c.longitude != null).map((city) => {
+                        // Only show cities that have real data mapped
+                        const size = getCitySize(city.visits);
+
+                        // Fade cities out when zoomed out all the way to keep global map clean
+                        if (zoom <= 2) return null;
+
+                        return (
+                            <Overlay
+                                key={`city-${city.country}-${city.city}`}
+                                anchor={[city.latitude!, city.longitude!]}
+                                offset={[size / 2, size / 2]}
+                            >
+                                <div
+                                    className="relative flex items-center justify-center group/city cursor-pointer"
+                                    style={{ width: size, height: size }}
+                                    onMouseEnter={(e) => {
+                                        setHoveredCity({
+                                            city: city.city,
+                                            country: city.country,
+                                            visits: city.visits,
+                                            percentage: city.percentage,
+                                            x: e.clientX,
+                                            y: e.clientY,
+                                        });
+                                    }}
+                                    onMouseLeave={() => setHoveredCity(null)}
+                                >
+                                    <div className="absolute inset-0 bg-chart-2/80 backdrop-blur-sm rounded-full shadow-sm border-[1.5px] border-background transition-transform duration-200 group-hover/city:scale-125 group-hover/city:bg-chart-2 flex items-center justify-center overflow-hidden">
+                                        {zoom > 5 && size > 16 && (
+                                            <span className="text-[8px] font-bold text-white max-w-[90%] truncate opacity-0 group-hover/city:opacity-100 transition-opacity">
+                                                {formatCompactNumber(city.visits)}
+                                            </span>
+                                        )}
+                                    </div>
+
+                                    {/* City Label when zoomed in */}
+                                    {zoom >= 6 && (
+                                        <div className="absolute top-[110%] left-1/2 -translate-x-1/2 whitespace-nowrap px-1.5 py-0.5 bg-background/80 backdrop-blur rounded text-[10px] font-semibold text-foreground pointer-events-none drop-shadow-sm">
+                                            {city.city}
+                                        </div>
+                                    )}
+                                </div>
+                            </Overlay>
+                        );
+                    })}
+
+                </Map>
 
                 {/* Animated Tooltip */}
                 <AnimatePresence>
@@ -486,23 +441,12 @@ export function GeoMap({ data, cities, isLoading, onCountryClick }: GeoMapProps)
             {/* Bottom Legend & Stats */}
             <div className="px-4 py-3 border-t border-border/50 bg-muted/20">
                 <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
-                    {/* Color Scale Legend */}
-                    <div className="flex items-center gap-3">
-                        <span className="text-xs text-muted-foreground font-medium">Density:</span>
-                        <div className="flex items-center gap-1">
-                            <div className="w-6 h-3 rounded-sm" style={{ backgroundColor: "hsl(217, 91%, 95%)" }} />
-                            <div className="w-6 h-3 rounded-sm" style={{ backgroundColor: "hsla(217, 91%, 70%)" }} />
-                            <div className="w-6 h-3 rounded-sm" style={{ backgroundColor: "hsl(217, 91%, 50%)" }} />
-                            <div className="w-6 h-3 rounded-sm" style={{ backgroundColor: "hsl(217, 91%, 40%)" }} />
-                        </div>
-                    </div>
-
                     {/* Top Countries Quick Stats */}
-                    {topCountries.length > 0 && (
+                    {topCountries.length > 0 ? (
                         <div className="flex items-center gap-2 overflow-x-auto max-w-full pb-1 md:pb-0 hide-scrollbar">
-                            <span className="text-xs text-muted-foreground font-medium whitespace-nowrap">Top:</span>
+                            <span className="text-xs text-muted-foreground font-medium whitespace-nowrap">Global Top:</span>
                             <div className="flex items-center gap-2">
-                                {topCountries.slice(0, 3).map((country) => (
+                                {topCountries.slice(0, 4).map((country) => (
                                     <button
                                         key={country.country}
                                         onClick={() => onCountryClick?.(country.country)}
@@ -514,6 +458,8 @@ export function GeoMap({ data, cities, isLoading, onCountryClick }: GeoMapProps)
                                 ))}
                             </div>
                         </div>
+                    ) : (
+                        <span className="text-xs text-muted-foreground font-medium">Pan & Zoom to explore visitors</span>
                     )}
                 </div>
             </div>
