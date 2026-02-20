@@ -17,31 +17,49 @@
 <p align="center">
   <a href="#features">Features</a> •
   <a href="#getting-started">Getting Started</a> •
+  <a href="#usage">Usage</a> •
+  <a href="#integrations">Integrations</a> •
   <a href="#self-hosting">Self-Hosting</a> •
-  <a href="#contributing">Contributing</a> •
-  <a href="#license">License</a>
+  <a href="#contributing">Contributing</a>
 </p>
 
 ---
 
 ## ✨ Features
 
-- **Privacy-First**: No cookies, no personal data collection, GDPR/CCPA compliant
-- **Lightweight**: < 1KB tracking script, zero impact on Core Web Vitals
-- **Real-time Analytics**: See visitors on your site as it happens
-- **Custom Events**: Track button clicks, form submissions, and any custom events
-- **Funnel Analysis**: Understand your conversion funnel and optimize user flow
-- **Retention Cohorts**: Track user retention over time
-- **Open Source**: MIT licensed, self-hostable, fully transparent
+mmmetric goes beyond basic page views to provide a comprehensive, privacy-respecting analytics suite:
+
+### Core Analytics
+- **Privacy-First & Cookie-less**: No personal data collection. Fully GDPR/CCPA compliant out of the box.
+- **Real-time Engine**: Watch visitors interact with your site as it happens.
+- **Lightweight Tracker**: < 1KB standard script with zero impact on Core Web Vitals.
+- **Multi-Site Management**: Group and manage multiple domains under unified dashboards.
+- **Localization**: Built-in support for multiple languages (EN, ID, TH, VI, MY, PH).
+
+### Advanced Behavior & Conversion
+- **Session Recordings**: Visual playback of user interactions and navigation paths.
+- **A/B Testing & Experiments**: Built-in experiment management and statistical reporting.
+- **Page Overlays & Heatmaps**: Visual analytics laid directly over your website UI.
+- **Funnel & Journey Analysis**: Understand conversion funnels and multi-step user paths.
+- **Retention Cohorts**: Track user engagement and retention over time.
+- **Custom Event Tracking**: Track button clicks, form submissions, and unique conversions.
+
+### Diagnostics & Attribution
+- **Multi-Touch Attribution**: Track user sources and campaign effectiveness.
+- **Campaign Builder**: Built-in tool for standardizing UTM parameters.
+- **Site Search Analytics**: Analyze internal search queries on your platform.
+- **Error Tracking**: Client-side Javascript error reporting and logging.
+- **Social Share Tracking**: Measure content virality and sharing metrics.
 
 ## 🚀 Getting Started
 
 ### Quick Start (Cloud)
 
-1. Visit [mmmetric.lovable.app](https://mmmetric.lovable.app) and sign up
-2. Add your first website
-3. Copy the tracking script to your site's `<head>` tag
-4. Start collecting insights!
+1. Visit [mmmetric.lovable.app](https://mmmetric.lovable.app) and sign up.
+2. Add your first website.
+3. Configure your tracking preferences (Lite, Standard, Full).
+4. Copy the appropriate tracking script to your site's `<head>`.
+5. *Note: The Free tier retains data for 30 days. Consider upgrading for extended retention.*
 
 ### Self-Hosting
 
@@ -99,15 +117,6 @@ supabase secrets set CRON_SECRET=your-random-secret
 supabase secrets set ALLOWED_DEV_ORIGINS=localhost,staging.yourdomain.com
 ```
 
-| Secret | Required | Description |
-|--------|----------|-------------|
-| `RESEND_API_KEY` | For emails | [Resend.com](https://resend.com) API key for email reports |
-| `APP_URL` | For emails | Your application URL for links in emails |
-| `APP_NAME` | Optional | Application name in emails (default: mmmetric) |
-| `EMAIL_FROM` | Optional | Email sender address |
-| `CRON_SECRET` | For scheduled jobs | Secret to authenticate cron requests |
-| `ALLOWED_DEV_ORIGINS` | Optional | Comma-separated domains to allow for development |
-
 #### Production Deployment
 
 ```bash
@@ -118,65 +127,20 @@ npm run build
 npm run preview
 ```
 
-Deploy the `dist/` folder to any static hosting provider:
-- Vercel
-- Netlify
-- Cloudflare Pages
-- GitHub Pages
-- Your own server
-
-#### Edge Functions Deployment
-
-Deploy edge functions to your Supabase project:
-
-```bash
-# Link to your Supabase project
-supabase link --project-ref your-project-id
-
-# Deploy all functions
-supabase functions deploy
-```
-
-#### Supabase Configuration
-
-For self-hosted Supabase instances, regenerate `supabase/config.toml`:
-
-```bash
-supabase init
-```
-
-Then apply all migrations from `supabase/migrations/` to your database.
+Deploy the `dist/` folder to any static hosting provider like Vercel, Netlify, Cloudflare Pages, or GitHub Pages.
 
 #### GeoIP Setup (Optional)
 
-For visitor geolocation (country/city detection), mmmetric uses a self-hosted IP database:
-
-1. **Quick Start** - The database includes sample data for testing. For production, import a full dataset.
-
-2. **Import GeoIP Data** - Download free data from [DB-IP Lite](https://db-ip.com/db/lite.php) (no registration) or [MaxMind GeoLite2](https://dev.maxmind.com/geoip/geolite2-free-geolocation-data/) (free account required):
-
-```sql
--- Import locations from GeoLite2-City-Locations-en.csv
-\copy temp_locations FROM 'GeoLite2-City-Locations-en.csv' WITH CSV HEADER;
-INSERT INTO geoip_locations (geoname_id, country_code, country_name, city_name)
-SELECT geoname_id, country_iso_code, country_name, city_name FROM temp_locations;
-
--- Import IP blocks from GeoLite2-City-Blocks-IPv4.csv  
-\copy temp_blocks FROM 'GeoLite2-City-Blocks-IPv4.csv' WITH CSV HEADER;
-INSERT INTO geoip_blocks (network, geoname_id)
-SELECT network::inet, geoname_id FROM temp_blocks WHERE geoname_id IS NOT NULL;
-```
-
-See [docs/geoip-import.md](docs/geoip-import.md) for detailed instructions.
-
-3. **How It Works** - The tracking function automatically looks up visitor IPs against your local database - no external API calls, no rate limits, complete privacy.
+For visitor geolocation, mmmetric uses a self-hosted IP database to avoid external rate limits and preserve complete privacy. See [docs/geoip-import.md](docs/geoip-import.md) to import data from DB-IP Lite or MaxMind GeoLite2.
 
 ## 📊 Usage
 
-### Adding the Tracking Script
+### Tracking Script Variants
 
-Add this script to your website's `<head>` tag:
+mmmetric offers multiple tracking scripts depending on your needs. Add the chosen script to your website's `<head>` tag. **The `data-api` attribute should point to your Supabase Edge Functions URL.**
 
+**1. Standard Tracker (Recommended)**
+Tracks pageviews, unique visitors, and sessions.
 ```html
 <script defer 
   src="https://your-analytics-domain.com/track.js" 
@@ -185,14 +149,23 @@ Add this script to your website's `<head>` tag:
 </script>
 ```
 
-**Important:** The `data-api` attribute is required and should point to your Supabase Edge Functions URL.
-
-For cloud users:
+**2. Full Tracker (Web Vitals & Forms)**
+Includes Core Web Vitals performance tracking and automatic Form Analytics.
 ```html
 <script defer 
-  src="https://mmmetric.lovable.app/track.js" 
+  src="https://your-analytics-domain.com/track-full.js" 
   data-site="YOUR_TRACKING_ID"
-  data-api="https://lckjlefupqlblfcwhbom.supabase.co/functions/v1/track">
+  data-api="https://your-supabase-url.supabase.co/functions/v1/track">
+</script>
+```
+
+**3. Lite Tracker**
+A stripped-down version for absolute minimal payload size.
+```html
+<script defer 
+  src="https://your-analytics-domain.com/track-lite.js" 
+  data-site="YOUR_TRACKING_ID"
+  data-api="https://your-supabase-url.supabase.co/functions/v1/track">
 </script>
 ```
 
@@ -202,17 +175,24 @@ For cloud users:
 // Track a custom event
 mmmetric.track('button_click', { button_id: 'cta-hero' });
 
-// Track a form submission
+// Track a form submission manually
 mmmetric.track('form_submit', { form_name: 'newsletter' });
 ```
 
 ### Tracking Pixel (Email/No-JS)
 
-For environments without JavaScript:
+For environments without JavaScript (like email newsletters):
 
 ```html
 <img src="https://your-supabase-url.supabase.co/functions/v1/pixel?site_id=YOUR_TRACKING_ID" alt="" />
 ```
+
+## 🔌 Integrations
+
+mmmetric is designed to integrate cleanly with your existing ecosystem natively:
+- **Google Analytics Import Wizards:** Migrate historical metrics seamlessly from Universal Analytics and GA4 directly into mmmetric via `src/pages/GAImportWizard.tsx`.
+- **Google Search Console:** Built-in dashboard to pull and display your GSC SEO metrics alongside your web analytics.
+- **Mobile SDKs:** Support for tracking mobile applications (consult `src/pages/MobileSDKs.tsx` for platform status).
 
 ## 🏗️ Tech Stack
 
@@ -223,31 +203,11 @@ For environments without JavaScript:
 
 ## 🤝 Contributing
 
-We love contributions! Please read our [Contributing Guide](CONTRIBUTING.md) to get started.
-
-### Development
-
-```bash
-# Install dependencies
-npm install
-
-# Start dev server
-npm run dev
-
-# Run linting
-npm run lint
-
-# Build for production
-npm run build
-```
+We love contributions! Please read our [Contributing Guide](CONTRIBUTING.md) to get started. Run `npm run dev` to boot the application locally.
 
 ## 📄 License
 
 mmmetric is open-source software licensed under the [MIT License](LICENSE).
-
-## 🙏 Acknowledgments
-
-Inspired by [Umami](https://umami.is), [Plausible](https://plausible.io), and other privacy-focused analytics tools.
 
 ---
 
