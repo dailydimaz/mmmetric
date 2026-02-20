@@ -60,7 +60,9 @@ export function WhiteLabelingCard({ siteId }: WhiteLabelingCardProps) {
             if (!file) return;
 
             const fileExt = file.name.split('.').pop();
-            const fileName = `${siteId}/${Math.random()}.${fileExt}`;
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) throw new Error("Not authenticated");
+            const fileName = `${user.id}/${siteId}_${Math.random()}.${fileExt}`;
             const { error: uploadError } = await supabase.storage
                 .from('brand-assets')
                 .upload(fileName, file);
