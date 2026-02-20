@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 const getScriptConfig = () => {
     // Default to env vars if available (replaced by Vite during build)
     let apiUrl = import.meta.env.VITE_SUPABASE_URL + '/rest/v1/rpc/get_overlay_stats';
-    let apiKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+    let apiKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
     const script = document.querySelector('script[src*="overlay.js"]');
     if (script) {
