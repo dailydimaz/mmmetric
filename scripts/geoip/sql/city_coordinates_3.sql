@@ -1,31 +1,4 @@
 INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitude) VALUES
-('BR', 'Diadema (Cantinho do Céu)', -23.7456, -46.6578),
-('BR', 'Jardim Panorama', -23.6018, -46.6984),
-('BR', 'Ponta Porã', -22.5361, -55.7256),
-('MX', 'Cholula (Almenares de Chollollan)', 19.0596, -98.2742),
-('MX', 'San Andrés Cholula (Barrio Real)', 19.0597, -98.2763),
-('AR', 'Saavedra', -34.5528, -58.4743),
-('CO', 'Bogotá (Barrios Unidos)', 4.68472, -74.0602),
-('BR', 'Colméia', -8.73395, -48.753),
-('BR', 'Jardim Limoeiro', -20.2153, -40.2641),
-('SV', 'Ilopango', 13.7017, -89.1094),
-('SV', 'Candelaria de La Frontera', 14.1167, -89.65),
-('HN', 'Danlí', 14.0333, -86.5833),
-('HN', 'El Paraíso', 13.8667, -86.55),
-('AR', 'Rosario (Cabín 9)', -32.9693, -60.7392),
-('PE', 'Sullana', -4.90389, -80.6853),
-('BR', 'Lagoa Grande', -8.99694, -40.2719),
-('BR', 'Apucarana', -23.5508, -51.4608),
-('BR', 'Viçosa', -20.7539, -42.8819),
-('BR', 'Viçosa (Centro)', -20.7532, -42.8785),
-('BR', 'Jaguarari', -10.2639, -40.1958),
-('BR', 'Senhor do Bonfim', -10.4614, -40.1894),
-('BR', 'São Joaquim da Barra', -20.5814, -47.8547),
-('BR', 'Orlândia', -20.7203, -47.8867),
-('BR', 'Caçu', -18.5567, -51.1308),
-('BR', 'Juquiá', -24.3208, -47.6347),
-('BR', 'Miracatu', -24.2814, -47.4597),
-('CL', 'Punta Arenas', -53.1634, -70.9077),
 ('CL', 'Buin', -33.7326, -70.7428),
 ('PY', 'Nueva Esperanza', -24.5076, -54.8551),
 ('PY', 'Minga Porá', -24.8754, -54.9339),
@@ -998,9 +971,7 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('AR', 'Trenque Lauquen', -35.9733, -62.7327),
 ('BR', 'Cajueiro', -9.39296, -36.154),
 ('BR', 'Jambeiro', -23.2536, -45.6878),
-('BR', 'Santo Antônio do Jardim (Jardim)', -23.5694, -46.4005)
-ON CONFLICT (country_code, city_name) DO UPDATE SET latitude=EXCLUDED.latitude, longitude=EXCLUDED.longitude;
-INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitude) VALUES
+('BR', 'Santo Antônio do Jardim (Jardim)', -23.5694, -46.4005),
 ('TT', 'Rio Claro', 10.2995, -61.1753),
 ('BR', 'Jaguariúna', -22.7056, -46.9858),
 ('BR', 'Lins', -21.6786, -49.7425),
@@ -1027,7 +998,9 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('BR', 'Pedro Laurentino', -8.06833, -42.285),
 ('BR', 'Culaba (Centro Político Administrativo)', -15.5676, -56.0711),
 ('BR', 'Imbituva', -25.2274, -50.5981),
-('BR', 'Castanhal', -1.29389, -47.9264),
+('BR', 'Castanhal', -1.29389, -47.9264)
+ON CONFLICT (country_code, city_name) DO UPDATE SET latitude=EXCLUDED.latitude, longitude=EXCLUDED.longitude;
+INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitude) VALUES
 ('BR', 'Abaetetuba', -1.71806, -48.8825),
 ('EC', 'Montalvo', -1.79008, -79.2876),
 ('EC', 'Palestina', -1.62825, -79.9793),
@@ -2000,9 +1973,7 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('AR', 'Las Flores', -36.0143, -59.0999),
 ('BR', 'Prado Ferreira', -23.0394, -51.4422),
 ('BR', 'Jaguapitã', -23.1128, -51.5319),
-('BR', 'Cocos', -14.1807, -44.5405)
-ON CONFLICT (country_code, city_name) DO UPDATE SET latitude=EXCLUDED.latitude, longitude=EXCLUDED.longitude;
-INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitude) VALUES
+('BR', 'Cocos', -14.1807, -44.5405),
 ('BR', 'Palmas de Monte Alto', -14.2672, -43.1619),
 ('TT', 'Peñal', 10.1337, -61.436),
 ('TT', 'Princes Town', 10.2718, -61.371),
@@ -2029,7 +2000,9 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('BR', 'Cocal', -3.47194, -41.5575),
 ('BR', 'Cocal dos Alves', -3.60147, -41.4431),
 ('BR', 'Córrego Fundo', -20.4492, -45.555),
-('CL', 'Recoleta', -33.4202, -70.6314),
+('CL', 'Recoleta', -33.4202, -70.6314)
+ON CONFLICT (country_code, city_name) DO UPDATE SET latitude=EXCLUDED.latitude, longitude=EXCLUDED.longitude;
+INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitude) VALUES
 ('CO', 'Arjona', 10.2544, -75.3439),
 ('BR', 'Portelinha', -12.932, -38.4447),
 ('BR', 'Manoel Viana', -29.5892, -55.4828),
@@ -3002,9 +2975,7 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('ES', 'San Adrián', 42.3343, -1.93509),
 ('FR', 'Magny-les-Hameaux', 48.7418, 2.05321),
 ('CH', 'Zurich (Zürich (Kreis 9) / Altstetten)', 47.3877, 8.49624),
-('ES', 'Barcelona (Sant Martí)', 41.4014, 2.19646)
-ON CONFLICT (country_code, city_name) DO UPDATE SET latitude=EXCLUDED.latitude, longitude=EXCLUDED.longitude;
-INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitude) VALUES
+('ES', 'Barcelona (Sant Martí)', 41.4014, 2.19646),
 ('GB', 'Huntingdon (Stukeley Meadows Industrial Estate)', 52.3459, -0.189673),
 ('SK', 'Nové Zámky', 47.9854, 18.1619),
 ('SK', 'Bratislava (Old Town)', 48.1473, 17.0873),
@@ -3031,7 +3002,9 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('CZ', 'Rybitví', 50.0602, 15.7047),
 ('DE', 'Oberreichenbach', 48.7299, 8.66581),
 ('DE', 'Kogel', 53.4975, 10.9504),
-('GB', 'Quedgeley', 51.8156, -2.27192),
+('GB', 'Quedgeley', 51.8156, -2.27192)
+ON CONFLICT (country_code, city_name) DO UPDATE SET latitude=EXCLUDED.latitude, longitude=EXCLUDED.longitude;
+INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitude) VALUES
 ('CZ', 'Teplice (Trnovany)', 50.6497, 13.8418),
 ('CZ', 'Bystřany', 50.6287, 13.8642),
 ('IT', 'Montegiorgio', 43.1299, 13.5393),
@@ -4004,9 +3977,7 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('CH', 'Russikon', 47.3967, 8.77515),
 ('CH', 'Oberurnen', 47.1141, 9.05866),
 ('CH', 'Nods', 47.1149, 7.08014),
-('CH', 'Röschenz', 47.4237, 7.48024)
-ON CONFLICT (country_code, city_name) DO UPDATE SET latitude=EXCLUDED.latitude, longitude=EXCLUDED.longitude;
-INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitude) VALUES
+('CH', 'Röschenz', 47.4237, 7.48024),
 ('CH', 'Zwingen', 47.4383, 7.53027),
 ('CH', 'Porrentruy', 47.4173, 7.07573),
 ('CH', 'La Neuveville', 47.0659, 7.09717),
@@ -4033,7 +4004,9 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('CH', 'Caslano', 45.9736, 8.87739),
 ('CH', 'Bedigliora', 46.0025, 8.84052),
 ('CH', 'Winkel', 47.4919, 8.55371),
-('CH', 'Stadel', 47.5294, 8.46353),
+('CH', 'Stadel', 47.5294, 8.46353)
+ON CONFLICT (country_code, city_name) DO UPDATE SET latitude=EXCLUDED.latitude, longitude=EXCLUDED.longitude;
+INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitude) VALUES
 ('CH', 'Klosters Serneus', 46.8892, 9.83826),
 ('CH', 'Arbon', 47.5167, 9.43333),
 ('CH', 'Adelboden', 46.4914, 7.56031),
@@ -5006,9 +4979,7 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('BE', 'Saint-Hubert', 50.0267, 5.37401),
 ('BE', 'De Klinge', 51.2563, 4.09041),
 ('BE', 'Evergem', 51.1131, 3.70976),
-('BE', 'Bellevaux-Ligneuville', 50.3895, 6.01093)
-ON CONFLICT (country_code, city_name) DO UPDATE SET latitude=EXCLUDED.latitude, longitude=EXCLUDED.longitude;
-INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitude) VALUES
+('BE', 'Bellevaux-Ligneuville', 50.3895, 6.01093),
 ('BE', 'Sint-Stevens-Woluwe', 50.8684, 4.45195),
 ('BE', 'Lubbeek', 50.8828, 4.83896),
 ('BE', 'Beringen', 51.0495, 5.22606),
@@ -5035,7 +5006,9 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('BE', 'Morville', 50.2342, 4.74129),
 ('BE', 'Bellem', 51.094, 3.49277),
 ('BE', 'Namur', 50.4669, 4.86746),
-('BE', 'Aywaille', 50.4741, 5.67684),
+('BE', 'Aywaille', 50.4741, 5.67684)
+ON CONFLICT (country_code, city_name) DO UPDATE SET latitude=EXCLUDED.latitude, longitude=EXCLUDED.longitude;
+INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitude) VALUES
 ('BE', 'Nokere', 50.8854, 3.5101),
 ('RU', 'Tayga', 56.0654, 85.6218),
 ('CH', 'Port-Valais (Le Bouveret)', 46.3867, 6.84985),
@@ -5808,7 +5781,6 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('DE', 'Cologne (Altstadt Sud)', 50.9304, 6.94613),
 ('DE', 'Vettweiß', 50.7389, 6.59821),
 ('DE', 'Aachen (Haaren)', 50.7985, 6.11953),
-('DE', 'Cologne (Mülheim',  Cologne), 50.9762),
 ('GB', 'Glasgow (Hillington)', 55.8601, -4.36047),
 ('NL', 'Eindhoven (Centrum)', 51.4338, 5.48413),
 ('RU', 'Chernogolovka', 56.0098, 38.3787),
@@ -6008,9 +5980,7 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('DE', 'Griesstätt', 47.994, 12.1773),
 ('DE', 'Pittenhart', 47.9772, 12.39),
 ('JO', 'Amman (Tareq)', 31.9902, 35.9546),
-('CZ', 'Náchod', 50.4167, 16.1629)
-ON CONFLICT (country_code, city_name) DO UPDATE SET latitude=EXCLUDED.latitude, longitude=EXCLUDED.longitude;
-INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitude) VALUES
+('CZ', 'Náchod', 50.4167, 16.1629),
 ('CZ', 'Štoky', 49.5025, 15.5886),
 ('DE', 'Hamburg (Bergedorf)', 53.4461, 10.157),
 ('DE', 'Colditz', 51.1282, 12.8029),
@@ -6038,7 +6008,9 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('IT', 'Borso del Grappa', 45.8102, 11.7737),
 ('IT', 'Spineda', 45.7504, 11.8781),
 ('TR', 'Erenköy', 39.7485, 30.0246),
-('SI', 'Voglje', 46.2314, 14.4589),
+('SI', 'Voglje', 46.2314, 14.4589)
+ON CONFLICT (country_code, city_name) DO UPDATE SET latitude=EXCLUDED.latitude, longitude=EXCLUDED.longitude;
+INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitude) VALUES
 ('CZ', 'Ráby', 50.0728, 15.8025),
 ('RU', 'Chernukhino', 60.0332, 40.0936),
 ('DE', 'Hamburg (Alsterdorf)', 53.6119, 10.0254),
@@ -7010,9 +6982,7 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('TH', 'Bang Len', 14.0219, 100.172),
 ('TH', 'Chom Bueng', 13.62, 99.5917),
 ('TH', 'Don Chedi', 14.635, 100.021),
-('TH', 'Wiset Chaichan', 14.5945, 100.338)
-ON CONFLICT (country_code, city_name) DO UPDATE SET latitude=EXCLUDED.latitude, longitude=EXCLUDED.longitude;
-INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitude) VALUES
+('TH', 'Wiset Chaichan', 14.5945, 100.338),
 ('TH', 'Bang Pla Ma', 14.396, 100.159),
 ('TH', 'Sam Ko', 14.6074, 100.219),
 ('TH', 'Dan Chang', 14.8418, 99.6976),
@@ -7040,7 +7010,9 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('TH', 'Sung Men', 18.0494, 100.115),
 ('TH', 'Ko Kha', 18.1922, 99.3943),
 ('TH', 'Khok Samrong', 15.0665, 100.722),
-('TH', 'Ban Phraek', 14.6468, 100.576),
+('TH', 'Ban Phraek', 14.6468, 100.576)
+ON CONFLICT (country_code, city_name) DO UPDATE SET latitude=EXCLUDED.latitude, longitude=EXCLUDED.longitude;
+INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitude) VALUES
 ('TH', 'Sena', 14.327, 100.404),
 ('TH', 'Phak Hai', 14.4574, 100.37),
 ('TH', 'Ban Samae Dam', 13.5896, 100.387),
@@ -7343,7 +7315,6 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('PH', 'Maasin', 10.1327, 124.841),
 ('PH', 'Brookes Point', 8.77201, 117.837),
 ('PH', 'Minolos', 10.1019, 123.473),
-('PH', 'Brgy. Bachaw Norte',  Kalibo, 11.7181),
 ('PH', 'Sangat', 10.136, 123.69),
 ('PH', 'Dumaguete', 9.30646, 123.308),
 ('PH', 'Cabilauan', 10.8922, 122.659),
@@ -8012,9 +7983,7 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('NZ', 'Ngaio', -41.2504, 174.774),
 ('NZ', 'Pleasant Point', -44.2667, 171.133),
 ('NZ', 'Seddon', -41.6667, 174.083),
-('NZ', 'Waimate North', -35.3167, 173.883)
-ON CONFLICT (country_code, city_name) DO UPDATE SET latitude=EXCLUDED.latitude, longitude=EXCLUDED.longitude;
-INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitude) VALUES
+('NZ', 'Waimate North', -35.3167, 173.883),
 ('NZ', 'Leeston', -43.7667, 172.3),
 ('NZ', 'Te Anau', -45.4167, 167.717),
 ('NZ', 'Whitford', -36.9333, 174.967),
@@ -8043,7 +8012,9 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('NZ', 'Colville', -36.6333, 175.467),
 ('NZ', 'Harewood', -43.4833, 172.583),
 ('NZ', 'Roxburgh', -45.5406, 169.315),
-('NZ', 'Tuatapere', -46.1333, 167.683),
+('NZ', 'Tuatapere', -46.1333, 167.683)
+ON CONFLICT (country_code, city_name) DO UPDATE SET latitude=EXCLUDED.latitude, longitude=EXCLUDED.longitude;
+INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitude) VALUES
 ('TH', 'Thawi Watthana', 13.7832, 100.378),
 ('TH', 'Kanthararom', 15.1032, 104.573),
 ('TH', 'Phra Samut Chedi', 13.6022, 100.572),
@@ -9014,9 +8985,7 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('US', 'Jacksonville (Highlands)', 30.4316, -81.6606),
 ('US', 'Jacksonville Beach (Beaches)', 30.2935, -81.3932),
 ('US', 'Fremont (Kimber - Gomes)', 37.5499, -121.941),
-('US', 'San Francisco (Marina)', 37.8011, -122.429)
-ON CONFLICT (country_code, city_name) DO UPDATE SET latitude=EXCLUDED.latitude, longitude=EXCLUDED.longitude;
-INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitude) VALUES
+('US', 'San Francisco (Marina)', 37.8011, -122.429),
 ('US', 'Daly City (Sunnydale)', 37.7075, -122.416),
 ('US', 'Surf and Sand Mobile Home Park', 36.9759, -121.967),
 ('US', 'Fremont (Irvington District)', 37.5334, -121.961),
@@ -9045,7 +9014,9 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('US', 'Stafford (Greenbriar Southwest)', 29.6334, -95.5792),
 ('US', 'Houston (Greenbriar Place North)', 29.9549, -95.3983),
 ('US', 'Katy (West Green Reserves)', 29.7874, -95.7345),
-('US', 'Tomball (Rosewood Hill)', 30.0805, -95.7178),
+('US', 'Tomball (Rosewood Hill)', 30.0805, -95.7178)
+ON CONFLICT (country_code, city_name) DO UPDATE SET latitude=EXCLUDED.latitude, longitude=EXCLUDED.longitude;
+INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitude) VALUES
 ('US', 'Pooler', 32.1155, -81.2471),
 ('US', 'Richmond (South Richmond)', 37.4729, -77.441),
 ('US', 'Country Walk', 25.634, -80.4323),
@@ -9995,7 +9966,6 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('MY', 'Pengkalan Chepa', 6.17471, 102.288),
 ('MY', 'Bintulu (Shahida Commercial Centre)', 3.17168, 113.042),
 ('MY', 'Kuching (Universiti Malaysia Sarawak)', 1.44321, 110.45),
-('MY', 'Kampung Bukit Tinggi',  Bentong, 3.34944),
 ('MY', 'Kuching (Petra Jaya)', 1.56813, 110.352),
 ('MY', 'Puchong Batu Dua Belas (Bandar Kinrara 1)', 3.05632, 101.652),
 ('MY', 'Batu Feringgi', 5.47929, 100.255),
@@ -10016,9 +9986,7 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('PK', 'Dalbandin', 28.8885, 64.4062),
 ('CN', 'Pudong (Pudong Xinqu)', 31.2297, 121.525),
 ('CN', 'Shanghai (Changning Qu)', 31.1977, 121.399),
-('CN', 'Shanghai (Hongkou Qu)', 31.2959, 121.484)
-ON CONFLICT (country_code, city_name) DO UPDATE SET latitude=EXCLUDED.latitude, longitude=EXCLUDED.longitude;
-INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitude) VALUES
+('CN', 'Shanghai (Hongkou Qu)', 31.2959, 121.484),
 ('CN', 'Hongkou (Huangpu District)', 31.2366, 121.483),
 ('CN', 'Huai''an (Qinghe Qu)', 33.5926, 119.012),
 ('CN', 'Xinzhuang (Changning Qu)', 31.1867, 121.349),
@@ -10048,7 +10016,9 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('KR', 'Jinju-si', 35.1757, 128.118),
 ('PK', 'Lahore (Block G-Four)', 31.4599, 74.2714),
 ('PK', 'Islamabad (Nilore)', 33.6531, 73.2256),
-('PK', 'Sargodha (Satellite Town)', 32.084, 72.6902),
+('PK', 'Sargodha (Satellite Town)', 32.084, 72.6902)
+ON CONFLICT (country_code, city_name) DO UPDATE SET latitude=EXCLUDED.latitude, longitude=EXCLUDED.longitude;
+INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitude) VALUES
 ('PK', 'Gujranwala (Shaheenabad)', 32.185, 74.1748),
 ('BD', 'Dhaka (Pallabi)', 23.8205, 90.3583),
 ('BR', 'Rio Claro (Jardim Brasília II)', -22.4325, -47.5788),
@@ -10509,7 +10479,6 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('CN', 'Suqian (Sucheng Qu)', 33.895, 118.27),
 ('CN', 'Suzhou (Weigang)', 31.7504, 120.841),
 ('CN', 'Jinsha (Haimen Shi)', 31.8717, 121.182),
-('CN', 'Jinsha (Tongzhou District',  Nantong), 32.0676),
 ('CN', 'Wuxi (Chong’an Qu)', 31.5689, 120.304),
 ('CN', 'Suzhou (Gusu Qu)', 31.2953, 120.586),
 ('CN', 'Wuxi (Yixing Shi)', 31.3406, 119.823),
@@ -10517,7 +10486,6 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('CN', 'Chunjiang (Xinbei Qu)', 31.9778, 119.964),
 ('CN', 'Zhenjiang (Dantu Qu)', 32.153, 119.267),
 ('CN', 'Zhenjiang (Jingkou Qu)', 32.2045, 119.465),
-('CN', 'Yangzhou (Hanjiang District',  Yangzhou), 32.3765),
 ('CN', 'Xuzhou (Wenchang)', 33.9284, 118.094),
 ('CN', 'Yangzhou', 32.3936, 119.413),
 ('CN', 'Zhongxing', 33.7021, 118.728),
@@ -11018,9 +10986,7 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('KR', 'Siheung-si (Jonam-dong)', 37.374, 126.862),
 ('KR', 'Siheung-si (Dochangdong)', 37.407, 126.82),
 ('KR', 'Paripark (Banghwa-daero 50-gil)', 37.5763, 126.818),
-('KR', 'Gaebong-dong', 37.4942, 126.852)
-ON CONFLICT (country_code, city_name) DO UPDATE SET latitude=EXCLUDED.latitude, longitude=EXCLUDED.longitude;
-INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitude) VALUES
+('KR', 'Gaebong-dong', 37.4942, 126.852),
 ('KR', 'Banghwa-dong', 37.5759, 126.814),
 ('KR', 'Gwangmyeong-si (Cheolsan-dong)', 37.4794, 126.869),
 ('KR', 'Ujangsan-dong', 37.5506, 126.841),
@@ -11052,7 +11018,9 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('KR', 'Bucheon-si (Simgok-dong)', 37.4892, 126.781),
 ('KR', 'Gimpo-si (Haseong-myeon)', 37.7366, 126.641),
 ('KR', 'Bucheon-si (Jung-dong)', 37.4912, 126.763),
-('KR', 'Bupyeong-dong', 37.4931, 126.724),
+('KR', 'Bupyeong-dong', 37.4931, 126.724)
+ON CONFLICT (country_code, city_name) DO UPDATE SET latitude=EXCLUDED.latitude, longitude=EXCLUDED.longitude;
+INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitude) VALUES
 ('KR', 'Galsan-dong', 37.5135, 126.726),
 ('KR', 'Cheongcheon-dong', 37.5163, 126.705),
 ('KR', 'Samsandong (Samsan-dong)', 37.5172, 126.744),
@@ -12020,9 +11988,7 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('IN', 'Neyyūr', 8.19829, 77.3038),
 ('IN', 'Pail', 30.7213, 76.0605),
 ('IN', 'Ismāilābād', 30.1172, 76.669),
-('IN', 'Indri', 29.88, 77.0597)
-ON CONFLICT (country_code, city_name) DO UPDATE SET latitude=EXCLUDED.latitude, longitude=EXCLUDED.longitude;
-INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitude) VALUES
+('IN', 'Indri', 29.88, 77.0597),
 ('IN', 'Radaur', 30.0271, 77.1518),
 ('IN', 'Barsāna', 27.648, 77.3764),
 ('IN', 'Hasanpur', 27.9694, 77.4954),
@@ -12054,7 +12020,9 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('IN', 'Raigarh', 21.8976, 83.3966),
 ('IN', 'Saktī', 22.0266, 82.9609),
 ('IN', 'Durena', 22.3817, 82.5863),
-('IN', 'Deori', 22.099, 82.2664),
+('IN', 'Deori', 22.099, 82.2664)
+ON CONFLICT (country_code, city_name) DO UPDATE SET latitude=EXCLUDED.latitude, longitude=EXCLUDED.longitude;
+INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitude) VALUES
 ('IN', 'Lakhnādon', 22.6005, 79.6009),
 ('IN', 'Katangi', 21.7737, 79.8051),
 ('IN', 'Devgadh Bāriya', 22.7052, 73.9088),
@@ -12411,7 +12379,6 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('AU', 'Dungog', -32.4043, 151.752),
 ('AU', 'Glen Innes', -29.7348, 151.738),
 ('AU', 'Seymour', -37.0266, 145.139),
-('CN', 'Jinan (Licheng District',  Jinan), 36.6801),
 ('CN', 'Jinan (Shizhong Qu)', 36.6126, 117.011),
 ('CN', 'Jinan (Pingyin Xian)', 36.2765, 116.453),
 ('NZ', 'Auckland (Newmarket)', -36.8641, 174.778),
@@ -13022,9 +12989,7 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('CN', 'Xiangtan', 27.8298, 112.944),
 ('CN', 'Wanrongjiang (Jishou)', 28.2624, 109.698),
 ('CN', 'Chenzhou', 25.7705, 113.015),
-('CN', 'Loudi', 27.7001, 111.993)
-ON CONFLICT (country_code, city_name) DO UPDATE SET latitude=EXCLUDED.latitude, longitude=EXCLUDED.longitude;
-INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitude) VALUES
+('CN', 'Loudi', 27.7001, 111.993),
 ('CN', 'Jilin (Panshi Shi)', 42.9463, 126.06),
 ('CN', 'Changchun (Kuancheng District)', 43.9017, 125.327),
 ('CN', 'Songyuan', 45.1418, 124.825),
@@ -13057,7 +13022,9 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('CN', 'Heyuan (Yuancheng Qu)', 23.734, 114.703),
 ('CN', 'Paotai (Rongcheng Qu)', 23.5269, 116.45),
 ('CN', 'Qingyuan (Qingxin Xian)', 23.7347, 113.018),
-('CN', 'Meizhou (Meijiang Qu)', 24.2654, 116.082),
+('CN', 'Meizhou (Meijiang Qu)', 24.2654, 116.082)
+ON CONFLICT (country_code, city_name) DO UPDATE SET latitude=EXCLUDED.latitude, longitude=EXCLUDED.longitude;
+INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitude) VALUES
 ('CN', 'Meizhou (Anliu)', 23.6991, 115.679),
 ('CN', 'Meizhou (Xinan)', 23.9344, 116.467),
 ('CN', 'Nan’an (Gao Yao Qu)', 23.0262, 112.463),
@@ -14024,9 +13991,7 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('GB', 'Dunfermline', 56.065, -3.43335),
 ('GB', 'Bristol (Saint Paul''s)', 51.4627, -2.585),
 ('GB', 'London (South Woodford)', 51.5936, 0.0238998),
-('GB', 'Birmingham (Northfield)', 52.4075, -1.96554)
-ON CONFLICT (country_code, city_name) DO UPDATE SET latitude=EXCLUDED.latitude, longitude=EXCLUDED.longitude;
-INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitude) VALUES
+('GB', 'Birmingham (Northfield)', 52.4075, -1.96554),
 ('GB', 'Birch Vale', 53.3888, -1.99412),
 ('GB', 'Higham', 51.4086, 0.475852),
 ('GB', 'Beaminster', 50.8094, -2.73689),
@@ -14059,7 +14024,9 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('DE', 'Gersthofen', 48.4243, 10.8727),
 ('DE', 'Oberboihingen', 48.65, 9.36667),
 ('DE', 'Dölbau', 51.467, 12.0574),
-('DE', 'Weida', 50.7745, 12.0603),
+('DE', 'Weida', 50.7745, 12.0603)
+ON CONFLICT (country_code, city_name) DO UPDATE SET latitude=EXCLUDED.latitude, longitude=EXCLUDED.longitude;
+INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitude) VALUES
 ('DE', 'Vohburg an der Donau', 48.7698, 11.6185),
 ('DE', 'Philippsburg', 49.2317, 8.46074),
 ('DE', 'Heidelberg (Wieblingen)', 49.4372, 8.63675),
@@ -14107,7 +14074,6 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('IR', 'Bāghestān (Shahrak-e-Shahab Sang)', 35.6223, 51.193),
 ('IR', 'Eslamshahr (Shahrak-e-Shahab Sang)', 35.6223, 51.193),
 ('IR', 'Yazd (Javad Al Aeme)', 31.8317, 54.3727),
-('LU', 'Luxembourg (Kirchberg',  Luxembourg), 49.6231),
 ('FR', 'Descartes', 46.9667, 0.7),
 ('FR', 'Bletterans', 46.7471, 5.45233),
 ('FR', 'Istres', 43.5135, 4.98747),
@@ -15026,9 +14992,7 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('DE', 'Schorfheide (Altenhof)', 52.9143, 13.7133),
 ('DE', 'Porta Westfalica (Vennebeck)', 52.223, 8.87973),
 ('DE', 'Heide', 54.1973, 9.113),
-('DE', 'Regensburg (Innenstadt)', 49.0173, 12.1004)
-ON CONFLICT (country_code, city_name) DO UPDATE SET latitude=EXCLUDED.latitude, longitude=EXCLUDED.longitude;
-INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitude) VALUES
+('DE', 'Regensburg (Innenstadt)', 49.0173, 12.1004),
 ('DE', 'Bad Berleburg', 51.0522, 8.39227),
 ('DE', 'Hanover (Misburg)', 52.3801, 9.84958),
 ('DE', 'Leubnitz', 50.7231, 12.3566),
@@ -15062,7 +15026,9 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('DE', 'Stumsdorf', 51.6163, 12.0638),
 ('DE', 'Ramsin', 51.611, 12.2381),
 ('DE', 'Bitterfeld-Wolfen', 51.6236, 12.3239),
-('DE', 'Zscherndorf', 51.6109, 12.2676),
+('DE', 'Zscherndorf', 51.6109, 12.2676)
+ON CONFLICT (country_code, city_name) DO UPDATE SET latitude=EXCLUDED.latitude, longitude=EXCLUDED.longitude;
+INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitude) VALUES
 ('DE', 'Zörbig', 51.6289, 12.1174),
 ('DE', 'Lachen-Speyerdorf', 49.3305, 8.19983),
 ('DE', 'Gommersheim', 49.2911, 8.26583),
@@ -16028,9 +15994,7 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('DE', 'Langenmosen', 48.6066, 11.2138),
 ('DE', 'Hilgertshausen-Tandern', 48.4296, 11.3543),
 ('DE', 'Berg im Gau', 48.6333, 11.25),
-('DE', 'Rehling', 48.4833, 10.9333)
-ON CONFLICT (country_code, city_name) DO UPDATE SET latitude=EXCLUDED.latitude, longitude=EXCLUDED.longitude;
-INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitude) VALUES
+('DE', 'Rehling', 48.4833, 10.9333),
 ('DE', 'Pöttmes', 48.5838, 11.0876),
 ('DE', 'Aichach', 48.4576, 11.1341),
 ('DE', 'Schutzbach', 50.75, 7.9),
@@ -16064,7 +16028,9 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('RU', 'Yamskaya Sloboda', 55.4889, 36.0208),
 ('RO', 'Brestovăț', 45.8734, 21.682),
 ('RO', 'Cenei', 45.7158, 20.9039),
-('RO', 'Cenad', 46.1333, 20.5833),
+('RO', 'Cenad', 46.1333, 20.5833)
+ON CONFLICT (country_code, city_name) DO UPDATE SET latitude=EXCLUDED.latitude, longitude=EXCLUDED.longitude;
+INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitude) VALUES
 ('RO', 'Ineu', 46.431, 21.8405),
 ('RO', 'Petid', 46.7184, 22.0773),
 ('RO', 'Marghita', 47.35, 22.3333),
@@ -17026,13 +16992,10 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('US', 'Saint Paul (Lowertown)', 44.9479, -93.0886),
 ('US', 'Albuquerque (Broadbent Business Park)', 35.1113, -106.628),
 ('US', 'Phoenix (Citrus Homa Acres)', 33.567, -112.115),
-('PR', 'Guaynabo (Pueblo Viejo',  Guaynabo,  Puerto Rico)),
 ('US', 'Minneapolis (North Loop)', 44.9894, -93.2786),
 ('US', 'Albuquerque (West Of Westland)', 35.059, -106.8),
 ('US', 'Albuquerque (Airport Park)', 35.054, -106.621),
-('US', 'Tallahassee (Frenchtown)', 30.4502, -84.2875)
-ON CONFLICT (country_code, city_name) DO UPDATE SET latitude=EXCLUDED.latitude, longitude=EXCLUDED.longitude;
-INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitude) VALUES
+('US', 'Tallahassee (Frenchtown)', 30.4502, -84.2875),
 ('US', 'Golden (Genesee North Central)', 39.7063, -105.289),
 ('US', 'Avondale (Avondale Civic Center)', 33.4445, -112.304),
 ('US', 'Ouray', 38.0242, -107.669),
@@ -17067,7 +17030,9 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('CN', 'Dalang (Long Hua Qu)', 22.6743, 114.02),
 ('US', 'Kansas City (Garment District)', 39.1045, -94.5895),
 ('US', 'St. Petersburg (Disston Heights)', 27.7931, -82.6801),
-('US', 'Tucson (Dietz)', 32.2011, -110.82),
+('US', 'Tucson (Dietz)', 32.2011, -110.82)
+ON CONFLICT (country_code, city_name) DO UPDATE SET latitude=EXCLUDED.latitude, longitude=EXCLUDED.longitude;
+INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitude) VALUES
 ('US', 'Breda', 42.182, -94.9705),
 ('US', 'Lincoln (East Campus)', 40.8213, -96.6562),
 ('US', 'Whitefish', 48.4106, -114.345),
@@ -17997,7 +17962,6 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('CA', 'Gore Bay', 45.9127, -82.4617),
 ('US', 'Stevenson', 39.422, -76.7007),
 ('PR', 'Tiburones', 18.4316, -66.5807),
-('PR', 'Bayamón (Cerro Gordo',  Bayamón,  Puerto Rico)),
 ('US', 'Houlton', 46.1242, -67.8409),
 ('US', 'Hodgdon', 46.0539, -67.8667),
 ('US', 'Yakutat', 59.8465, -139.884),
@@ -18032,9 +17996,7 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('US', 'Saginaw (Robin Glen-Indiantown)', 43.4719, -83.844),
 ('US', 'Milwaukee (Jackson Park)', 43.0019, -87.975),
 ('US', 'Toledo (Five Points)', 41.7006, -83.584),
-('US', 'Columbus (Near East Columbus)', 39.9597, -82.9464)
-ON CONFLICT (country_code, city_name) DO UPDATE SET latitude=EXCLUDED.latitude, longitude=EXCLUDED.longitude;
-INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitude) VALUES
+('US', 'Columbus (Near East Columbus)', 39.9597, -82.9464),
 ('US', 'Columbus (Northwest Columbus)', 40.058, -83.0663),
 ('US', 'Detroit (Elmwood Park)', 42.3397, -83.0204),
 ('US', 'Wauconda', 42.2578, -88.1391),
@@ -18070,7 +18032,9 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('US', 'Henryville', 38.5417, -85.7677),
 ('US', 'Deshler', 41.2076, -83.8991),
 ('CA', 'Waglisla', 52.1605, -128.146),
-('CA', 'Vancouver (Shaughnessy)', 49.245, -123.137),
+('CA', 'Vancouver (Shaughnessy)', 49.245, -123.137)
+ON CONFLICT (country_code, city_name) DO UPDATE SET latitude=EXCLUDED.latitude, longitude=EXCLUDED.longitude;
+INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitude) VALUES
 ('CA', 'Port Renfrew', 48.5544, -124.414),
 ('CA', 'Jaffray', 49.3832, -115.302),
 ('CA', 'Lillooet', 50.6625, -121.895),
@@ -18654,7 +18618,6 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('US', 'Saint Nazianz', 44.008, -87.9223),
 ('CA', 'Yellowknife (Range Lake)', 62.4597, -114.413),
 ('CA', 'Igloolik', 69.3777, -81.7999),
-('PR', 'Carolina (Sabana Abajo',  Carolina,  Puerto Rico)),
 ('US', 'Linn Valley', 38.3775, -94.7094),
 ('US', 'Old Washington', 38.6159, -83.8085),
 ('US', 'Kingfisher', 35.8633, -97.9299),
@@ -18745,7 +18708,6 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('US', 'Carnesville', 34.3698, -83.2352),
 ('US', 'Milnor', 46.2591, -97.4562),
 ('US', 'Edgeley', 46.3591, -98.7157),
-('PR', 'San Juan (Pueblo Viejo',  Guaynabo,  Puerto Rico)),
 ('PR', 'Boquerón', 18.0269, -67.1691),
 ('PR', 'Guayanilla', 18.0191, -66.7918),
 ('US', 'West Middletown', 39.5495, -84.4278),
@@ -18770,7 +18732,6 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('US', 'Napoleonville', 29.9383, -91.0275),
 ('CA', 'Saint-Lazare', 45.4001, -74.1326),
 ('CR', 'San Pedro (Roosevelt)', 9.92857, -84.0528),
-('PR', 'Cataño (Palmas',  Cataño,  Puerto Rico)),
 ('FR', 'Labenne', 43.593, -1.42686),
 ('FR', 'Beaumont-du-Gâtinais', 48.1386, 2.47913),
 ('FR', 'Niévroz', 45.8258, 5.06108),
@@ -19034,9 +18995,7 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('US', 'Dubuque (Downtown)', 42.4963, -90.6649),
 ('US', 'Littleton (North Ranch At Ken Caryl)', 39.6015, -105.179),
 ('US', 'Twisp', 48.3635, -120.122),
-('US', 'Omaha (Midtown Crossing)', 41.2577, -95.9591)
-ON CONFLICT (country_code, city_name) DO UPDATE SET latitude=EXCLUDED.latitude, longitude=EXCLUDED.longitude;
-INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitude) VALUES
+('US', 'Omaha (Midtown Crossing)', 41.2577, -95.9591),
 ('US', 'Omaha (South Omaha)', 41.207, -95.9439),
 ('US', 'Sandia Heights', 35.1858, -106.542),
 ('US', 'Tucson (Orangewood North)', 32.3547, -111.054),
@@ -19075,7 +19034,9 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('US', 'Des Moines (Bloomfield/Allen)', 41.5209, -93.5845),
 ('US', 'Orlando (Hampton Park)', 28.5475, -81.3523),
 ('US', 'Daytona (East Daytona)', 29.2328, -81.0188),
-('US', 'Kronenwetter', 44.8394, -89.653),
+('US', 'Kronenwetter', 44.8394, -89.653)
+ON CONFLICT (country_code, city_name) DO UPDATE SET latitude=EXCLUDED.latitude, longitude=EXCLUDED.longitude;
+INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitude) VALUES
 ('US', 'Fort Myers (Poinsettia Mobile Home Park)', 26.6527, -81.8158),
 ('US', 'West Palm Beach (Westfield)', 26.7533, -80.0797),
 ('US', 'Elyria (Downtown)', 41.3662, -82.1055),
@@ -20036,9 +19997,7 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('CA', 'Kuujjuaq', 58.1073, -68.3997),
 ('CA', 'Inukjuak', 58.4547, -78.1014),
 ('US', 'Dallesport', 45.6173, -121.18),
-('US', 'Maple Bluff', 43.1183, -89.3796)
-ON CONFLICT (country_code, city_name) DO UPDATE SET latitude=EXCLUDED.latitude, longitude=EXCLUDED.longitude;
-INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitude) VALUES
+('US', 'Maple Bluff', 43.1183, -89.3796),
 ('US', 'Arctic Village', 68.1271, -145.538),
 ('US', 'Baltimore (Midtown)', 39.3096, -76.622),
 ('US', 'Dublin (Wilcox Place)', 40.0941, -83.1529),
@@ -20077,7 +20036,9 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('US', 'Winston', 43.1223, -123.413),
 ('US', 'Minneapolis (Downtown East)', 44.9714, -93.2545),
 ('US', 'Omaha (The Old Market)', 41.2574, -95.9295),
-('US', 'South Canaan', 41.5059, -75.4131),
+('US', 'South Canaan', 41.5059, -75.4131)
+ON CONFLICT (country_code, city_name) DO UPDATE SET latitude=EXCLUDED.latitude, longitude=EXCLUDED.longitude;
+INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitude) VALUES
 ('CA', 'Wallaceburg', 42.5941, -82.3839),
 ('US', 'Phoenix (Phoenix Plaza First)', 33.4807, -112.071),
 ('VG', 'Road Town (Wickhams Cay Two)', 18.4281, -64.6135),
@@ -20224,7 +20185,6 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('US', 'Kelly', 34.4663, -78.3244),
 ('US', 'Stedman', 35.0135, -78.6939),
 ('US', 'Roseboro', 34.9529, -78.5086),
-('US', 'Shreveport (Caddo Heights',  South Highlands), 32.47),
 ('US', 'Chattanooga (Fort Cheatem)', 35.0157, -85.2739),
 ('US', 'Gulf', 35.5588, -79.2829),
 ('US', 'Fresno (Figarden)', 36.8083, -119.795),
@@ -20844,7 +20804,6 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('US', 'Hypoluxo', 26.5665, -80.0534),
 ('US', 'Chicago (Douglas Park)', 41.8601, -87.6951),
 ('PR', 'San Juan (Cupey)', 18.3581, -66.052),
-('PR', 'San Juan (Sabana Llana Sur',  San Juan,  Puerto Rico)),
 ('PR', 'Playa Fortuna', 18.3797, -65.7452),
 ('PR', 'Coto Laurel', 18.0497, -66.5513),
 ('PR', 'Comunas', 18.0872, -65.8438),
@@ -21038,9 +20997,7 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('US', 'North Tustin', 33.7645, -117.794),
 ('US', 'Alderpoint', 40.1764, -123.612),
 ('US', 'San Diego (Valencia Park)', 32.7007, -117.078),
-('US', 'Toro Canyon', 34.42, -119.567)
-ON CONFLICT (country_code, city_name) DO UPDATE SET latitude=EXCLUDED.latitude, longitude=EXCLUDED.longitude;
-INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitude) VALUES
+('US', 'Toro Canyon', 34.42, -119.567),
 ('US', 'Montecito', 34.4367, -119.632),
 ('US', 'Greenacres', 35.3833, -119.11),
 ('US', 'Eucalyptus Hills', 32.8798, -116.947),
@@ -21081,7 +21038,9 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('US', 'Ossian', 40.8806, -85.1664),
 ('US', 'Brownlee Park', 42.3189, -85.1425),
 ('US', 'Vandercook Lake', 42.1934, -84.3911),
-('US', 'Knightstown', 39.7956, -85.5264),
+('US', 'Knightstown', 39.7956, -85.5264)
+ON CONFLICT (country_code, city_name) DO UPDATE SET latitude=EXCLUDED.latitude, longitude=EXCLUDED.longitude;
+INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitude) VALUES
 ('US', 'Homecroft', 39.6701, -86.1314),
 ('US', 'Country Squire Lakes', 39.0348, -85.6986),
 ('US', 'North Muskegon', 43.2561, -86.2676),
@@ -22040,9 +21999,7 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('CA', 'Tilbury', 42.2644, -82.4292),
 ('CA', 'Oro', 44.5127, -79.6112),
 ('CA', 'Plattsville', 43.3033, -80.6216),
-('CA', 'Thorndale', 43.103, -81.139)
-ON CONFLICT (country_code, city_name) DO UPDATE SET latitude=EXCLUDED.latitude, longitude=EXCLUDED.longitude;
-INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitude) VALUES
+('CA', 'Thorndale', 43.103, -81.139),
 ('CA', 'New Tecumseth (Tottenham)', 44.0225, -79.8056),
 ('CA', 'Sunderland', 44.2628, -79.0663),
 ('CA', 'St.-Charles', 46.3624, -80.4161),
@@ -22083,7 +22040,9 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('US', 'Columbia (Cottontown/Belleview)', 34.0184, -81.0409),
 ('US', 'Wilmington (Sunset Park)', 34.1923, -77.942),
 ('US', 'Charlotte (Raintree)', 35.0972, -80.7793),
-('US', 'Charlotte (Toddville Road)', 35.2411, -80.9206),
+('US', 'Charlotte (Toddville Road)', 35.2411, -80.9206)
+ON CONFLICT (country_code, city_name) DO UPDATE SET latitude=EXCLUDED.latitude, longitude=EXCLUDED.longitude;
+INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitude) VALUES
 ('US', 'Worthington (Worthington Place)', 40.1086, -83.0191),
 ('US', 'Dayton (Midtown Dayton)', 39.7504, -84.1901),
 ('US', 'New Albany (The New Albany Country Club)', 40.0549, -82.8172),
@@ -23033,7 +22992,6 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('US', 'Waianae', 21.4379, -158.186),
 ('US', 'Laupāhoehoe', 19.9867, -155.237),
 ('US', 'Ocean Pointe', 21.3107, -158.036),
-('US', 'Olinda',  CDP, 20.8237),
 ('US', 'Honaunau-Napoopoo', 19.4563, -155.865),
 ('US', 'Aina Haina-Hawaii Loa Ridge', 21.2914, -157.756),
 ('US', 'Manoa', 21.3161, -157.804),
@@ -23042,9 +23000,7 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('US', 'Wailuku', 20.8913, -156.506),
 ('US', 'Hālawa Heights', 21.3785, -157.914),
 ('US', 'Pū‘ōhala Village', 21.4085, -157.796),
-('US', 'Niu', 21.2843, -157.737)
-ON CONFLICT (country_code, city_name) DO UPDATE SET latitude=EXCLUDED.latitude, longitude=EXCLUDED.longitude;
-INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitude) VALUES
+('US', 'Niu', 21.2843, -157.737),
 ('US', '‘Ewa Gentry', 21.34, -158.03),
 ('US', 'Po‘ipū', 21.8735, -159.449),
 ('US', 'Diamond Head / Kapahulu / Saint Louis Heights', 21.277, -157.811),
@@ -23086,7 +23042,9 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('US', 'Lakewood Park', 27.5431, -80.4023),
 ('US', 'Fort Pierce North', 27.4736, -80.3593),
 ('US', 'Bliss Corner', 41.6118, -70.9384),
-('US', 'Ware', 42.2598, -72.2398),
+('US', 'Ware', 42.2598, -72.2398)
+ON CONFLICT (country_code, city_name) DO UPDATE SET latitude=EXCLUDED.latitude, longitude=EXCLUDED.longitude;
+INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitude) VALUES
 ('US', 'East Cambridge', 42.3668, -71.08),
 ('US', 'Hilshire Village', 29.7908, -95.4891),
 ('US', 'Worth', 41.6898, -87.7973),
@@ -23554,7 +23512,6 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('ES', 'Figueras', 43.5394, -7.02559),
 ('ES', 'Trabada', 43.4448, -7.19527),
 ('ES', 'Alfarràs', 41.8167, 0.58333),
-('IN', 'Thāne (• Vasant Vihar',  Vasant Vahar,  वसंत विहारS)),
 ('US', 'Deer Trail', 39.615, -104.044),
 ('US', 'White Earth', 47.0966, -95.8434),
 ('US', 'Naytahwaush', 47.2627, -95.6261),
@@ -24044,9 +24001,7 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('US', 'Fern Prairie', 45.6365, -122.399),
 ('US', 'Longport', 39.3143, -74.5249),
 ('US', 'West Simsbury', 41.873, -72.8575),
-('US', 'Turners Falls', 42.6043, -72.5565)
-ON CONFLICT (country_code, city_name) DO UPDATE SET latitude=EXCLUDED.latitude, longitude=EXCLUDED.longitude;
-INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitude) VALUES
+('US', 'Turners Falls', 42.6043, -72.5565),
 ('US', 'Osterville', 41.6284, -70.387),
 ('US', 'Beverly Cove', 42.5534, -70.8537),
 ('US', 'Black Diamond', 47.3087, -122.003),
@@ -24089,7 +24044,9 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('US', 'Campbellsburg', 38.5239, -85.2028),
 ('US', 'Cincinnati (Mount Washington)', 39.0934, -84.3874),
 ('US', 'Paulding', 41.1496, -84.5802),
-('US', 'Florien', 31.4438, -93.4574),
+('US', 'Florien', 31.4438, -93.4574)
+ON CONFLICT (country_code, city_name) DO UPDATE SET latitude=EXCLUDED.latitude, longitude=EXCLUDED.longitude;
+INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitude) VALUES
 ('US', 'Ravia', 34.2418, -96.7514),
 ('US', 'Youngstown (Landsdowne)', 41.1064, -80.6377),
 ('US', 'Buras', 29.3518, -89.5247),
@@ -25046,5 +25003,48 @@ INSERT INTO public.city_coordinates (country_code, city_name, latitude, longitud
 ('CH', 'Basel (Klybeck)', 47.5721, 7.59714),
 ('IT', 'San Defendente', 44.4005, 7.49222),
 ('NL', 'Groningen (Vinkhuizen)', 53.2175, 6.52951),
-('CH', 'Rickenbach bei Wil', 47.4486, 9.04902)
+('CH', 'Rickenbach bei Wil', 47.4486, 9.04902),
+('CH', 'Weiningen (Fahrweid (nördl. Teil) / Fahrweid)', 47.4097, 8.41515),
+('CH', 'Wiedlisbach', 47.2519, 7.6461),
+('AT', 'Kirchbichl', 47.4978, 12.0796),
+('HU', 'Ötvöskónyi', 46.2874, 17.36),
+('NO', 'Trollåsen', 59.8221, 10.7882),
+('NO', 'Sofiemyr', 59.7972, 10.8171),
+('RU', 'Pyatigorskaya', 44.6073, 39.0237),
+('AT', 'Graz (Gries)', 47.0459, 15.433),
+('AT', 'Graz (Gösting)', 47.0954, 15.4086),
+('AT', 'Breitenbach am Inn', 47.4784, 11.9735),
+('AT', 'Liesfeld', 47.4758, 11.9972),
+('AT', 'Kundl', 47.4667, 11.9833),
+('IT', 'Tredozio', 44.0796, 11.7414),
+('LB', 'Ain Ebel', 33.1102, 35.4025),
+('UA', 'Irshansk', 50.7509, 28.7239),
+('UA', 'Morshyn', 49.1552, 23.8724),
+('ES', 'Santa Coloma de Cervelló', 41.3674, 2.01426),
+('BG', 'Sofia (g.k. Sofia park)', 42.6222, 23.3677),
+('GB', 'Lutton', 52.8084, 0.12497),
+('GB', 'Bursledon', 50.8866, -1.31596),
+('BG', 'Vratsa (Vratsa Center)', 43.2053, 23.5515),
+('BG', 'Hayredin', 43.6019, 23.6614),
+('BG', 'Knezha', 43.4928, 24.0808),
+('BG', 'Iskar', 43.4596, 24.2574),
+('BG', 'Cherven Bryag', 43.2788, 24.0825),
+('BG', 'Krushovene', 43.6435, 24.4015),
+('BG', 'Mezdra', 43.15, 23.7),
+('BG', 'Mizia', 43.6862, 23.8537),
+('BG', 'Koynare', 43.35, 24.1333),
+('BG', 'Ugarchin', 43.1, 24.4167),
+('BG', 'Yablanitsa', 43.0281, 24.1024),
+('BG', 'Byala Slatina', 43.4667, 23.9333),
+('BG', 'Borovan', 43.4296, 23.7533),
+('BG', 'Oryahovo', 43.738, 23.9587),
+('BG', 'Lukovit', 43.2, 24.1667),
+('DE', 'Würzburg (Lengfeld)', 49.8015, 9.97596),
+('DE', 'Würzburg (Altstadt)', 49.7985, 9.94422),
+('DE', 'Sulzheim', 49.95, 10.3333),
+('DE', 'Gädheim', 50.0333, 10.35),
+('BG', 'Strumyani', 41.6333, 23.2),
+('BG', 'Rupite', 41.4425, 23.2417),
+('IR', 'Shīrvān', 37.3967, 57.9295),
+('RO', 'Făgăraș', 45.9432, 24.9668)
 ON CONFLICT (country_code, city_name) DO UPDATE SET latitude=EXCLUDED.latitude, longitude=EXCLUDED.longitude;

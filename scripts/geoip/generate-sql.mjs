@@ -17,6 +17,10 @@ function formatRow(tableName, line) {
         const lat = parts.pop();
         const cityParts = parts.slice(1).join(',');
         const city = cityParts.replace(/^"/, '').replace(/"$/, '').replace(/'/g, "''");
+        const validCoord = /^-?\d+(\.\d+)?$/;
+        if (!validCoord.test(lat.trim()) || !validCoord.test(lng.trim())) {
+            return null;
+        }
         return `('${cc}', '${city}', ${lat}, ${lng})`;
     } else {
         const [cidr, id] = line.split(',');
@@ -55,8 +59,11 @@ async function convertCsvToSql(csvFile, tableName, columns, maxLinesPerFile) {
         if (isHeader) { isHeader = false; continue; }
         if (!line.trim()) continue;
 
-        batch.push(formatRow(tableName, line));
-        currentLines++;
+        const formattedRow = formatRow(tableName, line);
+        if (formattedRow) {
+            batch.push(formattedRow);
+            currentLines++;
+        }
 
         if (batch.length === BATCH_SIZE) {
             writeBatch();
