@@ -604,10 +604,33 @@ serve(async (req) => {
     // Insert into original events table (for pageviews, custom events, and experiment assignments too)
     // Use Promise.allSettled to ensure both writes complete before returning
     // This prevents data loss in Edge Functions if the runtime kills un-awaited promises
-    const [legacyResult, partitionedResult] = await Promise.allSettled([
+    const promises: Promise<any>[] = [
       supabase.from('events').insert(eventData),
       supabase.from('events_partitioned').insert(eventData)
-    ]);
+    ];
+
+    let hasCityUpsert = false;
+    if (geoCity && geoCountry && geoLatitude != null && geoLongitude != null) {
+      hasCityUpsert = true;
+      promises.push(
+        supabase
+          .from('city_coordinates')
+          .upsert({
+            country_code: geoCountry,
+            city_name: geoCity,
+            latitude: geoLatitude,
+            longitude: geoLongitude,
+          }, {
+            onConflict: 'country_code,city_name',
+            ignoreDuplicates: false
+          })
+      );
+    }
+
+    const results = await Promise.allSettled(promises);
+
+    const legacyResult = results[0];
+    const partitionedResult = results[1];
 
     // Check legacy result (primary)
     let insertError = null;
@@ -628,31 +651,18 @@ serve(async (req) => {
       console.warn('Partitioned table insert exception:', partitionedResult.reason);
     }
 
-    // Upsert city coordinates if we have lat/lng data (async, non-blocking)
-    // This allows the map to show city markers for future visualization
-    if (geoCity && geoCountry && geoLatitude != null && geoLongitude != null) {
-      (async () => {
-        try {
-          const { error } = await supabase
-            .from('city_coordinates')
-            .upsert({
-              country_code: geoCountry,
-              city_name: geoCity,
-              latitude: geoLatitude,
-              longitude: geoLongitude,
-            }, {
-              onConflict: 'country_code,city_name',
-              ignoreDuplicates: false
-            });
-          if (error) {
-            console.warn('City coordinates upsert failed:', error.code);
-          } else {
-            console.log(`City coordinates upserted: ${geoCity}, ${geoCountry} (${geoLatitude}, ${geoLongitude})`);
-          }
-        } catch (e: unknown) {
-          console.warn('City coordinates upsert exception:', e);
+    // Log city upsert result if applicable
+    if (hasCityUpsert) {
+      const cityResult = results[2];
+      if (cityResult.status === 'fulfilled') {
+        if (cityResult.value.error) {
+          console.warn('City coordinates upsert failed:', cityResult.value.error.code);
+        } else {
+          console.log(`City coordinates upserted: ${geoCity}, ${geoCountry} (${geoLatitude}, ${geoLongitude})`);
         }
-      })();
+      } else {
+        console.warn('City coordinates upsert exception:', cityResult.reason);
+      }
     }
 
     if (insertError) {

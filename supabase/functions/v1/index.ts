@@ -4,11 +4,13 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.38.4";
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Max-Age': '86400',
 };
 
 serve(async (req) => {
     if (req.method === "OPTIONS") {
-        return new Response("ok", { headers: corsHeaders });
+        return new Response(null, { status: 204, headers: corsHeaders });
     }
 
     const upgrade = req.headers.get("upgrade") || "";
@@ -18,7 +20,8 @@ serve(async (req) => {
 
     try {
         const url = new URL(req.url);
-        const path = url.pathname.replace(/\/v1\/?/, ""); // Strip /v1 prefix
+        // Strip /v1 prefix and any trailing slashes to prevent 404s
+        const path = url.pathname.replace(/^\/v1\/?/, "").replace(/\/$/, "");
 
         // 1. Auth Validation
         const authHeader = req.headers.get("Authorization");
@@ -65,12 +68,11 @@ serve(async (req) => {
             });
         }
 
-        // Update last_used_at (async, don't await blocking)
-        supabaseAdmin
+        // Update last_used_at (await to ensure it executes before the Edge Function runtime suspends)
+        await supabaseAdmin
             .from("api_keys")
             .update({ last_used_at: new Date().toISOString() })
-            .eq("key_hash", keyHash)
-            .then();
+            .eq("key_hash", keyHash);
 
         // 2. Route Handling
         if (path === "stats" && req.method === "GET") {
