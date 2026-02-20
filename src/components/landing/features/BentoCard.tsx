@@ -1,7 +1,8 @@
-import { motion } from "framer-motion";
+import { motion, useMotionTemplate, useMotionValue } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { LucideIcon } from "lucide-react";
+import { MouseEvent } from "react";
 
 interface BentoCardProps {
   className?: string;
@@ -22,20 +23,44 @@ export function BentoCard({
   delay = 0,
   comingSoon = false,
 }: BentoCardProps) {
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  function handleMouseMove({ currentTarget, clientX, clientY }: MouseEvent) {
+    const { left, top } = currentTarget.getBoundingClientRect();
+    mouseX.set(clientX - left);
+    mouseY.set(clientY - top);
+  }
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      onMouseMove={handleMouseMove}
+      initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
-      transition={{ duration: 0.5, delay }}
+      transition={{ duration: 0.6, delay, ease: "easeOut" }}
       className={cn(
-        "group relative overflow-hidden rounded-3xl bg-card border border-border/40 transition-all hover:shadow-xl hover:border-border/80",
-        comingSoon && "opacity-75",
+        "group relative overflow-hidden rounded-3xl bg-card border border-border/40 transition-all duration-500 hover:shadow-2xl hover:-translate-y-1 hover:border-primary/30",
+        comingSoon && "opacity-75 grayscale-[0.2]",
         className
       )}
     >
+      {/* Mouse tracking spotlight effect */}
+      <motion.div
+        className="pointer-events-none absolute -inset-px rounded-3xl opacity-0 transition duration-300 group-hover:opacity-100 z-10"
+        style={{
+          background: useMotionTemplate`
+            radial-gradient(
+              450px circle at ${mouseX}px ${mouseY}px,
+              hsla(var(--primary), 0.12),
+              transparent 80%
+            )
+          `,
+        }}
+      />
+
       {/* Gradient Background Effect on Hover */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
       {/* Coming Soon Badge */}
       {comingSoon && (

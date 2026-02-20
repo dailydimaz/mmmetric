@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import {
   BarChart3,
   MousePointerClick,
@@ -121,8 +122,22 @@ export function Features() {
     <>
       <section id="features" className="py-24 bg-background relative overflow-hidden">
         {/* Decorative elements */}
-        <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-secondary/5 rounded-full blur-3xl pointer-events-none" />
+        <motion.div
+          animate={{
+            scale: [1, 1.1, 1],
+            rotate: [0, 90, 0]
+          }}
+          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-[800px] h-[800px] bg-primary/5 rounded-[40%_60%_70%_30%] blur-3xl pointer-events-none"
+        />
+        <motion.div
+          animate={{
+            scale: [1, 1.2, 1],
+            rotate: [0, -90, 0]
+          }}
+          transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-secondary/5 rounded-[60%_40%_30%_70%] blur-3xl pointer-events-none"
+        />
 
         <div className="container mx-auto px-4 md:px-8">
           <div className="max-w-2xl mx-auto text-center mb-16">
