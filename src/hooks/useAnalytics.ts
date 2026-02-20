@@ -382,8 +382,8 @@ export function useCityStats({ siteId, dateRange, filters }: AnalyticsParams) {
         country: row.country,
         visits: Number(row.visits) || 0,
         percentage: Number(row.percentage) || 0,
-        latitude: row.latitude,
-        longitude: row.longitude,
+        latitude: row.latitude ? Number(row.latitude) : null,
+        longitude: row.longitude ? Number(row.longitude) : null,
       }));
     },
     enabled: !!siteId,
