@@ -328,14 +328,15 @@ serve(async (req) => {
 
     // Extract geo data from multiple header sources using helper
     const location = getLocationFromHeaders(req.headers);
-    let geoCountry = location?.country || null;
+    let geoCountry = location?.country?.toUpperCase() || null;
     let geoCity = location?.city || null;
     let geoLatitude = location?.latitude || null;
     let geoLongitude = location?.longitude || null;
 
     // Extract language: prefer client-side (navigator.language) then fallback to header
     const headerLanguage = extractLanguage(req);
-    const primaryLanguage = bodyLanguage || headerLanguage;
+    // Normalize language to lower case (e.g. en-US -> en-us) to prevent fragmentation in stats
+    let primaryLanguage = (bodyLanguage || headerLanguage)?.toLowerCase() || null;
 
     // If no geo data found (e.g. localhost or direct access), try database lookup
     // only if clientIp is available and not localhost/private
@@ -354,7 +355,7 @@ serve(async (req) => {
         if (geoError) {
           console.warn('GeoIP lookup RPC error:', geoError.message);
         } else if (geoData && geoData.length > 0) {
-          geoCountry = geoData[0].country || null;
+          geoCountry = geoData[0].country?.toUpperCase() || null;
           geoCity = geoData[0].city || null;
           console.log('Database geo lookup successful:', { geoCountry, geoCity });
         } else {
