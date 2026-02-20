@@ -88,7 +88,7 @@ export function useGoalStats({ siteId, dateRange }: GoalsParams) {
       if (!data || data.length === 0) return [];
 
       // Transform RPC response to match the GoalStats interface
-      return data.map((row: {
+      return (data as unknown as Array<{
         goal_id: string;
         goal_name: string;
         event_name: string;
@@ -101,7 +101,7 @@ export function useGoalStats({ siteId, dateRange }: GoalsParams) {
         total_revenue: number;
         average_order_value: number;
         target_value: number | null;
-      }) => ({
+      }>).map((row) => ({
         goal: {
           id: row.goal_id,
           site_id: siteId,
