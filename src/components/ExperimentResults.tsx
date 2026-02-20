@@ -18,12 +18,12 @@ export function ExperimentResults({ experimentId }: { experimentId: string }) {
     const { data: stats, isLoading } = useQuery({
         queryKey: ["experiment_stats", experimentId],
         queryFn: async () => {
-            const { data, error } = await supabase.rpc("get_experiment_stats", {
+            const { data, error } = await supabase.rpc("get_experiment_stats" as any, {
                 _experiment_id: experimentId,
             });
 
             if (error) throw error;
-            return data as ExperimentStats[];
+            return data as unknown as ExperimentStats[];
         },
         // Refresh every minute
         refetchInterval: 60000,
