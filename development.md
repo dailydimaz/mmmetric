@@ -6,7 +6,7 @@
 
 **Tech Stack:** React, Vite, TypeScript, Tailwind CSS, Supabase (Lovable Cloud)
 
-**Current Progress:** 47/60 features implemented (78%)
+**Current Progress:** 50/60 features implemented (83%)
 
 ---
 
@@ -64,15 +64,15 @@
 | Entry/Exit Pages | Medium | Analytics | Landing and exit page tracking |
 | Form Analytics | Medium | Analytics | Track form submissions & drop-offs |
 
-### ⬜ Not Implemented Features (15)
+### ⬜ Not Implemented Features (10)
 
 | Feature | Difficulty | Category | Description | Status |
 |---------|------------|----------|-------------|--------|
 | Google Search Console | Medium | Insights | SEO keywords and organic traffic | Requires Google Cloud credentials |
-| White Labeling | Medium | Cloud | Custom branding for dashboards | Planned |
+| ~~White Labeling~~ | ~~Medium~~ | ~~Cloud~~ | ~~Custom branding for dashboards~~ | ✅ Implemented |
 | ~~Custom Alerts~~ | ~~Medium~~ | ~~Cloud~~ | ~~Traffic spike/drop notifications~~ | ✅ Implemented |
-| Roll-up Reporting | Medium | Insights | Aggregate data across sites | Planned |
-| Tag Manager | Medium | Cloud | Built-in tag management | Planned |
+| ~~Roll-up Reporting~~ | ~~Medium~~ | ~~Insights~~ | ~~Aggregate data across sites~~ | ✅ Implemented |
+| ~~Tag Manager~~ | ~~Medium~~ | ~~Cloud~~ | ~~Built-in tag management~~ | ✅ Implemented |
 | Log Analytics | Medium | Cloud | Import Apache/Nginx/IIS logs | Planned |
 | Looker Studio Connector | Medium | Cloud | BI tool integration | Planned |
 | Shopify Integration | Hard | Cloud | Automatic revenue tracking | Requires Shopify webhook secret |
@@ -80,7 +80,7 @@
 | Heatmaps | Hard | Insights | Click & scroll visualization | Planned |
 | Session Recordings | Hard | Insights | Video replays of user sessions | Planned |
 | A/B Testing | Hard | Insights | Built-in split testing | Planned |
-| Visitor Profiles | Hard | Insights | Individual user history | Planned |
+| ~~Visitor Profiles~~ | ~~Hard~~ | ~~Insights~~ | ~~Individual user history~~ | Removed from scope |
 | SSO/SAML | Hard | Cloud | Enterprise single sign-on | Planned |
 | Page Overlay | Hard | Insights | On-site stats visualization | Planned |
 
