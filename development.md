@@ -6,7 +6,7 @@
 
 **Tech Stack:** React, Vite, TypeScript, Tailwind CSS, Supabase (Lovable Cloud)
 
-**Current Progress:** 50/60 features implemented (83%)
+**Current Progress:** 56/60 features implemented (93%)
 
 ---
 
@@ -64,7 +64,7 @@
 | Entry/Exit Pages | Medium | Analytics | Landing and exit page tracking |
 | Form Analytics | Medium | Analytics | Track form submissions & drop-offs |
 
-### ⬜ Not Implemented Features (10)
+### ⬜ Not Implemented Features (4)
 
 | Feature | Difficulty | Category | Description | Status |
 |---------|------------|----------|-------------|--------|
@@ -73,16 +73,16 @@
 | ~~Custom Alerts~~ | ~~Medium~~ | ~~Cloud~~ | ~~Traffic spike/drop notifications~~ | ✅ Implemented |
 | ~~Roll-up Reporting~~ | ~~Medium~~ | ~~Insights~~ | ~~Aggregate data across sites~~ | ✅ Implemented |
 | ~~Tag Manager~~ | ~~Medium~~ | ~~Cloud~~ | ~~Built-in tag management~~ | ✅ Implemented |
-| Log Analytics | Medium | Cloud | Import Apache/Nginx/IIS logs | Planned |
-| Looker Studio Connector | Medium | Cloud | BI tool integration | Planned |
+| ~~Log Analytics~~ | ~~Medium~~ | ~~Cloud~~ | ~~Import Apache/Nginx/IIS logs~~ | ✅ Implemented |
+| ~~Looker Studio Connector~~ | ~~Medium~~ | ~~Cloud~~ | ~~BI tool integration~~ | ✅ Implemented |
 | Shopify Integration | Hard | Cloud | Automatic revenue tracking | Requires Shopify webhook secret |
 | GA Import | Hard | Cloud | Import from Google Analytics | Requires Google Cloud credentials |
-| Heatmaps | Hard | Insights | Click & scroll visualization | Planned |
-| Session Recordings | Hard | Insights | Video replays of user sessions | Planned |
-| A/B Testing | Hard | Insights | Built-in split testing | Planned |
+| ~~Heatmaps~~ | ~~Hard~~ | ~~Insights~~ | ~~Click & scroll visualization~~ | ✅ Implemented |
+| ~~Session Recordings~~ | ~~Hard~~ | ~~Insights~~ | ~~Video replays of user sessions~~ | ✅ Implemented |
+| ~~A/B Testing~~ | ~~Hard~~ | ~~Insights~~ | ~~Built-in split testing~~ | ✅ Implemented |
 | ~~Visitor Profiles~~ | ~~Hard~~ | ~~Insights~~ | ~~Individual user history~~ | Removed from scope |
 | SSO/SAML | Hard | Cloud | Enterprise single sign-on | Planned |
-| Page Overlay | Hard | Insights | On-site stats visualization | Planned |
+| ~~Page Overlay~~ | ~~Hard~~ | ~~Insights~~ | ~~On-site stats visualization~~ | ✅ Implemented |
 
 ---
 
@@ -91,9 +91,9 @@
 | Category | Implemented | Total | Progress |
 |----------|-------------|-------|----------|
 | Analytics | 22 | 22 | 100% |
-| Insights | 13 | 21 | 62% |
+| Insights | 19 | 21 | 90% |
 | Privacy | 4 | 4 | 100% |
-| Cloud | 8 | 13 | 62% |
+| Cloud | 11 | 13 | 85% |
 
 ---
 
