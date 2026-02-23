@@ -18,6 +18,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Site, useSites } from "@/hooks/useSites";
 import { getAppUrl, getTrackingApiUrl, getPixelUrl } from "@/lib/config";
 import { LogImportCard } from "@/components/settings/LogImportCard";
+import { EmbedWidgetCard } from "@/components/settings/EmbedWidgetCard";
+import { AnnotationsCard } from "@/components/settings/AnnotationsCard";
 import { LookerStudioCard } from "@/components/settings/LookerStudioCard";
 import { TrackingTierSelector, getScriptFilename, type TrackingTier } from "@/components/settings/TrackingTierSelector";
 import { ChatIntegrationsCard } from "@/components/settings/ChatIntegrationsCard";
@@ -236,13 +238,13 @@ export function SiteSettingsPanel({ site, onEdit, onDelete, deletePending }: Sit
                     {/* Cross-Domain Tracking */}
                     {selectedTier !== 'lite' && (
                         <div className="mt-3 p-3 bg-muted/30 rounded-lg border border-border/30">
-                        <h5 className="text-xs font-medium text-muted-foreground mb-1">Cross-Domain Tracking (optional)</h5>
-                        <p className="text-xs text-muted-foreground/80 mb-2">
-                            To track users across multiple domains, add the <code className="bg-muted px-1 rounded">data-cross-domain</code> attribute:
-                        </p>
-                        <code className="text-xs bg-muted px-2 py-1 rounded block overflow-x-auto text-foreground">
-                            data-cross-domain="otherdomain.com,anotherdomain.com"
-                        </code>
+                            <h5 className="text-xs font-medium text-muted-foreground mb-1">Cross-Domain Tracking (optional)</h5>
+                            <p className="text-xs text-muted-foreground/80 mb-2">
+                                To track users across multiple domains, add the <code className="bg-muted px-1 rounded">data-cross-domain</code> attribute:
+                            </p>
+                            <code className="text-xs bg-muted px-2 py-1 rounded block overflow-x-auto text-foreground">
+                                data-cross-domain="otherdomain.com,anotherdomain.com"
+                            </code>
                         </div>
                     )}
 
@@ -302,6 +304,11 @@ export function SiteSettingsPanel({ site, onEdit, onDelete, deletePending }: Sit
                     </div>
                 </div>
 
+                {/* Annotations Management */}
+                <div className="mt-4 pt-4 border-t border-border">
+                    <AnnotationsCard siteId={site.id} />
+                </div>
+
                 {/* Log Analytics Import */}
                 <div className="mt-4 pt-4 border-t border-border">
                     <LogImportCard siteId={site.id} />
@@ -310,6 +317,11 @@ export function SiteSettingsPanel({ site, onEdit, onDelete, deletePending }: Sit
                 {/* BI Tools / Looker Studio Connector */}
                 <div className="mt-4 pt-4 border-t border-border">
                     <LookerStudioCard siteId={site.id} />
+                </div>
+
+                {/* Embed Widgets */}
+                <div className="mt-4 pt-4 border-t border-border">
+                    <EmbedWidgetCard siteId={site.id} />
                 </div>
 
                 {/* Team Chat Notifications (Slack/Discord) */}

@@ -10,6 +10,11 @@ import {
   TrendingDown,
   Share2,
   Twitter,
+  MessageSquare,
+  LayoutTemplate,
+  Command,
+  Sparkles,
+  GitCompare,
 } from "lucide-react";
 
 export const JourneyIllustration = () => (
@@ -262,5 +267,111 @@ export const SiteSearchIllustration = () => (
     <motion.span animate={{ opacity: [1, 0.4, 1] }} transition={{ duration: 2, repeat: Infinity }} className="text-xs text-primary font-medium">
       "pricing plan"<span className="animate-pulse">|</span>
     </motion.span>
+  </div>
+);
+
+export const AnnotationsIllustration = () => (
+  <div className="absolute inset-0 flex items-center justify-center p-4">
+    <div className="w-full h-full relative">
+      <svg viewBox="0 0 100 50" className="absolute bottom-4 w-full h-1/2 overflow-visible">
+        <path d="M0,40 Q20,30 40,35 T80,20 T100,25" fill="none" stroke="hsl(var(--primary))" strokeWidth="2" />
+      </svg>
+      <motion.div
+        animate={{ y: [0, -5, 0], opacity: [0.5, 1, 0.5] }}
+        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute top-1/4 left-1/2 -translate-x-1/2 bg-background border border-border shadow-lg rounded-md p-2 flex items-center gap-2 z-10"
+      >
+        <MessageSquare className="w-4 h-4 text-primary" />
+        <div className="w-12 h-2 bg-muted rounded"></div>
+      </motion.div>
+      <div className="absolute top-[45%] left-1/2 w-px h-1/4 bg-border"></div>
+      <div className="absolute top-[70%] left-1/2 w-2 h-2 bg-primary rounded-full -translate-x-1/2 mt-0.5 border-2 border-background"></div>
+    </div>
+  </div>
+);
+
+export const EmbedWidgetIllustration = () => (
+  <div className="absolute inset-0 flex items-center justify-center p-4">
+    <motion.div
+      whileHover={{ scale: 1.05 }}
+      animate={{ y: [0, -4, 0], boxShadow: ["0px 0px 0px rgba(var(--primary-rgb),0)", "0px 10px 20px rgba(var(--primary-rgb),0.1)", "0px 0px 0px rgba(var(--primary-rgb),0)"] }}
+      transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+      className="bg-card border border-border rounded-lg shadow-sm overflow-hidden flex z-10"
+    >
+      <div className="bg-muted px-3 py-2 border-r border-border flex items-center">
+        <LayoutTemplate className="w-4 h-4 text-muted-foreground mr-2" />
+        <span className="text-[10px] font-medium text-muted-foreground">visitors</span>
+      </div>
+      <div className="bg-primary/10 px-4 py-2 flex items-center justify-center">
+        <motion.span animate={{ opacity: [1, 0.5, 1] }} transition={{ duration: 2, repeat: Infinity }} className="text-xs font-bold text-primary">1,204</motion.span>
+      </div>
+    </motion.div>
+    <div className="absolute inset-x-8 bottom-4 text-[8px] text-muted-foreground font-mono opacity-50 bg-muted/50 p-2 rounded border border-border truncate">
+      &lt;img src="https://api.../embed" /&gt;
+    </div>
+  </div>
+);
+
+export const CliDocIllustration = () => (
+  <div className="absolute inset-x-8 top-12 bottom-8 bg-[#0D1117] rounded-lg border border-border shadow-2xl overflow-hidden flex flex-col">
+    <div className="h-6 bg-muted/20 border-b border-white/10 flex items-center px-2 gap-1.5">
+      <div className="w-2.5 h-2.5 rounded-full bg-red-500/80"></div>
+      <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/80"></div>
+      <div className="w-2.5 h-2.5 rounded-full bg-green-500/80"></div>
+    </div>
+    <div className="p-3 font-mono text-[10px] text-green-400 space-y-1 relative">
+      <div>$ mmmetric init</div>
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1, duration: 0.1 }} className="text-white/70">Connecting...</motion.div>
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2, duration: 0.1 }} className="flex items-center gap-1 mt-1">
+        <span className="text-blue-400">$</span>
+        <span className="text-white">mmmetric stats</span>
+        <motion.span animate={{ opacity: [1, 0, 1] }} transition={{ duration: 0.8, repeat: Infinity }} className="w-1.5 h-3 bg-white/80 inline-block align-middle"></motion.span>
+      </motion.div>
+    </div>
+  </div>
+);
+
+export const AiInsightsIllustration = () => (
+  <div className="absolute inset-0 flex items-center justify-center p-4">
+    <div className="w-full space-y-3">
+      <motion.div animate={{ rotate: [0, 5, -5, 0] }} transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }} className="w-8 h-8 rounded-full bg-yellow-500/20 flex items-center justify-center mx-auto mb-2 relative">
+        <Sparkles className="w-4 h-4 text-yellow-500" />
+        <motion.div animate={{ scale: [1, 1.5, 1], opacity: [1, 0, 1] }} transition={{ duration: 2, repeat: Infinity }} className="absolute inset-0 rounded-full border border-yellow-500/50"></motion.div>
+      </motion.div>
+      <div className="bg-card border border-border shadow-sm rounded-lg p-2.5 flex items-start gap-2">
+        <div className="mt-0.5 w-1.5 h-1.5 rounded-full bg-green-500 shrink-0"></div>
+        <div className="space-y-1.5 w-full">
+          <div className="w-3/4 h-1.5 bg-muted-foreground/30 rounded"></div>
+          <div className="w-1/2 h-1.5 bg-muted-foreground/20 rounded"></div>
+        </div>
+      </div>
+      <div className="bg-card border border-border shadow-sm rounded-lg p-2.5 flex items-start gap-2 opacity-60 translate-x-2">
+        <div className="mt-0.5 w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0"></div>
+        <div className="space-y-1.5 w-full">
+          <div className="w-5/6 h-1.5 bg-muted-foreground/30 rounded"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+export const BenchmarkIllustration = () => (
+  <div className="absolute inset-x-8 top-12 bottom-8 flex items-end justify-center gap-4">
+    <div className="w-1/3 flex flex-col items-center gap-2 h-full justify-end">
+      <motion.div animate={{ height: ["50%", "55%", "50%"] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} className="w-full bg-primary rounded-t-md shadow-[0_0_10px_rgba(var(--primary-rgb),0.3)] relative overflow-hidden">
+        <div className="absolute inset-x-0 bottom-0 h-4 bg-black/10"></div>
+      </motion.div>
+      <div className="text-[10px] font-medium text-muted-foreground">You</div>
+    </div>
+    <div className="w-1/3 flex flex-col items-center gap-2 h-full justify-end">
+      <div className="w-full h-[70%] bg-muted border border-border border-b-0 rounded-t-md relative overflow-hidden flex items-start justify-center pt-2">
+        <div className="w-4 h-0.5 bg-muted-foreground/20 rounded"></div>
+        <div className="absolute inset-x-0 bottom-0 h-4 bg-black/5"></div>
+      </div>
+      <div className="text-[10px] font-medium text-muted-foreground">Industry</div>
+    </div>
+    <motion.div animate={{ opacity: [0.5, 1, 0.5], scale: [1, 1.1, 1] }} transition={{ duration: 3, repeat: Infinity }} className="absolute top-[35%] left-1/2 -translate-x-1/2 bg-background border border-border rounded-full p-2 shadow-sm z-10">
+      <GitCompare className="w-4 h-4 text-muted-foreground" />
+    </motion.div>
   </div>
 );

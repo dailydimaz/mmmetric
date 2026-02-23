@@ -42,6 +42,7 @@ import PageOverlay from "./pages/PageOverlay";
 import Migrate from "./pages/Migrate";
 import Changelog from "./pages/Changelog";
 import MobileSDKs from "./pages/MobileSDKs";
+import DocsCLI from "./pages/DocsCLI";
 import { ThemeProvider } from "./components/ThemeProvider";
 import { CommandMenu } from "./components/dashboard/CommandMenu";
 
@@ -79,6 +80,7 @@ const AppRoutes = () => {
           <Route path="/migrate" element={<Migrate />} />
           <Route path="/changelog" element={<Changelog />} />
           <Route path="/resources/mobile-sdks" element={<MobileSDKs />} />
+          <Route path="/docs/cli" element={<DocsCLI />} />
           {/* Public routes */}
           <Route path="/share/:token" element={<PublicDashboard />} />
           <Route path="/insight/:token" element={<SharedInsight />} />

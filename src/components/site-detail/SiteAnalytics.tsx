@@ -44,6 +44,8 @@ import {
     ForecastChart,
     AnomalyDetectionStats,
     SessionRecordingsList,
+    InsightsCard,
+    BenchmarkCard,
 } from "@/components/analytics";
 import { isSelfHosted } from "@/lib/billing";
 import {
@@ -197,8 +199,29 @@ export function SiteAnalytics({
                     />
                 )}
 
+                {shouldShow('insights') && (
+                    <InsightsCard
+                        data={{
+                            stats,
+                            timeSeries,
+                            topPages,
+                            topReferrers
+                        }}
+                        isLoading={statsLoading || timeSeriesLoading || pagesLoading || referrersLoading}
+                    />
+                )}
+
+                {shouldShow('benchmarks') && (
+                    <BenchmarkCard
+                        siteId={site.id}
+                        category={site.category}
+                        stats={stats}
+                        isLoading={statsLoading}
+                    />
+                )}
+
                 {shouldShow('visitor_chart') && (
-                    <VisitorChart data={timeSeries} isLoading={timeSeriesLoading} showComparison={showComparison} />
+                    <VisitorChart siteId={site.id} data={timeSeries} isLoading={timeSeriesLoading} showComparison={showComparison} />
                 )}
 
                 {shouldShow('forecast') && (

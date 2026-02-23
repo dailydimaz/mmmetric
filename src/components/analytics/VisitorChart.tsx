@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, ReferenceLine } from "recharts";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAnnotations } from "@/hooks/useAnnotations";
 import { TimeSeriesData } from "@/hooks/useAnalytics";
 import { format, parseISO } from "date-fns";
 import { LineChart, ZoomIn, X } from "lucide-react";
@@ -10,13 +11,15 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 interface VisitorChartProps {
+  siteId?: string;
   data: TimeSeriesData[] | undefined;
   isLoading: boolean;
   showComparison?: boolean;
   onDateClick?: (date: string) => void;
 }
 
-export function VisitorChart({ data, isLoading, showComparison = true, onDateClick }: VisitorChartProps) {
+export function VisitorChart({ siteId, data, isLoading, showComparison = true, onDateClick }: VisitorChartProps) {
+  const { data: annotations } = useAnnotations(siteId || "");
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
   const handleClick = useCallback((data: any) => {
@@ -69,7 +72,7 @@ export function VisitorChart({ data, isLoading, showComparison = true, onDateCli
       <Card className="hover:shadow-lg transition-shadow duration-300 overflow-hidden">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 border-b border-border/50">
           <div className="flex items-center gap-2">
-            <motion.div 
+            <motion.div
               className="p-2 bg-primary/10 rounded-lg text-primary"
               whileHover={{ scale: 1.1 }}
               transition={{ type: "spring", stiffness: 400 }}
@@ -91,9 +94,9 @@ export function VisitorChart({ data, isLoading, showComparison = true, onDateCli
                     <ZoomIn className="h-3 w-3" />
                     {format(parseISO(selectedDate), "MMM d, yyyy")}
                   </Badge>
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
+                  <Button
+                    variant="ghost"
+                    size="icon"
                     className="h-6 w-6"
                     onClick={clearSelection}
                   >
@@ -111,8 +114,8 @@ export function VisitorChart({ data, isLoading, showComparison = true, onDateCli
         <CardContent className="p-6">
           <div className="h-[350px]">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart 
-                data={chartData} 
+              <AreaChart
+                data={chartData}
                 margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
                 onClick={handleClick}
                 style={{ cursor: onDateClick ? 'pointer' : 'default' }}
@@ -128,6 +131,16 @@ export function VisitorChart({ data, isLoading, showComparison = true, onDateCli
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" opacity={0.5} />
+                {annotations?.map(annotation => (
+                  <ReferenceLine
+                    key={annotation.id}
+                    x={format(parseISO(annotation.annotation_date), "MMM d")}
+                    stroke={annotation.color}
+                    strokeOpacity={0.8}
+                    strokeDasharray="3 3"
+                    label={{ position: 'top', value: annotation.title, fill: annotation.color, fontSize: 11 }}
+                  />
+                ))}
                 <XAxis
                   dataKey="displayDate"
                   tick={{ fill: 'hsl(var(--foreground))', fontSize: 12, opacity: 0.6 }}
@@ -151,9 +164,9 @@ export function VisitorChart({ data, isLoading, showComparison = true, onDateCli
                     padding: '12px 16px',
                   }}
                   itemStyle={{ color: 'hsl(var(--foreground))' }}
-                  cursor={{ 
-                    stroke: 'hsl(var(--primary))', 
-                    strokeWidth: 2, 
+                  cursor={{
+                    stroke: 'hsl(var(--primary))',
+                    strokeWidth: 2,
                     opacity: 0.3,
                     strokeDasharray: '4 4'
                   }}
@@ -176,9 +189,9 @@ export function VisitorChart({ data, isLoading, showComparison = true, onDateCli
                   animationDuration={1200}
                   animationEasing="ease-out"
                   dot={false}
-                  activeDot={{ 
-                    r: 6, 
-                    strokeWidth: 2, 
+                  activeDot={{
+                    r: 6,
+                    strokeWidth: 2,
                     stroke: 'hsl(var(--background))',
                     fill: 'hsl(var(--primary))'
                   }}
@@ -207,9 +220,9 @@ export function VisitorChart({ data, isLoading, showComparison = true, onDateCli
                   animationDuration={1200}
                   animationEasing="ease-out"
                   dot={false}
-                  activeDot={{ 
-                    r: 6, 
-                    strokeWidth: 2, 
+                  activeDot={{
+                    r: 6,
+                    strokeWidth: 2,
                     stroke: 'hsl(var(--background))',
                     fill: 'hsl(var(--chart-2))'
                   }}

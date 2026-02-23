@@ -48,6 +48,9 @@ import {
   ExternalLink,
   Link2,
   Search,
+  MessageSquare,
+  Sparkles,
+  GitCompare,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
@@ -85,6 +88,11 @@ import {
   ReadingDepthIllustration,
   VideoIllustration,
   SiteSearchIllustration,
+  AnnotationsIllustration,
+  EmbedWidgetIllustration,
+  CliDocIllustration,
+  AiInsightsIllustration,
+  BenchmarkIllustration,
 } from "./features/illustrations/AdvancedIllustrations";
 
 import {
@@ -582,6 +590,56 @@ export function Features() {
               description="Get notified when high-performing pages start declining."
               illustration={ContentDecayIllustration}
               delay={0.2}
+            />
+
+            {/* Card: Annotations */}
+            <BentoCard
+              className="md:col-span-1"
+              icon={MessageSquare}
+              title="Annotations"
+              description="Add contextual notes directly onto your charts to track impacts of events."
+              illustration={AnnotationsIllustration}
+              delay={0.3}
+            />
+
+            {/* Card: Embed Widgets */}
+            <BentoCard
+              className="md:col-span-1"
+              icon={LayoutTemplate}
+              title="Embed Widgets"
+              description="Generate live SVG badges and counters for your site or repository."
+              illustration={EmbedWidgetIllustration}
+              delay={0.4}
+            />
+
+            {/* Card: CLI Tool */}
+            <BentoCard
+              className="md:col-span-1"
+              icon={Command}
+              title="CLI Tool Docs"
+              description="Interact with your analytics seamlessly via the command line or scripts."
+              illustration={CliDocIllustration}
+              delay={0.5}
+            />
+
+            {/* Card: AI Insights */}
+            <BentoCard
+              className="md:col-span-1"
+              icon={Sparkles}
+              title="AI Insights"
+              description="Automated analysis and actionable traffic observations generated instantly."
+              illustration={AiInsightsIllustration}
+              delay={0.2}
+            />
+
+            {/* Card: Competitor Benchmarking */}
+            <BentoCard
+              className="md:col-span-1"
+              icon={GitCompare}
+              title="Benchmarking"
+              description="Compare your performance accurately against deep industry standards."
+              illustration={BenchmarkIllustration}
+              delay={0.3}
             />
 
             {/* --- COMING SOON FEATURES --- */}

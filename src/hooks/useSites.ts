@@ -7,6 +7,7 @@ export interface Site {
   id: string;
   name: string;
   domain: string | null;
+  category: string | null;
   tracking_id: string;
   timezone: string;
   tracking_tier: 'lite' | 'standard' | 'full';
@@ -104,10 +105,10 @@ export function useSites() {
   });
 
   const updateSite = useMutation({
-    mutationFn: async ({ id, name, domain, timezone, tracking_tier }: { id: string; name?: string; domain?: string; timezone?: string; tracking_tier?: 'lite' | 'standard' | 'full' }) => {
+    mutationFn: async ({ id, name, domain, timezone, tracking_tier, category }: { id: string; name?: string; domain?: string; timezone?: string; tracking_tier?: 'lite' | 'standard' | 'full'; category?: string | null }) => {
       const { data, error } = await supabase
         .from("sites")
-        .update({ name, domain, timezone, tracking_tier })
+        .update({ name, domain, timezone, tracking_tier, category })
         .eq("id", id)
         .select()
         .single();
