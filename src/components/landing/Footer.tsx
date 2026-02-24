@@ -186,6 +186,13 @@ export function Footer() {
           <p className="text-sm text-muted-foreground">
             © {currentYear} mmmetric Analytics. All rights reserved.
           </p>
+          <a href="https://mmmetric.lovable.app/share/60641200d39a254950512d4622912240" target="_blank" rel="noopener noreferrer">
+            <img
+              src="https://lckjlefupqlblfcwhbom.supabase.co/functions/v1/embed-widget?token=60641200d39a254950512d4622912240&type=badge&theme=light"
+              alt="Analytics Stats"
+              className="h-6"
+            />
+          </a>
           <div className="flex items-center gap-1 text-sm text-muted-foreground">
             <span>Built with</span>
             <motion.span
