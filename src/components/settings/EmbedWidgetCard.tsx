@@ -7,6 +7,7 @@ import { usePublicDashboard } from "@/hooks/usePublicDashboard";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { getSupabaseFunctionsUrl, getAppUrl } from "@/lib/config";
 
 interface EmbedWidgetCardProps {
     siteId: string;
@@ -47,14 +48,11 @@ export function EmbedWidgetCard({ siteId }: EmbedWidgetCardProps) {
         );
     }
 
-    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
-    const widgetUrl = `${supabaseUrl}/functions/v1/embed-widget?token=${config.share_token}&type=${widgetType}&theme=${theme}`;
+    const widgetUrl = `${getSupabaseFunctionsUrl()}/embed-widget?token=${config.share_token}&type=${widgetType}&theme=${theme}`;
+    const dashboardUrl = `${getAppUrl()}/share/${config.share_token}`;
 
-    // Fallback image tag for preview if environment variables are not set
-    const previewUrl = widgetUrl;
-
-    const htmlCode = `<a href="https://yourdomain.com/statistics" target="_blank"><img src="${widgetUrl}" alt="Analytics Stats" /></a>`;
-    const markdownCode = `[![Analytics Stats](${widgetUrl})](https://yourdomain.com/statistics)`;
+    const htmlCode = `<a href="${dashboardUrl}" target="_blank" rel="noopener"><img src="${widgetUrl}" alt="Analytics Stats" /></a>`;
+    const markdownCode = `[![Analytics Stats](${widgetUrl})](${dashboardUrl})`;
 
     return (
         <Card>
@@ -108,7 +106,7 @@ export function EmbedWidgetCard({ siteId }: EmbedWidgetCardProps) {
                     <div className="flex flex-col items-center justify-center space-y-4 bg-muted/40 p-6 rounded-lg border border-dashed border-border/60">
                         <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Preview</p>
                         <div className="min-h-[60px] flex items-center justify-center">
-                            <img src={previewUrl} alt="Widget Preview" className="max-w-full drop-shadow-sm" />
+                            <img src={widgetUrl} alt="Widget Preview" className="max-w-full drop-shadow-sm" />
                         </div>
                         <p className="text-[10px] text-muted-foreground text-center mt-4">
                             Updates live directly from your analytics database
