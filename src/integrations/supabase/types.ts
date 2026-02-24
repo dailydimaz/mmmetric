@@ -3670,33 +3670,15 @@ export type Database = {
           visitors: number
         }[]
       }
-      get_public_dashboard_stats:
-        | {
-            Args: {
-              _end_date: string
-              _password?: string
-              _share_token: string
-              _start_date: string
-            }
-            Returns: Json
-          }
-        | {
-            Args: {
-              _end_date: string
-              _share_token: string
-              _start_date: string
-            }
-            Returns: Json
-          }
-        | {
-            Args: {
-              _end_date: string
-              _password?: string
-              _share_token: string
-              _start_date: string
-            }
-            Returns: Json
-          }
+      get_public_dashboard_stats: {
+        Args: {
+          _end_date: string
+          _password?: string
+          _share_token: string
+          _start_date: string
+        }
+        Returns: Json
+      }
       get_realtime_stats: { Args: { _site_id: string }; Returns: Json }
       get_referrer_stats: {
         Args: {
