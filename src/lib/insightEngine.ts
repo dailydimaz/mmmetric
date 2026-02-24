@@ -88,10 +88,10 @@ export function generateInsights(data: InsightEngineInput): Insight[] {
     // 4. Top Referrer Analysis
     if (data.topReferrers && data.topReferrers.length > 0) {
         const bestReferrer = data.topReferrers[0];
-        if (bestReferrer.source !== 'Direct') {
+        if (bestReferrer.referrer !== 'Direct') {
             insights.push({
                 id: 'top-referrer',
-                message: `${bestReferrer.source} is your top external traffic source with ${bestReferrer.visitors} visitors.`,
+                message: `${bestReferrer.referrer} is your top external traffic source with ${bestReferrer.visits} visits.`,
                 severity: 'info',
                 category: 'audience'
             });
