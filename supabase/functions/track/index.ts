@@ -606,8 +606,8 @@ serve(async (req) => {
     // Use Promise.allSettled to ensure both writes complete before returning
     // This prevents data loss in Edge Functions if the runtime kills un-awaited promises
     const promises: Promise<any>[] = [
-      supabase.from('events').insert(eventData).then(() => {}),
-      supabase.from('events_partitioned').insert(eventData).then(() => {})
+      supabase.from('events').insert(eventData).then((res) => res),
+      supabase.from('events_partitioned').insert(eventData).then((res) => res)
     ];
 
     let hasCityUpsert = false;
@@ -624,7 +624,7 @@ serve(async (req) => {
           }, {
             onConflict: 'country_code,city_name',
             ignoreDuplicates: false
-          }).then(() => {})
+          }).then((res) => res)
       );
     }
 
