@@ -3738,56 +3738,34 @@ export type Database = {
           updated_at: string
         }[]
       }
-      get_site_group_stats:
-        | {
-            Args: { _end_date: string; _group_id: string; _start_date: string }
-            Returns: Json
-          }
-        | {
-            Args: {
-              _end_date: string
-              _group_id: string
-              _prev_end_date?: string
-              _prev_start_date?: string
-              _start_date: string
-            }
-            Returns: Json
-          }
-      get_site_stats:
-        | {
-            Args: {
-              _end_date: string
-              _filters?: Json
-              _site_id: string
-              _start_date: string
-            }
-            Returns: {
-              avg_session_duration: number
-              bounce_rate: number
-              pageviews_change: number
-              total_pageviews: number
-              unique_visitors: number
-              visitors_change: number
-            }[]
-          }
-        | {
-            Args: {
-              _end_date: string
-              _filters?: Json
-              _prev_end_date: string
-              _prev_start_date: string
-              _site_id: string
-              _start_date: string
-            }
-            Returns: {
-              avg_session_duration: number
-              bounce_rate: number
-              pageviews_change: number
-              total_pageviews: number
-              unique_visitors: number
-              visitors_change: number
-            }[]
-          }
+      get_site_group_stats: {
+        Args: {
+          _end_date: string
+          _group_id: string
+          _prev_end_date?: string
+          _prev_start_date?: string
+          _start_date: string
+        }
+        Returns: Json
+      }
+      get_site_stats: {
+        Args: {
+          _end_date: string
+          _filters?: Json
+          _prev_end_date: string
+          _prev_start_date: string
+          _site_id: string
+          _start_date: string
+        }
+        Returns: {
+          avg_session_duration: number
+          bounce_rate: number
+          pageviews_change: number
+          total_pageviews: number
+          unique_visitors: number
+          visitors_change: number
+        }[]
+      }
       get_team_member_profile: {
         Args: { _user_id: string }
         Returns: {
