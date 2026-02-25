@@ -141,25 +141,31 @@ Deno.serve(async (req) => {
           const startDate = url.searchParams.get('start_date') || new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
           const endDate = url.searchParams.get('end_date') || new Date().toISOString();
 
-          // Get pageviews and visitors
-          const { data: events, error: eventsError } = await supabase
-            .from('events')
-            .select('id, event_name, visitor_id, created_at')
-            .eq('site_id', siteId)
-            .gte('created_at', startDate)
-            .lte('created_at', endDate);
+          // Calculate previous period for comparison
+          const startMs = new Date(startDate).getTime();
+          const endMs = new Date(endDate).getTime();
+          const periodMs = endMs - startMs;
+          const prevStartDate = new Date(startMs - periodMs).toISOString();
+          const prevEndDate = new Date(startMs).toISOString();
 
-          if (eventsError) {
-            console.error('Database query failed:', eventsError);
+          // Use RPC for accurate aggregated stats (not subject to row limits)
+          const { data: rpcData, error: rpcError } = await supabase.rpc('get_site_stats', {
+            _site_id: siteId,
+            _start_date: startDate,
+            _end_date: endDate,
+            _prev_start_date: prevStartDate,
+            _prev_end_date: prevEndDate,
+          } as any);
+
+          if (rpcError) {
+            console.error('Stats RPC failed:', rpcError);
             return new Response(
               JSON.stringify({ error: 'Failed to fetch stats' }),
               { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
             );
           }
 
-          const pageviews = events?.filter(e => e.event_name === 'pageview').length || 0;
-          const uniqueVisitors = new Set(events?.map(e => e.visitor_id).filter(Boolean)).size;
-          const totalEvents = events?.length || 0;
+          const result = (rpcData as any)?.[0] || {};
 
           return new Response(
             JSON.stringify({
@@ -167,9 +173,12 @@ Deno.serve(async (req) => {
                 site: { id: site.id, name: site.name, domain: site.domain },
                 period: { start: startDate, end: endDate },
                 stats: {
-                  pageviews,
-                  unique_visitors: uniqueVisitors,
-                  total_events: totalEvents,
+                  pageviews: Number(result.total_pageviews) || 0,
+                  unique_visitors: Number(result.unique_visitors) || 0,
+                  avg_session_duration: Number(result.avg_session_duration) || 0,
+                  bounce_rate: Number(result.bounce_rate) || 0,
+                  pageviews_change: Number(result.pageviews_change) || 0,
+                  visitors_change: Number(result.visitors_change) || 0,
                 },
               },
             }),
@@ -238,46 +247,34 @@ Deno.serve(async (req) => {
           }
 
           const startDate = url.searchParams.get('start_date') || new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+          const endDate = url.searchParams.get('end_date') || new Date().toISOString();
 
-          // Apply server-side safety limit to prevent memory exhaustion
-          const { data: events, error } = await supabase
-            .from('events')
-            .select('url')
-            .eq('site_id', siteId)
-            .eq('event_name', 'pageview')
-            .gte('created_at', startDate)
-            .not('url', 'is', null)
-            .limit(EVENTS_SAFETY_LIMIT);
+          // Use RPC for accurate aggregated top pages
+          const { data: rpcData, error } = await supabase.rpc('get_top_pages', {
+            _site_id: siteId,
+            _start_date: startDate,
+            _end_date: endDate,
+            _limit: limit,
+          } as any);
 
           if (error) {
-            console.error('Database query failed:', error);
+            console.error('Top pages RPC failed:', error);
             return new Response(
               JSON.stringify({ error: 'Failed to fetch top pages' }),
               { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
             );
           }
 
-          // Count page views
-          const pageCounts: Record<string, number> = {};
-          events?.forEach(e => {
-            if (e.url) {
-              pageCounts[e.url] = (pageCounts[e.url] || 0) + 1;
-            }
-          });
-
-          const topPages = Object.entries(pageCounts)
-            .sort((a, b) => b[1] - a[1])
-            .slice(0, limit)
-            .map(([url, views]) => ({ url, views }));
+          const topPages = (rpcData as any[] || []).map((row: any) => ({
+            url: row.url,
+            views: Number(row.pageviews) || 0,
+            unique_visitors: Number(row.unique_visitors) || 0,
+          }));
 
           return new Response(
             JSON.stringify({ 
               data: topPages,
-              meta: {
-                limit,
-                events_analyzed: events?.length || 0,
-                events_capped: (events?.length || 0) >= EVENTS_SAFETY_LIMIT,
-              }
+              meta: { limit }
             }),
             { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
           );
