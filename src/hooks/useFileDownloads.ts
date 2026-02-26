@@ -20,38 +20,21 @@ export function useFileDownloads({ siteId, dateRange }: UseFileDownloadsProps) {
     return useQuery({
         queryKey: ["file-downloads", siteId, dateRange],
         queryFn: async (): Promise<FileDownload[]> => {
-            const { data, error } = await supabase
-                .from("events")
-                .select("properties, created_at")
-                .eq("site_id", siteId)
-                .eq("event_name", "file_download")
-                .gte("created_at", start.toISOString())
-                .lte("created_at", end.toISOString());
+            const { data, error } = await supabase.rpc("get_file_download_stats", {
+                _site_id: siteId,
+                _start_date: start.toISOString(),
+                _end_date: end.toISOString(),
+                _limit: 10,
+            });
 
             if (error) throw error;
 
-            // Group by filename
-            const downloads = new Map<string, FileDownload>();
-
-            data?.forEach((event) => {
-                const props = event.properties as any;
-                const key = props.filename || 'unknown';
-
-                if (downloads.has(key)) {
-                    downloads.get(key)!.count += 1;
-                } else {
-                    downloads.set(key, {
-                        filename: key,
-                        extension: props.extension || 'unknown',
-                        href: props.href || '#',
-                        count: 1
-                    });
-                }
-            });
-
-            return Array.from(downloads.values())
-                .sort((a, b) => b.count - a.count)
-                .slice(0, 10);
+            return (data || []).map((row: any) => ({
+                filename: row.filename,
+                extension: row.extension,
+                href: row.href,
+                count: Number(row.download_count) || 0,
+            }));
         },
         enabled: !!siteId,
     });

@@ -3570,6 +3570,20 @@ export type Database = {
         }
         Returns: Json
       }
+      get_engagement_stats: {
+        Args: {
+          _end_date: string
+          _limit?: number
+          _site_id: string
+          _start_date: string
+        }
+        Returns: {
+          avg_duration: number
+          total_duration: number
+          url: string
+          visits: number
+        }[]
+      }
       get_entry_exit_pages: {
         Args: {
           _end_date: string
@@ -3583,6 +3597,14 @@ export type Database = {
           url: string
         }[]
       }
+      get_event_groups_stats: {
+        Args: { _end_date: string; _site_id: string; _start_date: string }
+        Returns: {
+          event_count: number
+          event_name: string
+          last_occurrence: string
+        }[]
+      }
       get_experiment_stats: {
         Args: { _experiment_id: string }
         Returns: {
@@ -3593,6 +3615,30 @@ export type Database = {
           variant_id: string
           variant_name: string
           visitors: number
+        }[]
+      }
+      get_file_download_stats: {
+        Args: {
+          _end_date: string
+          _limit?: number
+          _site_id: string
+          _start_date: string
+        }
+        Returns: {
+          download_count: number
+          extension: string
+          filename: string
+          href: string
+        }[]
+      }
+      get_form_analytics_stats: {
+        Args: { _end_date: string; _site_id: string; _start_date: string }
+        Returns: {
+          abandons: number
+          conversion_rate: number
+          form_id: string
+          starts: number
+          submissions: number
         }[]
       }
       get_funnel_stats: {
@@ -3705,6 +3751,15 @@ export type Database = {
           rate: number
           retained: number
         }[]
+      }
+      get_scroll_depth_stats: {
+        Args: {
+          _end_date: string
+          _limit?: number
+          _site_id: string
+          _start_date: string
+        }
+        Returns: Json
       }
       get_shared_insight: {
         Args: { _share_token: string }

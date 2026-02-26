@@ -20,43 +20,21 @@ export function useEngagement({ siteId, dateRange }: UseEngagementProps) {
     return useQuery({
         queryKey: ["engagement", siteId, dateRange],
         queryFn: async (): Promise<EngagementData[]> => {
-            const { data, error } = await supabase
-                .from("events")
-                .select("properties, url")
-                .eq("site_id", siteId)
-                .eq("event_name", "engagement")
-                .gte("created_at", start.toISOString())
-                .lte("created_at", end.toISOString());
+            const { data, error } = await supabase.rpc("get_engagement_stats", {
+                _site_id: siteId,
+                _start_date: start.toISOString(),
+                _end_date: end.toISOString(),
+                _limit: 10,
+            });
 
             if (error) throw error;
 
-            // Group by URL
-            const pages = new Map<string, { totalDuration: number; visits: number }>();
-
-            data?.forEach((event) => {
-                const url = event.url || '/';
-                const props = event.properties as any;
-                const duration = Number(props.duration_seconds) || 0;
-
-                if (duration > 0) {
-                    if (!pages.has(url)) {
-                        pages.set(url, { totalDuration: 0, visits: 0 });
-                    }
-                    const stats = pages.get(url)!;
-                    stats.totalDuration += duration;
-                    stats.visits += 1;
-                }
-            });
-
-            return Array.from(pages.entries())
-                .map(([url, stats]) => ({
-                    url,
-                    avgDuration: stats.visits > 0 ? stats.totalDuration / stats.visits : 0,
-                    totalDuration: stats.totalDuration,
-                    visits: stats.visits
-                }))
-                .sort((a, b) => b.avgDuration - a.avgDuration)
-                .slice(0, 5);
+            return (data || []).map((row: any) => ({
+                url: row.url,
+                avgDuration: Number(row.avg_duration) || 0,
+                totalDuration: Number(row.total_duration) || 0,
+                visits: Number(row.visits) || 0,
+            }));
         },
         enabled: !!siteId,
     });
