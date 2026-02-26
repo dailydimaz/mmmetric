@@ -81,39 +81,19 @@ export function useEventGroups({ siteId, dateRange }: CustomEventsParams) {
   return useQuery({
     queryKey: ["event-groups", siteId, dateRange],
     queryFn: async (): Promise<EventGroup[]> => {
-      const { data, error } = await supabase
-        .from("events")
-        .select("event_name, created_at")
-        .eq("site_id", siteId)
-        .neq("event_name", "pageview")
-        .gte("created_at", start.toISOString())
-        .lte("created_at", end.toISOString())
-        .order("created_at", { ascending: false });
+      const { data, error } = await supabase.rpc("get_event_groups_stats", {
+        _site_id: siteId,
+        _start_date: start.toISOString(),
+        _end_date: end.toISOString(),
+      });
 
       if (error) throw error;
 
-      // Group by event name
-      const groups = new Map<string, { count: number; lastOccurrence: string }>();
-
-      data?.forEach(event => {
-        const existing = groups.get(event.event_name);
-        if (existing) {
-          existing.count++;
-        } else {
-          groups.set(event.event_name, {
-            count: 1,
-            lastOccurrence: event.created_at,
-          });
-        }
-      });
-
-      return Array.from(groups.entries())
-        .map(([name, data]) => ({
-          name,
-          count: data.count,
-          lastOccurrence: data.lastOccurrence,
-        }))
-        .sort((a, b) => b.count - a.count);
+      return (data || []).map((row: any) => ({
+        name: row.event_name,
+        count: Number(row.event_count) || 0,
+        lastOccurrence: row.last_occurrence,
+      }));
     },
     enabled: !!siteId,
   });

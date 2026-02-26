@@ -4,7 +4,7 @@ import { DateRange, getDateRangeFilter } from "@/hooks/useAnalytics";
 
 export interface FormStats {
     formId: string;
-    views: number; // starts
+    views: number;
     submissions: number;
     abandons: number;
     conversionRate: number;
@@ -21,44 +21,21 @@ export function useFormAnalytics({ siteId, dateRange }: UseFormAnalyticsProps) {
     return useQuery({
         queryKey: ["form-analytics", siteId, dateRange],
         queryFn: async (): Promise<FormStats[]> => {
-            const { data, error } = await supabase
-                .from("events")
-                .select("event_name, properties")
-                .eq("site_id", siteId)
-                .in("event_name", ["form_start", "form_submit", "form_abandon"])
-                .gte("created_at", start.toISOString())
-                .lte("created_at", end.toISOString());
+            const { data, error } = await supabase.rpc("get_form_analytics_stats", {
+                _site_id: siteId,
+                _start_date: start.toISOString(),
+                _end_date: end.toISOString(),
+            });
 
             if (error) throw error;
 
-            // Aggregation
-            const forms = new Map<string, { starts: number; submissions: number; abandons: number }>();
-
-            data?.forEach(event => {
-                const props = event.properties as any;
-                const formId = props.form_id || 'unknown-form';
-
-                if (!forms.has(formId)) {
-                    forms.set(formId, { starts: 0, submissions: 0, abandons: 0 });
-                }
-
-                const stats = forms.get(formId)!;
-                if (event.event_name === 'form_start') {
-                    stats.starts++;
-                } else if (event.event_name === 'form_submit') {
-                    stats.submissions++;
-                } else if (event.event_name === 'form_abandon') {
-                    stats.abandons++;
-                }
-            });
-
-            return Array.from(forms.entries()).map(([formId, stats]) => ({
-                formId,
-                views: stats.starts,
-                submissions: stats.submissions,
-                abandons: stats.abandons,
-                conversionRate: stats.starts > 0 ? (stats.submissions / stats.starts) * 100 : 0
-            })).sort((a, b) => b.submissions - a.submissions);
+            return (data || []).map((row: any) => ({
+                formId: row.form_id,
+                views: Number(row.starts) || 0,
+                submissions: Number(row.submissions) || 0,
+                abandons: Number(row.abandons) || 0,
+                conversionRate: Number(row.conversion_rate) || 0,
+            }));
         },
         enabled: !!siteId,
     });
