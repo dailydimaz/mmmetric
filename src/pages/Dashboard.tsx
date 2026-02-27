@@ -16,11 +16,14 @@ import { motion } from "framer-motion";
 import { GreetingBanner } from "@/components/dashboard/GreetingBanner";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { KonamiEasterEgg } from "@/components/ui/KonamiEasterEgg";
+import { useOnboarding } from "@/hooks/useOnboarding";
+import { OnboardingWizard } from "@/components/onboarding/OnboardingWizard";
 
 export default function Dashboard() {
   const { user, loading: authLoading } = useAuth();
   const { sites, isLoading: sitesLoading } = useSites();
   const { plan, isSelfHosted } = useSubscription();
+  const { showOnboarding } = useOnboarding();
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -71,6 +74,7 @@ export default function Dashboard() {
   return (
     <DashboardLayout>
       <KonamiEasterEgg />
+      {showOnboarding && <OnboardingWizard />}
       <motion.div
         variants={container}
         initial="hidden"
