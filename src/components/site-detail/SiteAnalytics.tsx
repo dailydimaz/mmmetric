@@ -1,4 +1,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useState } from "react";
+import { Switch } from "@/components/ui/switch";
+
 import {
     LayoutDashboard,
     Magnet,
@@ -129,7 +132,41 @@ export function SiteAnalytics({
 }: SiteAnalyticsProps) {
 
 
+
+    // Progressive Disclosure State
+    const [showAdvanced, setShowAdvanced] = useState(false);
+
+    // Advanced Tabs check - any data present?
+    const hasFormsData = false; // We would ideally check the actual formStats data if passed down
+    const hasEcommerceData = false;
+    const hasCustomEvents = false;
+
+    // A tab is visible if:
+    // 1. It is a core tab (always visible)
+    // 2. The user has explicitly toggled 'show advanced'
+    // 3. Or it has context-aware data that necessitates showing it
+    const isAdvancedVisible = showAdvanced || hasFormsData || hasEcommerceData || hasCustomEvents;
+
     const shouldShow = (widgetKey: string) => {
+        // If the user has explicitly configured widgets, respect that
+        if (visibleWidgets && visibleWidgets.size > 0) {
+            return visibleWidgets.has(widgetKey);
+        }
+
+        // Default Progressive Disclosure: Hide non-core widgets if advanced is not shown
+        const advancedWidgets = ['realtime', 'insights', 'anomaly_detection', 'forecast', 'benchmarks', 'utm_campaigns', 'entry_exit', 'site_search', 'links', 'downloads', 'content_decay', 'geo_stats', 'language_stats', 'device_stats', 'retention'];
+        if (!showAdvanced && advancedWidgets.includes(widgetKey)) {
+            // Context-aware auto-reveal could go here based on data props
+            // For example, if we have topReferrers data, we might auto-show 'top_referrers'
+            return false;
+        }
+
+        // Core widgets shown by default
+        const coreWidgets = ['visitors', 'pageviews', 'bounce_rate', 'avg_duration', 'visitor_chart', 'top_pages', 'top_referrers'];
+        if (coreWidgets.includes(widgetKey)) return true;
+
+        return showAdvanced;
+
         if (!visibleWidgets) return true;
         return visibleWidgets.has(widgetKey);
     };
@@ -153,7 +190,9 @@ export function SiteAnalytics({
                     <Users className="h-4 w-4" />
                     Audience
                 </TabsTrigger>
-                <TabsTrigger value="engagement" className="gap-2">
+                {isAdvancedVisible && (
+                    <>
+                        <TabsTrigger value="engagement" className="gap-2">
                     <MousePointerClick className="h-4 w-4" />
                     Engagement
                 </TabsTrigger>
@@ -174,12 +213,28 @@ export function SiteAnalytics({
                     Heatmap
                 </TabsTrigger>
                 {isSelfHosted() && (
-                    <TabsTrigger value="recordings" className="gap-2">
-                        <Video className="h-4 w-4" />
-                        Recordings
-                    </TabsTrigger>
+                            <TabsTrigger value="recordings" className="gap-2">
+                                <Video className="h-4 w-4" />
+                                Recordings
+                            </TabsTrigger>
+                        )}
+                    </>
                 )}
             </TabsList>
+            
+            <div className="flex items-center justify-end space-x-2 pb-2">
+                <Switch 
+                    id="advanced-mode" 
+                    checked={showAdvanced} 
+                    onCheckedChange={setShowAdvanced} 
+                />
+                <label 
+                    htmlFor="advanced-mode" 
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-muted-foreground"
+                >
+                    Show advanced analytics
+                </label>
+            </div>
 
             {/* Overview Tab */}
             <TabsContent value="overview" className="space-y-6 animate-fade-in-up">
@@ -305,8 +360,11 @@ export function SiteAnalytics({
                 {shouldShow('retention') && <RetentionCard siteId={site.id} dateRange={dateRange} />}
             </TabsContent>
 
-            {/* Engagement Tab */}
-            <TabsContent value="engagement" className="space-y-6 animate-fade-in-up">
+            {/* Advanced Tabs Context Wrapper */}
+            {isAdvancedVisible && (
+                <>
+                    {/* Engagement Tab */}
+                    <TabsContent value="engagement" className="space-y-6 animate-fade-in-up">
                 {shouldShow('engagement') && <EngagementStats siteId={site.id} dateRange={dateRange} />}
 
                 <div className="grid gap-6 lg:grid-cols-2">
@@ -353,9 +411,11 @@ export function SiteAnalytics({
             </TabsContent>
 
             {isSelfHosted() && (
-                <TabsContent value="recordings" className="animate-fade-in-up">
-                    <SessionRecordingsList siteId={site.id} />
-                </TabsContent>
+                        <TabsContent value="recordings" className="animate-fade-in-up">
+                            <SessionRecordingsList siteId={site.id} />
+                        </TabsContent>
+                    )}
+                </>
             )}
         </Tabs>
     );
