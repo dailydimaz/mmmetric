@@ -173,12 +173,6 @@ export function SiteAnalytics({
                     <LayoutDashboard className="h-4 w-4" />
                     Overview
                 </TabsTrigger>
-                {isAdvancedVisible && (
-                    <TabsTrigger value="acquisition" className="gap-2">
-                        <Magnet className="h-4 w-4" />
-                        Acquisition
-                    </TabsTrigger>
-                )}
                 <TabsTrigger value="content" className="gap-2">
                     <FileText className="h-4 w-4" />
                     Content
@@ -189,27 +183,31 @@ export function SiteAnalytics({
                 </TabsTrigger>
                 {isAdvancedVisible && (
                     <>
+                        <TabsTrigger value="acquisition" className="gap-2">
+                            <Magnet className="h-4 w-4" />
+                            Acquisition
+                        </TabsTrigger>
                         <TabsTrigger value="engagement" className="gap-2">
-                    <MousePointerClick className="h-4 w-4" />
-                    Engagement
-                </TabsTrigger>
-                <TabsTrigger value="conversions" className="gap-2">
-                    <Target className="h-4 w-4" />
-                    Conversions
-                </TabsTrigger>
-                <TabsTrigger value="tech" className="gap-2">
-                    <Monitor className="h-4 w-4" />
-                    Tech
-                </TabsTrigger>
-                <TabsTrigger value="twitter" className="gap-2">
-                    <Twitter className="h-4 w-4" />
-                    X / Twitter
-                </TabsTrigger>
-                <TabsTrigger value="heatmap" className="gap-2">
-                    <Flame className="h-4 w-4" />
-                    Heatmap
-                </TabsTrigger>
-                {isSelfHosted() && (
+                            <MousePointerClick className="h-4 w-4" />
+                            Engagement
+                        </TabsTrigger>
+                        <TabsTrigger value="conversions" className="gap-2">
+                            <Target className="h-4 w-4" />
+                            Conversions
+                        </TabsTrigger>
+                        <TabsTrigger value="tech" className="gap-2">
+                            <Monitor className="h-4 w-4" />
+                            Tech
+                        </TabsTrigger>
+                        <TabsTrigger value="twitter" className="gap-2">
+                            <Twitter className="h-4 w-4" />
+                            X / Twitter
+                        </TabsTrigger>
+                        <TabsTrigger value="heatmap" className="gap-2">
+                            <Flame className="h-4 w-4" />
+                            Heatmap
+                        </TabsTrigger>
+                        {isSelfHosted() && (
                             <TabsTrigger value="recordings" className="gap-2">
                                 <Video className="h-4 w-4" />
                                 Recordings
@@ -218,15 +216,15 @@ export function SiteAnalytics({
                     </>
                 )}
             </TabsList>
-            
+
             <div className="flex items-center justify-end space-x-2 pb-2">
-                <Switch 
-                    id="advanced-mode" 
-                    checked={showAdvanced} 
-                    onCheckedChange={setShowAdvanced} 
+                <Switch
+                    id="advanced-mode"
+                    checked={showAdvanced}
+                    onCheckedChange={setShowAdvanced}
                 />
-                <label 
-                    htmlFor="advanced-mode" 
+                <label
+                    htmlFor="advanced-mode"
                     className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-muted-foreground"
                 >
                     Show advanced analytics
@@ -289,18 +287,6 @@ export function SiteAnalytics({
                 )}
             </TabsContent>
 
-            {/* Acquisition Tab */}
-            <TabsContent value="acquisition" className="space-y-6 animate-fade-in-up">
-                {shouldShow('top_referrers') && (
-                    <TopReferrers
-                        referrers={topReferrers}
-                        isLoading={referrersLoading}
-                        onBreakdown={(ref) => onBreakdown('referrer', ref)}
-                    />
-                )}
-                {shouldShow('utm_campaigns') && <UTMStats utmStats={utmStats} isLoading={utmLoading} />}
-            </TabsContent>
-
             {/* Content Tab */}
             <TabsContent value="content" className="space-y-6 animate-fade-in-up">
                 <div className="grid gap-6 lg:grid-cols-2">
@@ -360,54 +346,66 @@ export function SiteAnalytics({
             {/* Advanced Tabs Context Wrapper */}
             {isAdvancedVisible && (
                 <>
+                    {/* Acquisition Tab */}
+                    <TabsContent value="acquisition" className="space-y-6 animate-fade-in-up">
+                        {shouldShow('top_referrers') && (
+                            <TopReferrers
+                                referrers={topReferrers}
+                                isLoading={referrersLoading}
+                                onBreakdown={(ref) => onBreakdown('referrer', ref)}
+                            />
+                        )}
+                        {shouldShow('utm_campaigns') && <UTMStats utmStats={utmStats} isLoading={utmLoading} />}
+                    </TabsContent>
+
                     {/* Engagement Tab */}
                     <TabsContent value="engagement" className="space-y-6 animate-fade-in-up">
-                {shouldShow('engagement') && <EngagementStats siteId={site.id} dateRange={dateRange} />}
+                        {shouldShow('engagement') && <EngagementStats siteId={site.id} dateRange={dateRange} />}
 
-                <div className="grid gap-6 lg:grid-cols-2">
-                    {shouldShow('scroll_depth') && <ScrollDepthStats siteId={site.id} dateRange={dateRange} />}
-                    {shouldShow('reading_depth') && <ReadingDepthStats siteId={site.id} dateRange={dateRange} />}
-                </div>
+                        <div className="grid gap-6 lg:grid-cols-2">
+                            {shouldShow('scroll_depth') && <ScrollDepthStats siteId={site.id} dateRange={dateRange} />}
+                            {shouldShow('reading_depth') && <ReadingDepthStats siteId={site.id} dateRange={dateRange} />}
+                        </div>
 
-                <div className="grid gap-6 lg:grid-cols-2">
-                    {shouldShow('social_shares') && <SocialShareStats siteId={site.id} dateRange={dateRange} />}
-                    {shouldShow('video_analytics') && <VideoAnalyticsStats siteId={site.id} dateRange={dateRange} />}
-                </div>
-            </TabsContent>
+                        <div className="grid gap-6 lg:grid-cols-2">
+                            {shouldShow('social_shares') && <SocialShareStats siteId={site.id} dateRange={dateRange} />}
+                            {shouldShow('video_analytics') && <VideoAnalyticsStats siteId={site.id} dateRange={dateRange} />}
+                        </div>
+                    </TabsContent>
 
-            {/* Conversions Tab */}
-            <TabsContent value="conversions" className="space-y-6 animate-fade-in-up">
-                <div className="grid gap-6 lg:grid-cols-2">
-                    {shouldShow('goals') && (
-                        <GoalsCard
-                            siteId={site.id}
-                            dateRange={dateRange}
-                            onCreateGoal={onCreateGoal}
-                        />
-                    )}
-                    {shouldShow('custom_events') && <CustomEvents siteId={site.id} dateRange={dateRange} />}
-                </div>
+                    {/* Conversions Tab */}
+                    <TabsContent value="conversions" className="space-y-6 animate-fade-in-up">
+                        <div className="grid gap-6 lg:grid-cols-2">
+                            {shouldShow('goals') && (
+                                <GoalsCard
+                                    siteId={site.id}
+                                    dateRange={dateRange}
+                                    onCreateGoal={onCreateGoal}
+                                />
+                            )}
+                            {shouldShow('custom_events') && <CustomEvents siteId={site.id} dateRange={dateRange} />}
+                        </div>
 
-                {shouldShow('funnels') && <FunnelList siteId={site.id} />}
-                {shouldShow('forms') && <FormStats siteId={site.id} dateRange={dateRange} />}
-            </TabsContent>
+                        {shouldShow('funnels') && <FunnelList siteId={site.id} />}
+                        {shouldShow('forms') && <FormStats siteId={site.id} dateRange={dateRange} />}
+                    </TabsContent>
 
-            {/* Tech Tab */}
-            <TabsContent value="tech" className="space-y-6 animate-fade-in-up">
-                {shouldShow('web_vitals') && <WebVitalsStats siteId={site.id} dateRange={dateRange} />}
-                {shouldShow('error_tracking') && <ErrorTrackingStats siteId={site.id} dateRange={dateRange} />}
-            </TabsContent>
+                    {/* Tech Tab */}
+                    <TabsContent value="tech" className="space-y-6 animate-fade-in-up">
+                        {shouldShow('web_vitals') && <WebVitalsStats siteId={site.id} dateRange={dateRange} />}
+                        {shouldShow('error_tracking') && <ErrorTrackingStats siteId={site.id} dateRange={dateRange} />}
+                    </TabsContent>
 
-            {/* Existing Separate Tabs */}
-            <TabsContent value="twitter" className="animate-fade-in-up">
-                <TwitterStats siteId={site.id} dateRange={dateRange} />
-            </TabsContent>
+                    {/* Existing Separate Tabs */}
+                    <TabsContent value="twitter" className="animate-fade-in-up">
+                        <TwitterStats siteId={site.id} dateRange={dateRange} />
+                    </TabsContent>
 
-            <TabsContent value="heatmap" className="animate-fade-in-up">
-                <HeatmapView siteId={site.id} />
-            </TabsContent>
+                    <TabsContent value="heatmap" className="animate-fade-in-up">
+                        <HeatmapView siteId={site.id} />
+                    </TabsContent>
 
-            {isSelfHosted() && (
+                    {isSelfHosted() && (
                         <TabsContent value="recordings" className="animate-fade-in-up">
                             <SessionRecordingsList siteId={site.id} />
                         </TabsContent>
