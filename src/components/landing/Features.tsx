@@ -53,6 +53,7 @@ import {
   GitCompare,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 // Import refactored components
 import { BentoCard } from "./features/BentoCard";
@@ -160,18 +161,26 @@ export function Features() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 auto-rows-[minmax(280px,auto)]">
-            {/* Large Card: Real-time - Row 1 */}
-            <BentoCard
+          <div className="flex flex-col w-full mb-8">
+            <Tabs defaultValue="core" className="w-full">
+              <div className="flex justify-center w-full mb-12">
+                <TabsList className="h-12 grid grid-cols-3 max-w-[600px] w-full">
+                  <TabsTrigger value="core" className="h-full text-sm sm:text-base data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Core Analytics</TabsTrigger>
+                  <TabsTrigger value="advanced" className="h-full text-sm sm:text-base data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Advanced Insights</TabsTrigger>
+                  <TabsTrigger value="enterprise" className="h-full text-sm sm:text-base data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Enterprise Power</TabsTrigger>
+                </TabsList>
+              </div>
+
+              <TabsContent value="core" className="mt-0 outline-none">
+                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 auto-rows-[minmax(280px,auto)] grid-flow-dense">
+                  <BentoCard
               className="md:col-span-2 md:row-span-2"
               icon={BarChart3}
               title="Real-time Traffic Insights"
               description="Watch your traffic spike in real-time. See exactly how many people are on your site right now, what pages they're viewing, and where they're coming from."
               illustration={RealtimeIllustration}
             />
-
-            {/* Card: Events - Row 1 */}
-            <BentoCard
+<BentoCard
               className="md:col-span-1 md:row-span-2"
               icon={MousePointerClick}
               title="Custom Events"
@@ -179,9 +188,7 @@ export function Features() {
               illustration={EventsIllustration}
               delay={0.1}
             />
-
-            {/* Card: Funnels - Row 1 */}
-            <BentoCard
+<BentoCard
               className="md:col-span-1"
               icon={GitBranch}
               title="Funnel Analysis"
@@ -189,9 +196,7 @@ export function Features() {
               illustration={FunnelIllustration}
               delay={0.2}
             />
-
-            {/* Card: Cohorts - Row 2 */}
-            <BentoCard
+<BentoCard
               className="md:col-span-1"
               icon={Users}
               title="Retention Cohorts"
@@ -199,9 +204,7 @@ export function Features() {
               illustration={CohortIllustration}
               delay={0.3}
             />
-
-            {/* Large Card: Privacy - Row 2 */}
-            <BentoCard
+<BentoCard
               className="md:col-span-2"
               icon={Shield}
               title="Privacy-First & GDPR Compliant"
@@ -209,9 +212,7 @@ export function Features() {
               illustration={PrivacyIllustration}
               delay={0.1}
             />
-
-            {/* Card: Geo - Row 2 */}
-            <BentoCard
+<BentoCard
               className="md:col-span-1"
               icon={Globe}
               title="Global Reach"
@@ -219,9 +220,7 @@ export function Features() {
               illustration={GeoIllustration}
               delay={0.2}
             />
-
-            {/* Card: Script */}
-            <BentoCard
+<BentoCard
               className="md:col-span-1"
               icon={Zap}
               title="Ultralight Script"
@@ -229,9 +228,7 @@ export function Features() {
               illustration={ScriptSizeIllustration}
               delay={0.3}
             />
-
-            {/* Large Card: User Journeys - Row 3 */}
-            <BentoCard
+<BentoCard
               className="md:col-span-2"
               icon={Route}
               title="User Journeys"
@@ -239,9 +236,7 @@ export function Features() {
               illustration={JourneyIllustration}
               delay={0.2}
             />
-
-            {/* Card: Command Menu */}
-            <BentoCard
+<BentoCard
               className="md:col-span-1"
               icon={Command}
               title="Command Menu"
@@ -249,9 +244,7 @@ export function Features() {
               illustration={CommandIllustration}
               delay={0.3}
             />
-
-            {/* Card: Team */}
-            <BentoCard
+<BentoCard
               className="md:col-span-1"
               icon={UserPlus}
               title="Team Access"
@@ -259,9 +252,7 @@ export function Features() {
               illustration={TeamIllustration}
               delay={0.4}
             />
-
-            {/* Card: Project */}
-            <BentoCard
+<BentoCard
               className="md:col-span-1"
               icon={LayoutTemplate}
               title="Unlimited Projects"
@@ -269,9 +260,7 @@ export function Features() {
               illustration={ProjectsIllustration}
               delay={0.5}
             />
-
-            {/* Card: Export */}
-            <BentoCard
+<BentoCard
               className="md:col-span-1"
               icon={Download}
               title="Data Ownership"
@@ -279,9 +268,7 @@ export function Features() {
               illustration={ExportIllustration}
               delay={0.2}
             />
-
-            {/* Card: Languages */}
-            <BentoCard
+<BentoCard
               className="md:col-span-1"
               icon={Languages}
               title="Languages"
@@ -289,9 +276,7 @@ export function Features() {
               illustration={LanguagesIllustration}
               delay={0.3}
             />
-
-            {/* Card: Breakdown */}
-            <BentoCard
+<BentoCard
               className="md:col-span-1"
               icon={Database}
               title="Breakdown Analysis"
@@ -299,9 +284,7 @@ export function Features() {
               illustration={BreakdownIllustration}
               delay={0.4}
             />
-
-            {/* Card: Revenue */}
-            <BentoCard
+<BentoCard
               className="md:col-span-1"
               icon={DollarSign}
               title="Revenue Tracking"
@@ -309,19 +292,7 @@ export function Features() {
               illustration={RevenueIllustration}
               delay={0.2}
             />
-
-            {/* Card: Attribution */}
-            <BentoCard
-              className="md:col-span-1"
-              icon={Magnet}
-              title="Attribution Models"
-              description="Understand the customer journey with First-touch and Linear models."
-              illustration={AttributionIllustration}
-              delay={0.3}
-            />
-
-            {/* Card: Devices */}
-            <BentoCard
+<BentoCard
               className="md:col-span-1"
               icon={Smartphone}
               title="Device & OS"
@@ -329,9 +300,7 @@ export function Features() {
               illustration={DeviceIllustration}
               delay={0.4}
             />
-
-            {/* Card: Social */}
-            <BentoCard
+<BentoCard
               className="md:col-span-1"
               icon={Twitter}
               title="Social Analytics"
@@ -339,19 +308,7 @@ export function Features() {
               illustration={SocialIllustration}
               delay={0.5}
             />
-
-            {/* Card: API */}
-            <BentoCard
-              className="md:col-span-1"
-              icon={Code2}
-              title="API & Webhooks"
-              description="Programmatic access to data and Slack/Discord alerts via webhooks."
-              illustration={ApiIllustration}
-              delay={0.2}
-            />
-
-            {/* Card: Email Reports */}
-            <BentoCard
+<BentoCard
               className="md:col-span-1"
               icon={Mail}
               title="Email Reports"
@@ -359,101 +316,7 @@ export function Features() {
               illustration={EmailIllustration}
               delay={0.3}
             />
-
-            {/* Card: Cross Domain */}
-            <BentoCard
-              className="md:col-span-1"
-              icon={Globe2}
-              title="Cross-domain"
-              description="Unified analytics across multiple domains and subdomains."
-              illustration={CrossDomainIllustration}
-              delay={0.4}
-            />
-
-            {/* Card: Insight Drilldown */}
-            <BentoCard
-              className="md:col-span-1"
-              icon={Lightbulb}
-              title="Custom Reports"
-              description="Build and share custom reports with specific filters."
-              illustration={InsightsIllustration}
-              delay={0.5}
-            />
-
-            {/* --- IMPLEMENTED ADVANCED FEATURES --- */}
-
-            {/* Card: A/B Testing */}
-            <BentoCard
-              className="md:col-span-1"
-              icon={FlaskConical}
-              title="A/B Testing"
-              description="Test different content and layouts to optimize conversions."
-              illustration={ABTestIllustration}
-              delay={0.2}
-            />
-
-            {/* Card: Bot Detection */}
-            <BentoCard
-              className="md:col-span-1"
-              icon={Bot}
-              title="Bot Protection"
-              description="Automatically filter out bots, spiders, and scrapers from your data."
-              illustration={BotIllustration}
-              delay={0.3}
-            />
-
-            {/* Card: Form Analytics */}
-            <BentoCard
-              className="md:col-span-1"
-              icon={FormInput}
-              title="Form Analytics"
-              description="Identify which fields cause users to abandon your forms."
-              illustration={FormIllustration}
-              delay={0.4}
-            />
-
-            {/* Card: Scroll Depth */}
-            <BentoCard
-              className="md:col-span-1"
-              icon={ArrowDownToLine}
-              title="Scroll Depth"
-              description="See exactly how far users scroll down your pages."
-              illustration={ScrollIllustration}
-              delay={0.5}
-            />
-
-            {/* Card: File Downloads */}
-            <BentoCard
-              className="md:col-span-1"
-              icon={FileDown}
-              title="File Downloads"
-              description="Automatically track PDF, document, and asset downloads."
-              illustration={FileDownloadIllustration}
-              delay={0.2}
-            />
-
-            {/* Card: Custom Alerts */}
-            <BentoCard
-              className="md:col-span-1"
-              icon={AlertTriangle}
-              title="Custom Alerts"
-              description="Get notified instantly when key metrics spike or drop."
-              illustration={AlertIllustration}
-              delay={0.3}
-            />
-
-            {/* Card: Pixels */}
-            <BentoCard
-              className="md:col-span-1"
-              icon={Image}
-              title="Tracking Pixels"
-              description="Embed invisible pixels to track views in emails and 3rd party sites."
-              illustration={PixelIllustration}
-              delay={0.4}
-            />
-
-            {/* Card: Time on Page */}
-            <BentoCard
+<BentoCard
               className="md:col-span-1"
               icon={Timer}
               title="Time Tracking"
@@ -461,9 +324,7 @@ export function Features() {
               illustration={TimeIllustration}
               delay={0.5}
             />
-
-            {/* Card: Entry/Exit */}
-            <BentoCard
+<BentoCard
               className="md:col-span-1"
               icon={LogIn}
               title="Entry & Exit Pages"
@@ -471,39 +332,7 @@ export function Features() {
               illustration={EntryExitIllustration}
               delay={0.2}
             />
-
-            {/* Card: High Performance */}
-            <BentoCard
-              className="md:col-span-1"
-              icon={Gauge}
-              title="High Scale"
-              description="Built for scale. Optimized rollups that handle billions of records effortlessly."
-              illustration={ScaleIllustration}
-              delay={0.3}
-            />
-
-            {/* Card: Goals */}
-            <BentoCard
-              className="md:col-span-1"
-              icon={Target}
-              title="Goals & Revenue"
-              description="Track custom goals with revenue properties and AOV."
-              illustration={GoalsIllustration}
-              delay={0.4}
-            />
-
-            {/* Card: Roll-up Reporting */}
-            <BentoCard
-              className="md:col-span-1"
-              icon={Combine}
-              title="Roll-up Reporting"
-              description="Aggregate data across multiple sites in one view."
-              illustration={RollupIllustration}
-              delay={0.5}
-            />
-
-            {/* Card: Outbound Links */}
-            <BentoCard
+<BentoCard
               className="md:col-span-1"
               icon={ExternalLink}
               title="Outbound Links"
@@ -511,69 +340,7 @@ export function Features() {
               illustration={OutboundLinkIllustration}
               delay={0.2}
             />
-
-            {/* Card: Core Web Vitals */}
-            <BentoCard
-              className="md:col-span-1"
-              icon={Activity}
-              title="Core Web Vitals"
-              description="Track LCP, CLS, FID, TTFB per page for SEO & performance."
-              illustration={WebVitalsIllustration}
-              delay={0.3}
-            />
-
-            {/* Card: Error Tracking */}
-            <BentoCard
-              className="md:col-span-1"
-              icon={Bug}
-              title="Error Tracking"
-              description="Privacy-first JavaScript error monitoring without Sentry."
-              illustration={ErrorTrackingIllustration}
-              delay={0.4}
-            />
-
-            {/* Card: Site Search */}
-            <BentoCard
-              className="md:col-span-1"
-              icon={Search}
-              title="Site Search"
-              description="Track internal search queries and zero-results patterns."
-              illustration={SiteSearchIllustration}
-              delay={0.5}
-            />
-
-            {/* Card: Reading Depth */}
-            <BentoCard
-              className="md:col-span-1"
-              icon={BookOpen}
-              title="Reading Depth"
-              description="Track actual reading engagement vs scroll-through behavior."
-              illustration={ReadingDepthIllustration}
-              delay={0.2}
-            />
-
-            {/* Card: Video Analytics */}
-            <BentoCard
-              className="md:col-span-1"
-              icon={Play}
-              title="Video Analytics"
-              description="Track play, pause, and completion rates for embedded videos."
-              illustration={VideoIllustration}
-              delay={0.3}
-            />
-
-            {/* Card: Mobile SDK */}
-            <BentoCard
-              className="md:col-span-1"
-              icon={Smartphone}
-              title="Mobile SDK"
-              description="React Native and Flutter SDKs for mobile app analytics."
-              illustration={MobileSDKIllustration}
-              delay={0.4}
-            />
-
-            {/* Card: Social Share */}
-            <BentoCard
+<BentoCard
               className="md:col-span-1"
               icon={Share2}
               title="Social Sharing"
@@ -581,9 +348,100 @@ export function Features() {
               illustration={SocialShareIllustration}
               delay={0.5}
             />
+                </div>
+              </TabsContent>
 
-            {/* Card: Content Decay */}
-            <BentoCard
+              <TabsContent value="advanced" className="mt-0 outline-none">
+                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 auto-rows-[minmax(280px,auto)] grid-flow-dense">
+                  <BentoCard
+              className="md:col-span-1"
+              icon={Magnet}
+              title="Attribution Models"
+              description="Understand the customer journey with First-touch and Linear models."
+              illustration={AttributionIllustration}
+              delay={0.3}
+            />
+<BentoCard
+              className="md:col-span-1"
+              icon={Lightbulb}
+              title="Custom Reports"
+              description="Build and share custom reports with specific filters."
+              illustration={InsightsIllustration}
+              delay={0.5}
+            />
+<BentoCard
+              className="md:col-span-2 md:row-span-2"
+              icon={FlaskConical}
+              title="A/B Testing"
+              description="Test different content and layouts to optimize conversions."
+              illustration={ABTestIllustration}
+              delay={0.2}
+            />
+<BentoCard
+              className="md:col-span-1"
+              icon={Bot}
+              title="Bot Protection"
+              description="Automatically filter out bots, spiders, and scrapers from your data."
+              illustration={BotIllustration}
+              delay={0.3}
+            />
+<BentoCard
+              className="md:col-span-1"
+              icon={FormInput}
+              title="Form Analytics"
+              description="Identify which fields cause users to abandon your forms."
+              illustration={FormIllustration}
+              delay={0.4}
+            />
+<BentoCard
+              className="md:col-span-1"
+              icon={ArrowDownToLine}
+              title="Scroll Depth"
+              description="See exactly how far users scroll down your pages."
+              illustration={ScrollIllustration}
+              delay={0.5}
+            />
+<BentoCard
+              className="md:col-span-1"
+              icon={FileDown}
+              title="File Downloads"
+              description="Automatically track PDF, document, and asset downloads."
+              illustration={FileDownloadIllustration}
+              delay={0.2}
+            />
+<BentoCard
+              className="md:col-span-1"
+              icon={Target}
+              title="Goals & Revenue"
+              description="Track custom goals with revenue properties and AOV."
+              illustration={GoalsIllustration}
+              delay={0.4}
+            />
+<BentoCard
+              className="md:col-span-1"
+              icon={Search}
+              title="Site Search"
+              description="Track internal search queries and zero-results patterns."
+              illustration={SiteSearchIllustration}
+              delay={0.5}
+            />
+<BentoCard
+              className="md:col-span-1"
+              icon={BookOpen}
+              title="Reading Depth"
+              description="Track actual reading engagement vs scroll-through behavior."
+              illustration={ReadingDepthIllustration}
+              delay={0.2}
+            />
+<BentoCard
+              className="md:col-span-1"
+              icon={Play}
+              title="Video Analytics"
+              description="Track play, pause, and completion rates for embedded videos."
+              illustration={VideoIllustration}
+              delay={0.3}
+            />
+<BentoCard
               className="md:col-span-1"
               icon={TrendingDown}
               title="Content Decay"
@@ -591,19 +449,15 @@ export function Features() {
               illustration={ContentDecayIllustration}
               delay={0.2}
             />
-
-            {/* Card: Annotations */}
-            <BentoCard
-              className="md:col-span-1"
+<BentoCard
+              className="md:col-span-2"
               icon={MessageSquare}
               title="Annotations"
               description="Add contextual notes directly onto your charts to track impacts of events."
               illustration={AnnotationsIllustration}
               delay={0.3}
             />
-
-            {/* Card: Embed Widgets */}
-            <BentoCard
+<BentoCard
               className="md:col-span-1"
               icon={LayoutTemplate}
               title="Embed Widgets"
@@ -611,9 +465,7 @@ export function Features() {
               illustration={EmbedWidgetIllustration}
               delay={0.4}
             />
-
-            {/* Card: CLI Tool */}
-            <BentoCard
+<BentoCard
               className="md:col-span-1"
               icon={Command}
               title="CLI Tool Docs"
@@ -621,19 +473,15 @@ export function Features() {
               illustration={CliDocIllustration}
               delay={0.5}
             />
-
-            {/* Card: AI Insights */}
-            <BentoCard
-              className="md:col-span-1"
+<BentoCard
+              className="md:col-span-2"
               icon={Sparkles}
               title="AI Insights"
               description="Automated analysis and actionable traffic observations generated instantly."
               illustration={AiInsightsIllustration}
               delay={0.2}
             />
-
-            {/* Card: Competitor Benchmarking */}
-            <BentoCard
+<BentoCard
               className="md:col-span-1"
               icon={GitCompare}
               title="Benchmarking"
@@ -641,21 +489,15 @@ export function Features() {
               illustration={BenchmarkIllustration}
               delay={0.3}
             />
-
-            {/* --- COMING SOON FEATURES --- */}
-
-            {/* Card: Heatmaps */}
-            <BentoCard
-              className="md:col-span-1"
+<BentoCard
+              className="md:col-span-1 md:row-span-2"
               icon={MousePointerClick}
               title="Heatmaps"
               description="Visualize where users click, move, and scroll with stunning heatmaps."
               illustration={HeatmapIllustration}
               delay={0.3}
             />
-
-            {/* Card: Page Overlay */}
-            <BentoCard
+<BentoCard
               className="md:col-span-1"
               icon={Layers3}
               title="Page Overlay"
@@ -663,9 +505,84 @@ export function Features() {
               illustration={PageOverlayIllustration}
               delay={0.4}
             />
+                </div>
+              </TabsContent>
 
-            {/* Card: Tag Manager */}
-            <BentoCard
+              <TabsContent value="enterprise" className="mt-0 outline-none">
+                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 auto-rows-[minmax(280px,auto)] grid-flow-dense">
+                  <BentoCard
+              className="md:col-span-1"
+              icon={Code2}
+              title="API & Webhooks"
+              description="Programmatic access to data and Slack/Discord alerts via webhooks."
+              illustration={ApiIllustration}
+              delay={0.2}
+            />
+<BentoCard
+              className="md:col-span-1"
+              icon={Globe2}
+              title="Cross-domain"
+              description="Unified analytics across multiple domains and subdomains."
+              illustration={CrossDomainIllustration}
+              delay={0.4}
+            />
+<BentoCard
+              className="md:col-span-1"
+              icon={AlertTriangle}
+              title="Custom Alerts"
+              description="Get notified instantly when key metrics spike or drop."
+              illustration={AlertIllustration}
+              delay={0.3}
+            />
+<BentoCard
+              className="md:col-span-1"
+              icon={Image}
+              title="Tracking Pixels"
+              description="Embed invisible pixels to track views in emails and 3rd party sites."
+              illustration={PixelIllustration}
+              delay={0.4}
+            />
+<BentoCard
+              className="md:col-span-2 md:row-span-2"
+              icon={Gauge}
+              title="High Scale"
+              description="Built for scale. Optimized rollups that handle billions of records effortlessly."
+              illustration={ScaleIllustration}
+              delay={0.3}
+            />
+<BentoCard
+              className="md:col-span-2"
+              icon={Combine}
+              title="Roll-up Reporting"
+              description="Aggregate data across multiple sites in one view."
+              illustration={RollupIllustration}
+              delay={0.5}
+            />
+<BentoCard
+              className="md:col-span-1"
+              icon={Activity}
+              title="Core Web Vitals"
+              description="Track LCP, CLS, FID, TTFB per page for SEO & performance."
+              illustration={WebVitalsIllustration}
+              delay={0.3}
+            />
+<BentoCard
+              className="md:col-span-1"
+              icon={Bug}
+              title="Error Tracking"
+              description="Privacy-first JavaScript error monitoring without Sentry."
+              illustration={ErrorTrackingIllustration}
+              delay={0.4}
+            />
+<BentoCard
+              className="md:col-span-1"
+              icon={Smartphone}
+              title="Mobile SDK"
+              description="React Native and Flutter SDKs for mobile app analytics."
+              illustration={MobileSDKIllustration}
+              delay={0.4}
+            />
+<BentoCard
               className="md:col-span-1"
               icon={Tag}
               title="Tag Manager"
@@ -673,19 +590,15 @@ export function Features() {
               illustration={TagIllustration}
               delay={0.5}
             />
-
-            {/* Card: Log Analytics */}
-            <BentoCard
-              className="md:col-span-1"
+<BentoCard
+              className="md:col-span-1 md:row-span-2"
               icon={FileText}
               title="Log Analytics"
               description="Import server logs from Apache, Nginx, and IIS."
               illustration={LogAnalyticsIllustration}
               delay={0.2}
             />
-
-            {/* Card: Looker Studio / BI Connector */}
-            <BentoCard
+<BentoCard
               className="md:col-span-1"
               icon={PieChart}
               title="BI Connector"
@@ -693,9 +606,7 @@ export function Features() {
               illustration={LookerStudioIllustration}
               delay={0.3}
             />
-
-            {/* Card: White Labeling */}
-            <BentoCard
+<BentoCard
               className="md:col-span-1"
               icon={LayoutTemplate}
               title="White Labeling"
@@ -703,19 +614,21 @@ export function Features() {
               illustration={WhiteLabelIllustration}
               delay={0.4}
             />
-
-            {/* Card: SSO / SAML */}
-            <BentoCard
-              className="md:col-span-1"
+<BentoCard
+              className="md:col-span-2"
               icon={KeyRound}
               title="SSO / SAML"
               description="Enterprise-grade Single Sign-On integration."
               illustration={SSOIllustration}
               delay={0.5}
             />
+                </div>
+              </TabsContent>
+            </Tabs>
           </div>
         </div>
       </section>
+
 
       {/* Comparison Section */}
       <ComparisonTable />
