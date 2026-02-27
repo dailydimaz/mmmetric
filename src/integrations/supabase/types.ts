@@ -2590,6 +2590,7 @@ export type Database = {
           email: string | null
           email_notifications: boolean | null
           full_name: string | null
+          has_completed_onboarding: boolean | null
           id: string
           marketing_emails: boolean | null
           updated_at: string
@@ -2601,6 +2602,7 @@ export type Database = {
           email?: string | null
           email_notifications?: boolean | null
           full_name?: string | null
+          has_completed_onboarding?: boolean | null
           id: string
           marketing_emails?: boolean | null
           updated_at?: string
@@ -2612,6 +2614,7 @@ export type Database = {
           email?: string | null
           email_notifications?: boolean | null
           full_name?: string | null
+          has_completed_onboarding?: boolean | null
           id?: string
           marketing_emails?: boolean | null
           updated_at?: string
