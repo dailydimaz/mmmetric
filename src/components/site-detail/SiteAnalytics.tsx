@@ -154,21 +154,16 @@ export function SiteAnalytics({
         }
 
         // Default Progressive Disclosure: Hide non-core widgets if advanced is not shown
-        const advancedWidgets = ['realtime', 'insights', 'anomaly_detection', 'forecast', 'benchmarks', 'utm_campaigns', 'entry_exit', 'site_search', 'links', 'downloads', 'content_decay', 'geo_stats', 'language_stats', 'device_stats', 'retention'];
+        const advancedWidgets = ['realtime', 'insights', 'anomaly_detection', 'forecast', 'benchmarks', 'utm_campaigns', 'entry_exit', 'site_search', 'links', 'downloads', 'content_decay', 'top_referrers'];
         if (!showAdvanced && advancedWidgets.includes(widgetKey)) {
-            // Context-aware auto-reveal could go here based on data props
-            // For example, if we have topReferrers data, we might auto-show 'top_referrers'
             return false;
         }
 
         // Core widgets shown by default
-        const coreWidgets = ['visitors', 'pageviews', 'bounce_rate', 'avg_duration', 'visitor_chart', 'top_pages', 'top_referrers'];
+        const coreWidgets = ['visitors', 'pageviews', 'bounce_rate', 'avg_duration', 'visitor_chart', 'top_pages', 'geo_stats', 'language_stats', 'device_stats', 'retention'];
         if (coreWidgets.includes(widgetKey)) return true;
 
         return showAdvanced;
-
-        if (!visibleWidgets) return true;
-        return visibleWidgets.has(widgetKey);
     };
 
     return (
@@ -178,10 +173,12 @@ export function SiteAnalytics({
                     <LayoutDashboard className="h-4 w-4" />
                     Overview
                 </TabsTrigger>
-                <TabsTrigger value="acquisition" className="gap-2">
-                    <Magnet className="h-4 w-4" />
-                    Acquisition
-                </TabsTrigger>
+                {isAdvancedVisible && (
+                    <TabsTrigger value="acquisition" className="gap-2">
+                        <Magnet className="h-4 w-4" />
+                        Acquisition
+                    </TabsTrigger>
+                )}
                 <TabsTrigger value="content" className="gap-2">
                     <FileText className="h-4 w-4" />
                     Content
