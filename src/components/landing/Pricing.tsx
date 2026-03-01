@@ -80,7 +80,7 @@ export function Pricing() {
             <div
               key={tier.name}
               className={`rounded-xl border ${tier.highlighted
-                ? "border-primary bg-card shadow-xl shadow-primary/10 scale-105 z-10"
+                ? "relative border-primary bg-card shadow-xl shadow-primary/10 scale-105 z-10"
                 : "bg-card border-border"
                 }`}
             >
