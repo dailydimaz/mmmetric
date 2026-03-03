@@ -1,6 +1,7 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { getLocationFromHeaders } from "../_shared/detect.ts";
 
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
@@ -14,8 +15,12 @@ const GIF_BUFFER = new Uint8Array([
     0x01, 0x00, 0x01, 0x00, 0x00, 0x02, 0x02, 0x44, 0x01, 0x00, 0x3b
 ]);
 
+const GIF_HEADERS = {
+    "Content-Type": "image/gif",
+    "Cache-Control": "no-cache, no-store, must-revalidate"
+};
+
 serve(async (req) => {
-    // Handle CORS preflight
     if (req.method === 'OPTIONS') {
         return new Response(null, { status: 204, headers: corsHeaders });
     }
@@ -24,42 +29,48 @@ serve(async (req) => {
         const url = new URL(req.url);
         const params = url.searchParams;
 
-        // Extract parameters - accept both 'tracking_id' (preferred) and 'site_id' (legacy) for backward compatibility
         const trackingId = params.get('tracking_id') || params.get('site_id');
         const pageUrl = params.get('url') || '/';
         const referrer = params.get('ref') || null;
         const event_name = params.get('event') || 'pageview';
 
-        // Basic validation
         if (!trackingId) {
-            // Even on error, return the GIF to avoid broken image icons on client
-            return new Response(GIF_BUFFER, {
-                headers: {
-                    ...corsHeaders,
-                    "Content-Type": "image/gif",
-                    "Cache-Control": "no-cache, no-store, must-revalidate"
-                }
-            });
+            return new Response(GIF_BUFFER, { headers: { ...corsHeaders, ...GIF_HEADERS } });
         }
 
-        // Capture requester info
         const userAgent = req.headers.get('user-agent') || '';
-        const ip = req.headers.get('x-forwarded-for') || 'unknown';
-        const cfCountry = req.headers.get('cf-ipcountry') || null;
-        const cfCity = req.headers.get('cf-ipcity') || null;
+        const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
 
-        // Generate simple IDs (since this is lightweight tracking)
-        // For robust fingerprinting, we'd reuse the logic from the main track function
-        // ensuring we import it or duplicate safely.
-        // Here we'll do a simplified version for the pixel.
+        // Use shared multi-provider geo detection from detect.ts
+        const location = getLocationFromHeaders(req.headers);
+        let geoCountry = location?.country?.toUpperCase() || null;
+        let geoCity = location?.city || null;
+        let geoLatitude = location?.latitude || null;
+        let geoLongitude = location?.longitude || null;
 
         const visitor_id = await generateVisitorId(ip, userAgent);
         const session_id = `${visitor_id}-${Date.now()}`;
 
-        // Initialize Supabase
         const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
         const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
         const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+        // DB fallback for geo when no proxy headers available
+        if (!geoCountry && ip && ip !== 'unknown' && !ip.startsWith('127.') && !ip.startsWith('192.168.') && !ip.startsWith('10.')) {
+            try {
+                const { data: geoData } = await supabase.rpc('lookup_geoip', { ip_address: ip });
+                if (geoData && geoData.length > 0) {
+                    geoCountry = geoData[0].country?.toUpperCase() || null;
+                    geoCity = geoData[0].city || null;
+                    if (geoData[0].latitude != null && geoData[0].longitude != null) {
+                        geoLatitude = Number(geoData[0].latitude);
+                        geoLongitude = Number(geoData[0].longitude);
+                    }
+                }
+            } catch (e) {
+                console.warn('Pixel GeoIP DB lookup failed:', e);
+            }
+        }
 
         // Verify site exists
         const { data: site } = await supabase
@@ -69,8 +80,7 @@ serve(async (req) => {
             .maybeSingle();
 
         if (site) {
-            // Record event
-            await supabase.from('events').insert({
+            const eventInsert = {
                 site_id: site.id,
                 event_name,
                 url: pageUrl,
@@ -80,42 +90,47 @@ serve(async (req) => {
                 browser: parseBrowser(userAgent),
                 os: parseOS(userAgent),
                 device_type: parseDevice(userAgent),
-                country: cfCountry,
-                city: cfCity,
+                country: geoCountry,
+                city: geoCity,
                 properties: { type: 'pixel' }
-            });
+            };
+
+            // Dual-write to both tables
+            const promises: Promise<any>[] = [
+                Promise.resolve(supabase.from('events').insert(eventInsert)),
+                Promise.resolve(supabase.from('events_partitioned').insert(eventInsert))
+            ];
+
+            // Upsert city coordinates if we have lat/lng
+            if (geoCity && geoCountry && geoLatitude != null && geoLongitude != null) {
+                promises.push(
+                    Promise.resolve(supabase.from('city_coordinates').upsert({
+                        country_code: geoCountry,
+                        city_name: geoCity,
+                        latitude: geoLatitude,
+                        longitude: geoLongitude,
+                    }, { onConflict: 'country_code,city_name', ignoreDuplicates: false }))
+                );
+            }
+
+            await Promise.allSettled(promises);
         }
 
-        // Always return GIF
-        return new Response(GIF_BUFFER, {
-            headers: {
-                ...corsHeaders,
-                "Content-Type": "image/gif",
-                "Cache-Control": "no-cache, no-store, must-revalidate"
-            }
-        });
+        return new Response(GIF_BUFFER, { headers: { ...corsHeaders, ...GIF_HEADERS } });
 
     } catch (error) {
         console.error('Pixel error:', error);
-        // Return GIF even on error
-        return new Response(GIF_BUFFER, {
-            headers: {
-                ...corsHeaders,
-                "Content-Type": "image/gif",
-                "Cache-Control": "no-cache, no-store, must-revalidate"
-            }
-        });
+        return new Response(GIF_BUFFER, { headers: { ...corsHeaders, ...GIF_HEADERS } });
     }
 });
 
-// Helper functions (simplified from track/index.ts)
+// Helper functions
 async function generateVisitorId(ip: string, ua: string): Promise<string> {
-    // Include daily salt rotation for privacy (consistent with main track function)
     const dailySalt = Deno.env.get('DAILY_SALT_SECRET');
     if (!dailySalt) {
       throw new Error('DAILY_SALT_SECRET is not configured');
     }
-    const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+    const today = new Date().toISOString().slice(0, 10);
     const str = `${ip}-${ua}-${dailySalt}-${today}`;
     const encoder = new TextEncoder();
     const data = encoder.encode(str);
@@ -128,21 +143,22 @@ function parseBrowser(ua: string): string {
     if (ua.includes('Firefox/')) return 'Firefox';
     if (ua.includes('Edg/')) return 'Edge';
     if (ua.includes('Chrome/')) return 'Chrome';
-    if (ua.includes('Safari/')) return 'Safari';
+    if (ua.includes('Safari/') && !ua.includes('Chrome')) return 'Safari';
+    if (ua.includes('Opera') || ua.includes('OPR/')) return 'Opera';
     return 'Unknown';
 }
 
 function parseOS(ua: string): string {
     if (ua.includes('Windows')) return 'Windows';
-    if (ua.includes('Mac OS X')) return 'macOS';
-    if (ua.includes('Linux')) return 'Linux';
+    if (ua.includes('Mac OS X') || ua.includes('Macintosh')) return 'macOS';
+    if (ua.includes('Linux') && !ua.includes('Android')) return 'Linux';
     if (ua.includes('Android')) return 'Android';
     if (ua.includes('iPhone') || ua.includes('iPad')) return 'iOS';
     return 'Unknown';
 }
 
 function parseDevice(ua: string): string {
-    if (ua.includes('Mobile') || ua.includes('Android')) return 'mobile';
     if (ua.includes('Tablet') || ua.includes('iPad')) return 'tablet';
+    if (ua.includes('Mobile') || ua.includes('Android')) return 'mobile';
     return 'desktop';
 }

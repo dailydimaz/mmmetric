@@ -1,7 +1,7 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { getLocationFromHeaders } from "./detect.ts";
+import { getLocationFromHeaders } from "../_shared/detect.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -357,7 +357,12 @@ serve(async (req) => {
         } else if (geoData && geoData.length > 0) {
           geoCountry = geoData[0].country?.toUpperCase() || null;
           geoCity = geoData[0].city || null;
-          console.log('Database geo lookup successful:', { geoCountry, geoCity });
+          // Grab coordinates from the enhanced lookup_geoip function
+          if (geoData[0].latitude != null && geoData[0].longitude != null) {
+            geoLatitude = Number(geoData[0].latitude);
+            geoLongitude = Number(geoData[0].longitude);
+          }
+          console.log('Database geo lookup successful:', { geoCountry, geoCity, geoLatitude, geoLongitude });
         } else {
           console.log('No geo data found in database for IP:', clientIp);
         }
@@ -606,15 +611,15 @@ serve(async (req) => {
     // Use Promise.allSettled to ensure both writes complete before returning
     // This prevents data loss in Edge Functions if the runtime kills un-awaited promises
     const promises: Promise<any>[] = [
-      supabase.from('events').insert(eventData).then((res) => res),
-      supabase.from('events_partitioned').insert(eventData).then((res) => res)
+      Promise.resolve(supabase.from('events').insert(eventData)),
+      Promise.resolve(supabase.from('events_partitioned').insert(eventData))
     ];
 
     let hasCityUpsert = false;
     if (geoCity && geoCountry && geoLatitude != null && geoLongitude != null) {
       hasCityUpsert = true;
       promises.push(
-        supabase
+        Promise.resolve(supabase
           .from('city_coordinates')
           .upsert({
             country_code: geoCountry,
@@ -624,7 +629,7 @@ serve(async (req) => {
           }, {
             onConflict: 'country_code,city_name',
             ignoreDuplicates: false
-          }).then((res) => res)
+          }))
       );
     }
 
