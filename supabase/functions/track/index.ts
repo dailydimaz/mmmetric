@@ -439,7 +439,7 @@ serve(async (req) => {
     const ipHashForRateLimit = Array.from(new Uint8Array(ipHashBuf)).slice(0, 8).map(b => b.toString(16).padStart(2, '0')).join('');
     const dbRateLimitOk = await checkRateLimitDb(supabase, ipHashForRateLimit);
     if (!dbRateLimitOk) {
-      console.warn(`Rate limit exceeded for IP (db): ${clientIp}`);
+      console.warn('Rate limit exceeded (db)');
       return new Response(JSON.stringify({ error: 'Rate limit exceeded' }), {
         status: 429,
         headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Retry-After': '60' },
