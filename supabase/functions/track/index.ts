@@ -197,23 +197,8 @@ function getAllowedDevOrigins(): string[] {
 }
 
 serve(async (req) => {
-  const origin = req.headers.get('origin') || 'no-origin';
-  const contentType = req.headers.get('content-type') || 'no-content-type';
-  console.log(`Incoming request: ${req.method} from ${origin}, content-type: ${contentType}`);
-
-  // Log all relevant headers for debugging geo issues
-  const geoHeaders = {
-    'cf-ipcountry': req.headers.get('cf-ipcountry'),
-    'cf-ipcity': req.headers.get('cf-ipcity'),
-    'x-vercel-ip-country': req.headers.get('x-vercel-ip-country'),
-    'x-vercel-ip-city': req.headers.get('x-vercel-ip-city'),
-    'accept-language': req.headers.get('accept-language'),
-  };
-  console.log('Geo headers:', JSON.stringify(geoHeaders));
-
-  // Handle CORS preflight with explicit 204 status
+  // Handle CORS preflight
   if (req.method === 'OPTIONS') {
-    console.log('Returning CORS preflight response');
     return new Response(null, { status: 204, headers: corsHeaders });
   }
 
