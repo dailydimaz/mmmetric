@@ -136,6 +136,7 @@ serve(async (req) => {
             };
 
             // Dual-write to both tables
+            // deno-lint-ignore no-explicit-any
             const promises: Promise<any>[] = [
                 Promise.resolve(supabase.from('events').insert(eventInsert)),
                 Promise.resolve(supabase.from('events_partitioned').insert(eventInsert))

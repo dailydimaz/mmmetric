@@ -101,7 +101,6 @@ function validateJsonStructure(obj: unknown, depth = 0): void {
 }
 
 // Parse user agent to extract browser, OS, and device type
-// Parse user agent to extract browser, OS, and device type
 function parseUserAgent(ua: string): { browser: string; os: string; device_type: string } {
   let browser = 'Unknown';
   let os = 'Unknown';
@@ -177,10 +176,6 @@ async function generateSecureSessionId(clientSessionId: string, visitorId: strin
   return hashArray.slice(0, 8).map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
-// Extract geo data from various proxy headers (Implementation moved to detect.ts)
-
-
-// Extract language from Accept-Language header
 // Extract language from Accept-Language header
 function extractLanguage(req: Request): string | null {
   const acceptLanguage = req.headers.get('accept-language') || '';
@@ -202,23 +197,8 @@ function getAllowedDevOrigins(): string[] {
 }
 
 serve(async (req) => {
-  const origin = req.headers.get('origin') || 'no-origin';
-  const contentType = req.headers.get('content-type') || 'no-content-type';
-  console.log(`Incoming request: ${req.method} from ${origin}, content-type: ${contentType}`);
-
-  // Log all relevant headers for debugging geo issues
-  const geoHeaders = {
-    'cf-ipcountry': req.headers.get('cf-ipcountry'),
-    'cf-ipcity': req.headers.get('cf-ipcity'),
-    'x-vercel-ip-country': req.headers.get('x-vercel-ip-country'),
-    'x-vercel-ip-city': req.headers.get('x-vercel-ip-city'),
-    'accept-language': req.headers.get('accept-language'),
-  };
-  console.log('Geo headers:', JSON.stringify(geoHeaders));
-
-  // Handle CORS preflight with explicit 204 status
+  // Handle CORS preflight
   if (req.method === 'OPTIONS') {
-    console.log('Returning CORS preflight response');
     return new Response(null, { status: 204, headers: corsHeaders });
   }
 
@@ -247,7 +227,6 @@ serve(async (req) => {
 
   try {
     const rawBody = await req.text();
-    console.log(`Body received (${rawBody.length} bytes)`);
 
     let body;
     try {
@@ -352,12 +331,12 @@ serve(async (req) => {
       } else {
         // 2. Database lookup
         let resolved = false;
-        try {
-          const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-          const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-          const geoSupabase = createClient(supabaseUrl, supabaseServiceKey);
+        const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+        const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+        const supabaseGeo = createClient(supabaseUrl, supabaseServiceKey);
 
-          const { data: geoData, error: geoError } = await geoSupabase.rpc('lookup_geoip', {
+        try {
+          const { data: geoData, error: geoError } = await supabaseGeo.rpc('lookup_geoip', {
             ip_address: clientIp
           });
 
@@ -401,15 +380,11 @@ serve(async (req) => {
       }
     }
 
-    // Log extracted data for debugging
-    console.log(`Geo data: country=${geoCountry}, city=${geoCity}, lat=${geoLatitude}, lng=${geoLongitude}, language=${primaryLanguage}`);
-
     // Parse user agent
     const { browser, os, device_type } = parseUserAgent(userAgent);
 
     // Bot detection
     if (isBot(userAgent)) {
-      console.log(`Bot detected: ${userAgent} - Skipping event`);
       // Return success to bot to avoid retries/errors
       return new Response(JSON.stringify({ success: true, ignored: true }), {
         status: 200,
@@ -531,9 +506,6 @@ serve(async (req) => {
         // If URL parsing fails, log but allow (could be server-side request)
         console.warn(`Could not parse origin: ${reqOrigin}`, e);
       }
-    } else if (!reqOrigin) {
-      // sendBeacon requests may not include origin header - this is normal
-      console.log(`No origin header present for ${event_name} event - likely sendBeacon`);
     }
 
     // Insert the event into both tables (dual-write for migration)
@@ -640,6 +612,7 @@ serve(async (req) => {
     // Insert into original events table (for pageviews, custom events, and experiment assignments too)
     // Use Promise.allSettled to ensure both writes complete before returning
     // This prevents data loss in Edge Functions if the runtime kills un-awaited promises
+    // deno-lint-ignore no-explicit-any
     const promises: Promise<any>[] = [
       Promise.resolve(supabase.from('events').insert(eventData)),
       Promise.resolve(supabase.from('events_partitioned').insert(eventData))
@@ -693,8 +666,6 @@ serve(async (req) => {
       if (cityResult.status === 'fulfilled') {
         if (cityResult.value.error) {
           console.warn('City coordinates upsert failed:', cityResult.value.error.code);
-        } else {
-          console.log(`City coordinates upserted: ${geoCity}, ${geoCountry} (${geoLatitude}, ${geoLongitude})`);
         }
       } else {
         console.warn('City coordinates upsert exception:', cityResult.reason);
@@ -712,8 +683,6 @@ serve(async (req) => {
 
     // Note: Usage tracking is handled by the frontend useUsage hook
     // which counts events directly for simplicity and accuracy
-
-    console.log(`Event recorded: ${event_name} for site ${site_id}, geo: ${geoCountry}/${geoCity}, lang: ${primaryLanguage}`);
 
     // Return success with minimal response
     return new Response(JSON.stringify({ success: true }), {
