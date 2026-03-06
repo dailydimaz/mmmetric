@@ -1,7 +1,7 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { getLocationFromHeaders } from "../_shared/detect.ts";
+import { getLocationFromHeaders, getCachedGeo, setCachedGeo, isPrivateIp, lookupGeoApiFallback } from "../_shared/detect.ts";
 
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
@@ -41,7 +41,7 @@ serve(async (req) => {
         const userAgent = req.headers.get('user-agent') || '';
         const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
 
-        // Use shared multi-provider geo detection from detect.ts
+        // === Geo Resolution: Headers → Cache → DB → Free API ===
         const location = getLocationFromHeaders(req.headers);
         let geoCountry = location?.country?.toUpperCase() || null;
         let geoCity = location?.city || null;
@@ -55,20 +55,60 @@ serve(async (req) => {
         const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
         const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-        // DB fallback for geo when no proxy headers available
-        if (!geoCountry && ip && ip !== 'unknown' && !ip.startsWith('127.') && !ip.startsWith('192.168.') && !ip.startsWith('10.')) {
-            try {
-                const { data: geoData } = await supabase.rpc('lookup_geoip', { ip_address: ip });
-                if (geoData && geoData.length > 0) {
-                    geoCountry = geoData[0].country?.toUpperCase() || null;
-                    geoCity = geoData[0].city || null;
-                    if (geoData[0].latitude != null && geoData[0].longitude != null) {
-                        geoLatitude = Number(geoData[0].latitude);
-                        geoLongitude = Number(geoData[0].longitude);
+        // Fallback chain when CDN headers are absent
+        if (!geoCountry && !isPrivateIp(ip)) {
+            // 1. Check in-memory LRU cache
+            const cached = getCachedGeo(ip);
+            if (cached !== undefined) {
+                if (cached) {
+                    geoCountry = cached.country?.toUpperCase() || null;
+                    geoCity = cached.city || null;
+                    geoLatitude = cached.latitude;
+                    geoLongitude = cached.longitude;
+                }
+            } else {
+                let resolved = false;
+
+                // 2. Database lookup
+                try {
+                    const { data: geoData } = await supabase.rpc('lookup_geoip', { ip_address: ip });
+                    if (geoData && geoData.length > 0) {
+                        geoCountry = geoData[0].country?.toUpperCase() || null;
+                        geoCity = geoData[0].city || null;
+                        if (geoData[0].latitude != null && geoData[0].longitude != null) {
+                            geoLatitude = Number(geoData[0].latitude);
+                            geoLongitude = Number(geoData[0].longitude);
+                        }
+                        resolved = true;
+                    }
+                } catch (e) {
+                    console.warn('Pixel GeoIP DB lookup failed:', e);
+                }
+
+                // 3. Free API fallback (ip-api.com)
+                if (!resolved) {
+                    try {
+                        const apiResult = await lookupGeoApiFallback(ip);
+                        if (apiResult && apiResult.country) {
+                            geoCountry = apiResult.country.toUpperCase();
+                            geoCity = apiResult.city || null;
+                            geoLatitude = apiResult.latitude;
+                            geoLongitude = apiResult.longitude;
+                            resolved = true;
+                        }
+                    } catch {
+                        // Silent fail
                     }
                 }
-            } catch (e) {
-                console.warn('Pixel GeoIP DB lookup failed:', e);
+
+                // Cache the result (even null)
+                setCachedGeo(ip, resolved ? {
+                    country: geoCountry,
+                    region: null,
+                    city: geoCity,
+                    latitude: geoLatitude,
+                    longitude: geoLongitude,
+                } : null);
             }
         }
 
