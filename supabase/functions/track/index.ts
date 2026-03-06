@@ -506,9 +506,6 @@ serve(async (req) => {
         // If URL parsing fails, log but allow (could be server-side request)
         console.warn(`Could not parse origin: ${reqOrigin}`, e);
       }
-    } else if (!reqOrigin) {
-      // sendBeacon requests may not include origin header - this is normal
-      console.log(`No origin header present for ${event_name} event - likely sendBeacon`);
     }
 
     // Insert the event into both tables (dual-write for migration)
