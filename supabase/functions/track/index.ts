@@ -380,9 +380,6 @@ serve(async (req) => {
       }
     }
 
-    // Log extracted data for debugging
-    console.log(`Geo data: country=${geoCountry}, city=${geoCity}, lat=${geoLatitude}, lng=${geoLongitude}, language=${primaryLanguage}`);
-
     // Parse user agent
     const { browser, os, device_type } = parseUserAgent(userAgent);
 
