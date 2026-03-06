@@ -684,8 +684,6 @@ serve(async (req) => {
     // Note: Usage tracking is handled by the frontend useUsage hook
     // which counts events directly for simplicity and accuracy
 
-    console.log(`Event recorded: ${event_name} for site ${site_id}, geo: ${geoCountry}/${geoCity}, lang: ${primaryLanguage}`);
-
     // Return success with minimal response
     return new Response(JSON.stringify({ success: true }), {
       status: 200,
