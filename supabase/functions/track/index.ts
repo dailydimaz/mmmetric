@@ -101,7 +101,6 @@ function validateJsonStructure(obj: unknown, depth = 0): void {
 }
 
 // Parse user agent to extract browser, OS, and device type
-// Parse user agent to extract browser, OS, and device type
 function parseUserAgent(ua: string): { browser: string; os: string; device_type: string } {
   let browser = 'Unknown';
   let os = 'Unknown';
