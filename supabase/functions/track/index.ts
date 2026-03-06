@@ -176,10 +176,6 @@ async function generateSecureSessionId(clientSessionId: string, visitorId: strin
   return hashArray.slice(0, 8).map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
-// Extract geo data from various proxy headers (Implementation moved to detect.ts)
-
-
-// Extract language from Accept-Language header
 // Extract language from Accept-Language header
 function extractLanguage(req: Request): string | null {
   const acceptLanguage = req.headers.get('accept-language') || '';
