@@ -612,6 +612,7 @@ serve(async (req) => {
     // Insert into original events table (for pageviews, custom events, and experiment assignments too)
     // Use Promise.allSettled to ensure both writes complete before returning
     // This prevents data loss in Edge Functions if the runtime kills un-awaited promises
+    // deno-lint-ignore no-explicit-any
     const promises: Promise<any>[] = [
       Promise.resolve(supabase.from('events').insert(eventData)),
       Promise.resolve(supabase.from('events_partitioned').insert(eventData))
