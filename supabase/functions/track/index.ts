@@ -331,12 +331,12 @@ serve(async (req) => {
       } else {
         // 2. Database lookup
         let resolved = false;
-        try {
-          const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-          const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-          const geoSupabase = createClient(supabaseUrl, supabaseServiceKey);
+        const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+        const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+        const supabaseGeo = createClient(supabaseUrl, supabaseServiceKey);
 
-          const { data: geoData, error: geoError } = await geoSupabase.rpc('lookup_geoip', {
+        try {
+          const { data: geoData, error: geoError } = await supabaseGeo.rpc('lookup_geoip', {
             ip_address: clientIp
           });
 
