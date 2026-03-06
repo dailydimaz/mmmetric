@@ -326,7 +326,7 @@ serve(async (req) => {
     // Get headers for geo and user agent
     const userAgent = req.headers.get('user-agent') || '';
 
-    // Extract geo data from multiple header sources using helper
+    // === Geo Resolution: Headers → Cache → DB → Free API ===
     const location = getLocationFromHeaders(req.headers);
     let geoCountry = location?.country?.toUpperCase() || null;
     let geoCity = location?.city || null;
@@ -335,39 +335,69 @@ serve(async (req) => {
 
     // Extract language: prefer client-side (navigator.language) then fallback to header
     const headerLanguage = extractLanguage(req);
-    // Normalize language to lower case (e.g. en-US -> en-us) to prevent fragmentation in stats
     let primaryLanguage = (bodyLanguage || headerLanguage)?.toLowerCase() || null;
 
-    // If no geo data found (e.g. localhost or direct access), try database lookup
-    // only if clientIp is available and not localhost/private
-    if (!geoCountry && clientIp && clientIp !== 'unknown' && !clientIp.startsWith('127.') && !clientIp.startsWith('192.168.') && !clientIp.startsWith('10.')) {
-      try {
-        console.log(`No geo headers found for IP ${clientIp}, attempting database lookup...`);
-        // Create Supabase client for geo lookup (using service role for RLS bypass)
-        const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-        const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-        const geoSupabase = createClient(supabaseUrl, supabaseServiceKey);
-
-        const { data: geoData, error: geoError } = await geoSupabase.rpc('lookup_geoip', {
-          ip_address: clientIp
-        });
-
-        if (geoError) {
-          console.warn('GeoIP lookup RPC error:', geoError.message);
-        } else if (geoData && geoData.length > 0) {
-          geoCountry = geoData[0].country?.toUpperCase() || null;
-          geoCity = geoData[0].city || null;
-          // Grab coordinates from the enhanced lookup_geoip function
-          if (geoData[0].latitude != null && geoData[0].longitude != null) {
-            geoLatitude = Number(geoData[0].latitude);
-            geoLongitude = Number(geoData[0].longitude);
-          }
-          console.log('Database geo lookup successful:', { geoCountry, geoCity, geoLatitude, geoLongitude });
-        } else {
-          console.log('No geo data found in database for IP:', clientIp);
+    // Fallback chain when CDN headers are absent
+    if (!geoCountry && !isPrivateIp(clientIp)) {
+      // 1. Check in-memory LRU cache
+      const cached = getCachedGeo(clientIp);
+      if (cached !== undefined) {
+        // Cache hit (may be null = "we looked and found nothing")
+        if (cached) {
+          geoCountry = cached.country?.toUpperCase() || null;
+          geoCity = cached.city || null;
+          geoLatitude = cached.latitude;
+          geoLongitude = cached.longitude;
         }
-      } catch (e) {
-        console.warn('Database geo lookup failed:', e);
+      } else {
+        // 2. Database lookup
+        let resolved = false;
+        try {
+          const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+          const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+          const geoSupabase = createClient(supabaseUrl, supabaseServiceKey);
+
+          const { data: geoData, error: geoError } = await geoSupabase.rpc('lookup_geoip', {
+            ip_address: clientIp
+          });
+
+          if (!geoError && geoData && geoData.length > 0) {
+            geoCountry = geoData[0].country?.toUpperCase() || null;
+            geoCity = geoData[0].city || null;
+            if (geoData[0].latitude != null && geoData[0].longitude != null) {
+              geoLatitude = Number(geoData[0].latitude);
+              geoLongitude = Number(geoData[0].longitude);
+            }
+            resolved = true;
+          }
+        } catch (e) {
+          console.warn('GeoIP DB lookup failed:', e);
+        }
+
+        // 3. Free API fallback (ip-api.com) when DB misses
+        if (!resolved) {
+          try {
+            const apiResult = await lookupGeoApiFallback(clientIp);
+            if (apiResult && apiResult.country) {
+              geoCountry = apiResult.country.toUpperCase();
+              geoCity = apiResult.city || null;
+              geoLatitude = apiResult.latitude;
+              geoLongitude = apiResult.longitude;
+              resolved = true;
+            }
+          } catch {
+            // Silent fail — geo is best-effort
+          }
+        }
+
+        // Cache the result (even null) to avoid repeated lookups
+        setCachedGeo(clientIp, resolved ? {
+          country: geoCountry,
+          region: null,
+          city: geoCity,
+          latitude: geoLatitude,
+          longitude: geoLongitude,
+        } : null);
       }
     }
 
