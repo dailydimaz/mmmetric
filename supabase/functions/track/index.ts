@@ -227,7 +227,6 @@ serve(async (req) => {
 
   try {
     const rawBody = await req.text();
-    console.log(`Body received (${rawBody.length} bytes)`);
 
     let body;
     try {
