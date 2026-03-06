@@ -385,7 +385,6 @@ serve(async (req) => {
 
     // Bot detection
     if (isBot(userAgent)) {
-      console.log(`Bot detected: ${userAgent} - Skipping event`);
       // Return success to bot to avoid retries/errors
       return new Response(JSON.stringify({ success: true, ignored: true }), {
         status: 200,
