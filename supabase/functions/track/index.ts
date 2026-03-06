@@ -666,8 +666,6 @@ serve(async (req) => {
       if (cityResult.status === 'fulfilled') {
         if (cityResult.value.error) {
           console.warn('City coordinates upsert failed:', cityResult.value.error.code);
-        } else {
-          console.log(`City coordinates upserted: ${geoCity}, ${geoCountry} (${geoLatitude}, ${geoLongitude})`);
         }
       } else {
         console.warn('City coordinates upsert exception:', cityResult.reason);
