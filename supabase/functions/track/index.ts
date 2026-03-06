@@ -238,7 +238,7 @@ serve(async (req) => {
 
   // Check in-memory rate limit (fast path)
   if (!checkRateLimitMemory(clientIp)) {
-    console.warn(`Rate limit exceeded for IP (memory): ${clientIp}`);
+    console.warn('Rate limit exceeded (memory)');
     return new Response(JSON.stringify({ error: 'Rate limit exceeded' }), {
       status: 429,
       headers: { ...corsHeaders, 'Content-Type': 'application/json', 'Retry-After': '60' },
