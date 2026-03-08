@@ -296,6 +296,8 @@ export default function SiteDetail() {
           utmLoading={utmLoading}
           showComparison={showComparison}
           visibleWidgets={visibleWidgets}
+          chartInterval={chartInterval}
+          onChartIntervalChange={setChartInterval}
           onBreakdown={(dim, val) => setBreakdown({ dimension: dim, value: val })}
           onCreateGoal={() => setShowGoalSetup(true)}
         />
