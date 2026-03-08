@@ -59,6 +59,7 @@ function filtersToJsonb(filters?: AnalyticsFilter): Record<string, string> | nul
   if (filters.device) result.device = filters.device;
   if (filters.url) result.url = filters.url;
   if (filters.referrerPattern) result.referrerPattern = filters.referrerPattern;
+  if (filters.tag) result.tag = filters.tag;
 
   return Object.keys(result).length > 0 ? result : null;
 }
