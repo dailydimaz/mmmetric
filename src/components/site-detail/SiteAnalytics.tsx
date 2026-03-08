@@ -49,6 +49,7 @@ import {
     SessionRecordingsList,
     InsightsCard,
     BenchmarkCard,
+    CustomPropertiesBreakdown,
 } from "@/components/analytics";
 import { isSelfHosted } from "@/lib/billing";
 import type { ChartInterval } from "@/components/analytics/IntervalSelector";
