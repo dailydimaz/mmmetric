@@ -41,7 +41,7 @@ import { cn } from "@/lib/utils";
 // Nav items - conditionally include cloud-only items
 const getNavItems = (siteId: string | null, billingEnabled: boolean) => {
   const items = [
-    { icon: LayoutDashboard, label: "Overview", href: "/dashboard" },
+    { icon: LayoutDashboard, label: "nav.overview", href: "/dashboard" },
     { icon: MousePointerClick, label: "Analytics", href: siteId ? `/dashboard/sites/${siteId}` : "/dashboard", siteSpecific: true },
     { icon: Route, label: "Journeys", href: siteId ? `/dashboard/sites/${siteId}/journeys` : "/dashboard", siteSpecific: true },
     { icon: GitBranch, label: "Funnels", href: siteId ? `/dashboard/sites/${siteId}/funnels` : "/dashboard", siteSpecific: true },
