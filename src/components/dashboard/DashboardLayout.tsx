@@ -162,7 +162,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               <DropdownMenuSeparator />
               <DropdownMenuItem onSelect={() => setCreateDialogOpen(true)} className="text-primary cursor-pointer font-medium">
                 <Plus className="mr-2 h-4 w-4" />
-                Add new site
+                {t('nav.addNewSite')}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
