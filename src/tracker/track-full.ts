@@ -1388,7 +1388,7 @@
     };
 
     const init = () => {
-        track('pageview');
+        if (autoTrack) track('pageview');
         setupOutbound();
         setupDownloads();
         setupScroll();
