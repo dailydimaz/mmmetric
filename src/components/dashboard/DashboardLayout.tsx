@@ -221,20 +221,24 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56 mb-2">
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuLabel>{t('nav.myAccount')}</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <div className="flex items-center justify-between px-2 py-1.5 text-sm">
-              <span>Theme</span>
+              <span>{t('nav.theme')}</span>
               <ThemeToggle />
+            </div>
+            <div className="flex items-center justify-between px-2 py-1.5 text-sm">
+              <span>{t('nav.language')}</span>
+              <LanguageSwitcher variant="compact" />
             </div>
             <DropdownMenuSeparator />
             <DropdownMenuItem onSelect={() => navigate("/dashboard/settings")} className="cursor-pointer">
               <Settings className="mr-2 h-4 w-4" />
-              Settings
+              {t('common.settings')}
             </DropdownMenuItem>
             <DropdownMenuItem onSelect={handleSignOut} className="text-destructive cursor-pointer">
               <LogOut className="mr-2 h-4 w-4" />
-              Sign out
+              {t('auth.signOut')}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
