@@ -29,6 +29,10 @@ import SiteGroupDashboard from "./pages/SiteGroupDashboard";
 import Experiments from "./pages/Experiments";
 import SessionRecordings from "./pages/SessionRecordings";
 import Sessions from "./pages/Sessions";
+import QueryBuilder from "./pages/QueryBuilder";
+import Reports from "./pages/Reports";
+import AuditLog from "./pages/AuditLog";
+import SqlEditor from "./pages/SqlEditor";
 
 import NotFound from "./pages/NotFound";
 import CompareGA from "./pages/CompareGA";
