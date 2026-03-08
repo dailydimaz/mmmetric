@@ -37,6 +37,8 @@ import { WebhookIntegrationCard } from "@/components/settings/WebhookIntegration
 import { PublicDashboardCard } from "@/components/settings/PublicDashboardCard";
 import { WhiteLabelingCard } from "@/components/settings/WhiteLabelingCard";
 import { ConnectedAccountsCard } from "@/components/settings/ConnectedAccountsCard";
+import { SubscriptionsCard } from "@/components/settings/SubscriptionsCard";
+import { EmbedDashboardCard } from "@/components/settings/EmbedDashboardCard";
 import { useSites } from "@/hooks/useSites";
 
 interface Profile {
