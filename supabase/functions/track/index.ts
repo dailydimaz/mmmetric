@@ -100,71 +100,7 @@ function validateJsonStructure(obj: unknown, depth = 0): void {
     }
   }
 }
-
-// Parse user agent to extract browser, OS, and device type
-function parseUserAgent(ua: string): { browser: string; os: string; device_type: string } {
-  let browser = 'Unknown';
-  let os = 'Unknown';
-  let device_type = 'desktop';
-
-  // Detect browser
-  if (ua.includes('Firefox/')) browser = 'Firefox';
-  else if (ua.includes('Edg/')) browser = 'Edge';
-  else if (ua.includes('Chrome/')) browser = 'Chrome';
-  else if (ua.includes('Safari/') && !ua.includes('Chrome')) browser = 'Safari';
-  else if (ua.includes('Opera') || ua.includes('OPR/')) browser = 'Opera';
-
-  // Detect OS
-  if (ua.includes('Windows')) os = 'Windows';
-  else if (ua.includes('Mac OS X') || ua.includes('Macintosh')) os = 'macOS';
-  else if (ua.includes('Linux') && !ua.includes('Android')) os = 'Linux';
-  else if (ua.includes('Android')) os = 'Android';
-  else if (ua.includes('iPhone') || ua.includes('iPad')) os = 'iOS';
-
-  // Detect device type (Fixed precedence: Tablet check before Mobile)
-  if (ua.includes('Tablet') || ua.includes('iPad')) {
-    device_type = 'tablet';
-  } else if (ua.includes('Mobile') || ua.includes('Android')) {
-    device_type = 'mobile';
-  }
-
-  return { browser, os, device_type };
-}
-
-// Bot detection patterns
-const BOT_PATTERNS = [
-  /bot/i, /crawler/i, /spider/i, /scraper/i,
-  /googlebot/i, /bingbot/i, /yandex/i, /baidu/i,
-  /facebookexternalhit/i, /twitterbot/i, /linkedinbot/i,
-  /slackbot/i, /discordbot/i, /whatsapp/i,
-  /semrush/i, /ahrefs/i, /mj12bot/i,
-  /headlesschrome/i, /phantomjs/i, /puppeteer/i
-];
-
-function isBot(userAgent: string): boolean {
-  if (!userAgent) return false;
-  return BOT_PATTERNS.some(pattern => pattern.test(userAgent));
-}
-
-// Generate a cryptographic hash for visitor fingerprinting using SHA-256
-// Rotates daily for privacy compliance (24h retention)
-async function generateVisitorId(ip: string, ua: string): Promise<string> {
-  // Use a rotating salt based on the current date (UTC)
-  const dateSalt = new Date().toISOString().slice(0, 10); // "YYYY-MM-DD"
-  const secretSalt = Deno.env.get('DAILY_SALT_SECRET');
-  if (!secretSalt) {
-    console.error('DAILY_SALT_SECRET is not configured');
-    throw new Error('Server configuration error: missing required secret');
-  }
-
-  const str = `${ip}-${ua}-${dateSalt}-${secretSalt}`;
-  const encoder = new TextEncoder();
-  const data = encoder.encode(str);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  // Use first 16 hex characters for a unique 64-bit identifier
-  return hashArray.slice(0, 8).map(b => b.toString(16).padStart(2, '0')).join('');
-}
+// parseUserAgent, isBot, generateVisitorId now imported from _shared/parsing.ts
 
 // Generate a session ID hash from client provided ID + visitor ID to prevent spoofing
 async function generateSecureSessionId(clientSessionId: string, visitorId: string): Promise<string> {
