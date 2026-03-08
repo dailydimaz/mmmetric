@@ -981,6 +981,18 @@
                 track(eventName, props || {});
             }
         };
+
+        // identify() support
+        (window as any).mmmetric.identify = (idOrData?: string | Record<string, unknown>, data?: Record<string, unknown>) => {
+            const payload: Record<string, unknown> = {};
+            if (typeof idOrData === 'string') {
+                payload.custom_id = idOrData;
+                if (data && typeof data === 'object') payload.data = data;
+            } else if (typeof idOrData === 'object') {
+                payload.data = idOrData;
+            }
+            track('identify', payload);
+        };
     };
 
     // Reading Depth - Track actual reading engagement vs scroll-through
