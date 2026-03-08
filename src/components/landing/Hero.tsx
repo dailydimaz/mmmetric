@@ -16,6 +16,7 @@ const mockStats: StatsData = {
   avgSessionDuration: 134,
   pageviewsChange: 12.5,
   visitorsChange: 8.2,
+  viewsPerVisit: 3.77,
 };
 
 const mockTimeSeries = Array.from({ length: 30 }).map((_, i) => {
