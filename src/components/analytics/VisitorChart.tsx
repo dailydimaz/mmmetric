@@ -141,6 +141,16 @@ export function VisitorChart({ siteId, data, isLoading, showComparison = true, o
             {onDateClick && !selectedDate && (
               <span className="text-xs text-muted-foreground">Click chart to filter</span>
             )}
+            {showComparison && (
+              <ToggleGroup type="single" value={compareMode} onValueChange={(val) => val && setCompareMode(val as CompareMode)} className="bg-muted p-0.5 rounded-md">
+                <ToggleGroupItem value="previous" size="sm" className="h-6 text-[10px] px-2 data-[state=on]:bg-background data-[state=on]:shadow-sm">
+                  Previous
+                </ToggleGroupItem>
+                <ToggleGroupItem value="yoy" size="sm" className="h-6 text-[10px] px-2 data-[state=on]:bg-background data-[state=on]:shadow-sm">
+                  Year-over-Year
+                </ToggleGroupItem>
+              </ToggleGroup>
+            )}
             {onIntervalChange && (
               <IntervalSelector
                 value={currentInterval}
