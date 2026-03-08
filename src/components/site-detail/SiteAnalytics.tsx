@@ -160,7 +160,7 @@ export function SiteAnalytics({
         }
 
         // Core widgets shown by default
-        const coreWidgets = ['visitors', 'pageviews', 'bounce_rate', 'avg_duration', 'visitor_chart', 'top_pages', 'geo_stats', 'language_stats', 'device_stats', 'retention'];
+        const coreWidgets = ['visitors', 'pageviews', 'bounce_rate', 'avg_duration', 'views_per_visit', 'visitor_chart', 'top_pages', 'geo_stats', 'language_stats', 'device_stats', 'retention'];
         if (coreWidgets.includes(widgetKey)) return true;
 
         return showAdvanced;
