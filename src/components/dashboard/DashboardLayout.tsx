@@ -34,26 +34,28 @@ import {
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { useI18n } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
 // Nav items - conditionally include cloud-only items
 const getNavItems = (siteId: string | null, billingEnabled: boolean) => {
   const items = [
-    { icon: LayoutDashboard, label: "Overview", href: "/dashboard" },
-    { icon: MousePointerClick, label: "Analytics", href: siteId ? `/dashboard/sites/${siteId}` : "/dashboard", siteSpecific: true },
-    { icon: Route, label: "Journeys", href: siteId ? `/dashboard/sites/${siteId}/journeys` : "/dashboard", siteSpecific: true },
-    { icon: GitBranch, label: "Funnels", href: siteId ? `/dashboard/sites/${siteId}/funnels` : "/dashboard", siteSpecific: true },
-    { icon: Users, label: "Retention", href: siteId ? `/dashboard/sites/${siteId}/retention` : "/dashboard", siteSpecific: true },
-    { icon: Lightbulb, label: "Insights", href: siteId ? `/dashboard/sites/${siteId}/insights` : "/dashboard", siteSpecific: true },
-    { icon: Target, label: "Attribution", href: siteId ? `/dashboard/sites/${siteId}/attribution` : "/dashboard", siteSpecific: true },
-    { icon: FlaskConical, label: "A/B Tests", href: siteId ? `/dashboard/sites/${siteId}/experiments` : "/dashboard", siteSpecific: true },
-    { icon: Activity, label: "Sessions", href: siteId ? `/dashboard/sites/${siteId}/sessions` : "/dashboard", siteSpecific: true },
+    { icon: LayoutDashboard, label: "nav.overview", href: "/dashboard" },
+    { icon: MousePointerClick, label: "nav.analytics", href: siteId ? `/dashboard/sites/${siteId}` : "/dashboard", siteSpecific: true },
+    { icon: Route, label: "nav.journeys", href: siteId ? `/dashboard/sites/${siteId}/journeys` : "/dashboard", siteSpecific: true },
+    { icon: GitBranch, label: "nav.funnels", href: siteId ? `/dashboard/sites/${siteId}/funnels` : "/dashboard", siteSpecific: true },
+    { icon: Users, label: "nav.retention", href: siteId ? `/dashboard/sites/${siteId}/retention` : "/dashboard", siteSpecific: true },
+    { icon: Lightbulb, label: "nav.insights", href: siteId ? `/dashboard/sites/${siteId}/insights` : "/dashboard", siteSpecific: true },
+    { icon: Target, label: "nav.attribution", href: siteId ? `/dashboard/sites/${siteId}/attribution` : "/dashboard", siteSpecific: true },
+    { icon: FlaskConical, label: "nav.abTests", href: siteId ? `/dashboard/sites/${siteId}/experiments` : "/dashboard", siteSpecific: true },
+    { icon: Activity, label: "nav.sessions", href: siteId ? `/dashboard/sites/${siteId}/sessions` : "/dashboard", siteSpecific: true },
   ];
 
   // Add cloud-only items
   if (billingEnabled) {
-    items.push({ icon: LinkIcon, label: "Links", href: siteId ? `/dashboard/sites/${siteId}/links` : "/dashboard", siteSpecific: true });
-    items.push({ icon: Link2, label: "URL Builder", href: "/tools/campaign-builder" });
+    items.push({ icon: LinkIcon, label: "nav.links", href: siteId ? `/dashboard/sites/${siteId}/links` : "/dashboard", siteSpecific: true });
+    items.push({ icon: Link2, label: "nav.urlBuilder", href: "/tools/campaign-builder" });
   }
 
 
@@ -72,6 +74,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const location = useLocation();
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { t } = useI18n();
 
   const params = useParams<{ siteId?: string }>();
   const urlSiteId = params.siteId;
@@ -127,7 +130,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-[220px]">
-              <DropdownMenuLabel className="text-xs text-muted-foreground">Switch Site</DropdownMenuLabel>
+              <DropdownMenuLabel className="text-xs text-muted-foreground">{t('nav.switchSite')}</DropdownMenuLabel>
               <div className="max-h-[200px] overflow-y-auto custom-scrollbar">
                 {sites.map((site) => (
                   <DropdownMenuItem
@@ -159,7 +162,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               <DropdownMenuSeparator />
               <DropdownMenuItem onSelect={() => setCreateDialogOpen(true)} className="text-primary cursor-pointer font-medium">
                 <Plus className="mr-2 h-4 w-4" />
-                Add new site
+                {t('nav.addNewSite')}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -168,7 +171,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         {/* Groups Selector */}
         <div className="mb-6 px-2">
           <Button variant="outline" className="w-full justify-between font-normal bg-sidebar-accent/50 border-sidebar-border/50 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground h-10 shadow-sm transition-all hover:border-sidebar-border" onClick={() => navigate("/dashboard/groups")}>
-            <span className="truncate font-medium text-sm">View Site Groups</span>
+            <span className="truncate font-medium text-sm">{t('nav.viewSiteGroups')}</span>
             <LayoutDashboard className="h-4 w-4 opacity-50" />
           </Button>
         </div>
@@ -178,7 +181,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           {navItems.map((item) => {
             // Use exact match for Overview and Analytics (base site page), prefix match for others
             const isExactMatchRoute = item.href === "/dashboard" ||
-              (item.label === "Analytics" && item.href.startsWith("/dashboard/sites/"));
+              (item.label === "nav.analytics" && item.href.startsWith("/dashboard/sites/"));
             const isActive = isExactMatchRoute
               ? location.pathname === item.href
               : location.pathname === item.href || location.pathname.startsWith(`${item.href}/`);
@@ -195,7 +198,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 <item.icon className={cn("h-4 w-4", isActive ? "text-sidebar-foreground" : "text-sidebar-foreground/50 group-hover:text-sidebar-foreground")} />
-                {item.label}
+                {t(item.label)}
                 {isActive && <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-primary rounded-r-full"></span>}
               </Link>
             );
@@ -218,20 +221,24 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56 mb-2">
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuLabel>{t('nav.myAccount')}</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <div className="flex items-center justify-between px-2 py-1.5 text-sm">
-              <span>Theme</span>
+              <span>{t('nav.theme')}</span>
               <ThemeToggle />
+            </div>
+            <div className="flex items-center justify-between px-2 py-1.5 text-sm">
+              <span>{t('nav.language')}</span>
+              <LanguageSwitcher variant="compact" />
             </div>
             <DropdownMenuSeparator />
             <DropdownMenuItem onSelect={() => navigate("/dashboard/settings")} className="cursor-pointer">
               <Settings className="mr-2 h-4 w-4" />
-              Settings
+              {t('common.settings')}
             </DropdownMenuItem>
             <DropdownMenuItem onSelect={handleSignOut} className="text-destructive cursor-pointer">
               <LogOut className="mr-2 h-4 w-4" />
-              Sign out
+              {t('auth.signOut')}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

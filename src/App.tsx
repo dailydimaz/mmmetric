@@ -49,6 +49,7 @@ import Changelog from "./pages/Changelog";
 import MobileSDKs from "./pages/MobileSDKs";
 import DocsCLI from "./pages/DocsCLI";
 import { ThemeProvider } from "./components/ThemeProvider";
+import { I18nProvider } from "./lib/i18n";
 import { CommandMenu } from "./components/dashboard/CommandMenu";
 
 
@@ -130,14 +131,16 @@ const AppRoutes = () => {
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <CommandMenu />
-          <AppRoutes />
-        </BrowserRouter>
-      </TooltipProvider>
+      <I18nProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <CommandMenu />
+            <AppRoutes />
+          </BrowserRouter>
+        </TooltipProvider>
+      </I18nProvider>
     </ThemeProvider>
   </QueryClientProvider>
 );
