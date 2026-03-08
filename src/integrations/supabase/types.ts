@@ -3890,6 +3890,17 @@ export type Database = {
           visits: number
         }[]
       }
+      get_custom_properties_breakdown: {
+        Args: {
+          _end_date: string
+          _event_name?: string
+          _limit?: number
+          _property_key?: string
+          _site_id: string
+          _start_date: string
+        }
+        Returns: Json
+      }
       get_device_stats: {
         Args: {
           _end_date: string
