@@ -1,118 +1,76 @@
 // @ts-nocheck
 /**
  * mmmetric Analytics - LITE Tracking Script
- * Minimal footprint: Pageviews, sessions, UTM, referrer, SPA support only
- * Target: < 1.5 KB gzipped
+ * Ultra-minimal: Pageviews, sessions, referrer, SPA support, custom events
+ * Target: < 1 KB gzipped
  */
 (function () {
     'use strict';
 
-    // Configuration
-    const script = document.currentScript || document.querySelector('script[data-site]');
-    const siteId = script?.getAttribute('data-site');
+    const s = document.currentScript || document.querySelector('script[data-site]');
+    const id = s?.getAttribute('data-site');
 
-    // API URL derivation
-    let apiUrl = script?.getAttribute('data-api');
-    if (!apiUrl && script?.src) {
+    let api = s?.getAttribute('data-api');
+    if (!api && s?.src) {
         try {
-            const scriptUrl = new URL(script.src);
-            if (scriptUrl.hostname.includes('supabase.co') || scriptUrl.hostname.includes('supabase.in')) {
-                apiUrl = scriptUrl.origin + '/functions/v1/track';
+            const u = new URL(s.src);
+            if (u.hostname.includes('supabase.co') || u.hostname.includes('supabase.in')) {
+                api = u.origin + '/functions/v1/track';
             } else {
-                const supabaseUrl = script.getAttribute('data-supabase-url');
-                if (supabaseUrl) apiUrl = supabaseUrl + '/functions/v1/track';
+                const b = s.getAttribute('data-supabase-url');
+                if (b) api = b + '/functions/v1/track';
             }
         } catch (e) { }
     }
 
-    if (!siteId || !apiUrl) return;
+    if (!id || !api) return;
 
-    // Session
-    let sessionId = null;
-    let lastActivity = Date.now();
-    const SESSION_TIMEOUT = 30 * 60 * 1000;
+    let sid = null;
+    let la = Date.now();
 
-    const getSessionId = () => {
-        const now = Date.now();
-        if (!sessionId || (now - lastActivity) > SESSION_TIMEOUT) {
-            sessionId = Math.random().toString(36).slice(2) + now.toString(36);
-        }
-        lastActivity = now;
-        return sessionId;
+    const gs = () => {
+        const n = Date.now();
+        if (!sid || n - la > 18e5) sid = Math.random().toString(36).slice(2) + n.toString(36);
+        la = n;
+        return sid;
     };
 
-    // Utils
-    const getUtmParams = () => {
-        const params = new URLSearchParams(window.location.search);
-        const utm = {};
-        ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'].forEach(key => {
-            const val = params.get(key);
-            if (val) utm[key] = val;
-        });
-        return Object.keys(utm).length ? utm : null;
+    const gr = () => {
+        const r = document.referrer;
+        if (!r) return null;
+        try { return new URL(r).hostname === location.hostname ? null : r; } catch { return null; }
     };
 
-    const getReferrer = () => {
-        const ref = document.referrer;
-        if (!ref) return null;
-        try {
-            if (new URL(ref).hostname === window.location.hostname) return null;
-            return ref;
-        } catch { return null; }
-    };
-
-    const track = (eventName, properties) => {
-        const utm = getUtmParams();
-        const merged = { ...properties };
-        if (utm) merged.utm = utm;
-        if (window.screen) merged.screen = `${window.screen.width}x${window.screen.height}`;
-
-        const payload = {
-            site_id: siteId,
-            event_name: eventName || 'pageview',
-            url: window.location.pathname,
-            referrer: getReferrer(),
-            session_id: getSessionId(),
-            language: navigator.language || navigator.userLanguage,
-            properties: Object.keys(merged).length ? merged : {}
+    const t = (e, p) => {
+        const d = {
+            site_id: id,
+            event_name: e || 'pageview',
+            url: location.pathname,
+            referrer: gr(),
+            session_id: gs(),
+            properties: p && Object.keys(p).length ? p : {}
         };
-
+        const b = JSON.stringify(d);
         if (navigator.sendBeacon) {
-            const blob = new Blob([JSON.stringify(payload)], { type: 'text/plain' });
-            if (!navigator.sendBeacon(apiUrl, blob)) {
-                fetch(apiUrl, { method: 'POST', body: JSON.stringify(payload), keepalive: true }).catch(() => { });
+            if (!navigator.sendBeacon(api, new Blob([b], { type: 'text/plain' }))) {
+                fetch(api, { method: 'POST', body: b, keepalive: true }).catch(() => { });
             }
         } else {
-            fetch(apiUrl, { method: 'POST', body: JSON.stringify(payload), keepalive: true }).catch(() => { });
+            fetch(api, { method: 'POST', body: b, keepalive: true }).catch(() => { });
         }
     };
 
-    // SPA Support
-    let lastPath = window.location.pathname;
+    let lp = location.pathname;
+    const h = () => { if (location.pathname !== lp) { lp = location.pathname; t('pageview'); } };
 
-    const handleNav = () => {
-        if (window.location.pathname !== lastPath) {
-            lastPath = window.location.pathname;
-            track('pageview');
-        }
-    };
-
-    if (window.history.pushState) {
-        const oPush = window.history.pushState;
-        window.history.pushState = function () { oPush.apply(this, arguments); handleNav(); };
-        window.addEventListener('popstate', handleNav);
+    if (history.pushState) {
+        const op = history.pushState;
+        history.pushState = function () { op.apply(this, arguments); h(); };
+        addEventListener('popstate', h);
     }
 
-    // Expose global for custom events
-    (window as any).mmmetric = (eventName: string, props?: Record<string, unknown>) => {
-        track(eventName, props || {});
-    };
+    (window as any).mmmetric = (e: string, p?: Record<string, unknown>) => { t(e, p || {}); };
 
-    const init = () => {
-        track('pageview');
-    };
-
-    if (document.readyState === 'complete') init();
-    else window.addEventListener('load', init);
-
+    if (document.readyState === 'complete') t('pageview');
+    else addEventListener('load', () => t('pageview'));
 })();
