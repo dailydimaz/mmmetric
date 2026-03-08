@@ -259,6 +259,18 @@
         track('identify', payload);
     };
 
+    // Consent mode support
+    let consentGiven = script?.getAttribute('data-require-consent') !== 'true';
+
+    (window as any).mmmetric.consent = () => {
+        consentGiven = true;
+        if (autoTrack) track('pageview');
+    };
+
+    (window as any).mmmetric.revokeConsent = () => {
+        consentGiven = false;
+    };
+
     // Forms
     const setupForms = () => {
         const active = new Set();
@@ -320,12 +332,18 @@
     };
 
     const init = () => {
-        if (autoTrack) track('pageview');
+        if (autoTrack && consentGiven) track('pageview');
         setupOutbound();
         setupDownloads();
         setupScroll();
         setupForms();
         setupVitals();
+        // 404 detection
+        setTimeout(() => {
+            if (document.title.toLowerCase().includes('404') || document.querySelector('meta[name="status"][content="404"]')) {
+                track('404', { url: window.location.href, referrer: document.referrer, title: document.title });
+            }
+        }, 1000);
     };
 
     if (document.readyState === 'complete') init();
