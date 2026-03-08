@@ -246,6 +246,7 @@ serve(async (req) => {
     const location = getLocationFromHeaders(req.headers);
     let geoCountry = location?.country?.toUpperCase() || null;
     let geoCity = location?.city || null;
+    let geoRegion = location?.region || null;
     let geoLatitude = location?.latitude || null;
     let geoLongitude = location?.longitude || null;
 
