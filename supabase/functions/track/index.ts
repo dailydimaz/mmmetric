@@ -460,6 +460,9 @@ serve(async (req) => {
       city: geoCity,
       language: primaryLanguage,
       properties,
+      title: (typeof bodyTitle === 'string' && bodyTitle.length <= 500) ? bodyTitle : null,
+      hostname: (typeof bodyHostname === 'string' && bodyHostname.length <= 200) ? bodyHostname : null,
+      tag: (typeof bodyTag === 'string' && bodyTag.length <= 100) ? bodyTag : null,
     };
 
     // Branch based on event type
