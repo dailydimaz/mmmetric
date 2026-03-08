@@ -39,6 +39,7 @@ import {
 import { SiteHeader } from "@/components/site-detail/SiteHeader";
 import { SiteSettingsPanel } from "@/components/site-detail/SiteSettingsPanel";
 import { SiteAnalytics } from "@/components/site-detail/SiteAnalytics";
+import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 
 export default function SiteDetail() {
   const { siteId } = useParams<{ siteId: string }>();
