@@ -24,11 +24,22 @@ interface VisitorChartProps {
   dateRange?: DateRange;
   interval?: ChartInterval;
   onIntervalChange?: (interval: ChartInterval) => void;
+  filters?: AnalyticsFilter;
 }
 
-export function VisitorChart({ siteId, data, isLoading, showComparison = true, onDateClick, dateRange = "7d", interval, onIntervalChange }: VisitorChartProps) {
+type CompareMode = "previous" | "yoy";
+
+export function VisitorChart({ siteId, data, isLoading, showComparison = true, onDateClick, dateRange = "7d", interval, onIntervalChange, filters }: VisitorChartProps) {
   const { data: annotations } = useAnnotations(siteId || "");
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [compareMode, setCompareMode] = useState<CompareMode>("previous");
+
+  const { data: yoyData } = useYoyComparison({
+    siteId: siteId || "",
+    dateRange,
+    filters,
+    enabled: !!siteId && showComparison && compareMode === "yoy",
+  });
 
   const handleClick = useCallback((data: any) => {
     if (data && data.activePayload && data.activePayload[0]) {
