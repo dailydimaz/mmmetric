@@ -28,6 +28,7 @@ import SiteGroups from "./pages/SiteGroups";
 import SiteGroupDashboard from "./pages/SiteGroupDashboard";
 import Experiments from "./pages/Experiments";
 import SessionRecordings from "./pages/SessionRecordings";
+import Sessions from "./pages/Sessions";
 
 import NotFound from "./pages/NotFound";
 import CompareGA from "./pages/CompareGA";
