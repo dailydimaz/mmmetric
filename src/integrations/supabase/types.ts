@@ -4165,6 +4165,13 @@ export type Database = {
           visitors_change: number
         }[]
       }
+      get_site_tags: {
+        Args: { _end_date: string; _site_id: string; _start_date: string }
+        Returns: {
+          event_count: number
+          tag: string
+        }[]
+      }
       get_team_member_profile: {
         Args: { _user_id: string }
         Returns: {
