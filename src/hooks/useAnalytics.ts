@@ -71,6 +71,7 @@ export interface StatsData {
   bounceRate: number;
   pageviewsChange: number;
   visitorsChange: number;
+  viewsPerVisit: number;
 }
 
 export interface TimeSeriesData {
