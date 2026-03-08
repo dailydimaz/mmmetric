@@ -323,9 +323,31 @@ serve(async (req) => {
     // Parse user agent
     const { browser, os, device_type } = parseUserAgent(userAgent);
 
-    // Bot detection
+    // Bot detection - log as bot_hit event for reporting instead of silently ignoring
     if (isBot(userAgent)) {
-      // Return success to bot to avoid retries/errors
+      const botName = getBotName(userAgent);
+      // Still insert into events_partitioned as bot_hit for analytics
+      try {
+        const visitor_id_bot = await generateVisitorId(clientIp, userAgent);
+        await supabase.from('events_partitioned').insert({
+          site_id: site.id,
+          event_name: 'bot_hit',
+          url,
+          visitor_id: visitor_id_bot,
+          session_id: 'bot',
+          browser: botName,
+          os: 'Bot',
+          device_type: 'bot',
+          country: geoCountry,
+          city: geoCity,
+          region: geoRegion,
+          language: null,
+          properties: { bot_name: botName, user_agent: userAgent.substring(0, 200) },
+          title: null,
+          hostname: null,
+          tag: null,
+        });
+      } catch { /* best effort */ }
       return new Response(JSON.stringify({ success: true, ignored: true }), {
         status: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
