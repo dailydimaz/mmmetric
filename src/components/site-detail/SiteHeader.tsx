@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Globe, Settings, Loader2 } from "lucide-react";
+import { ArrowLeft, Globe, Settings, Loader2, Search, FileText, Database, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
@@ -53,6 +53,7 @@ export function SiteHeader({
     onToggleSettings,
     onToggleCustomizer,
 }: SiteHeaderProps) {
+    const navigate = useNavigate();
 
     return (
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -138,6 +139,18 @@ export function SiteHeader({
                     </>
                 ) : (
                     <>
+                        <Button variant="ghost" size="sm" onClick={() => navigate(`/dashboard/sites/${site.id}/query-builder`)} title="Query Builder">
+                            <Search className="h-4 w-4 mr-1" />
+                            <span className="hidden xl:inline">Query</span>
+                        </Button>
+                        <Button variant="ghost" size="sm" onClick={() => navigate(`/dashboard/sites/${site.id}/reports`)} title="Reports">
+                            <FileText className="h-4 w-4 mr-1" />
+                            <span className="hidden xl:inline">Reports</span>
+                        </Button>
+                        <Button variant="ghost" size="sm" onClick={() => navigate(`/dashboard/sites/${site.id}/sql`)} title="SQL Editor">
+                            <Database className="h-4 w-4 mr-1" />
+                            <span className="hidden xl:inline">SQL</span>
+                        </Button>
                         <Button variant="ghost" size="sm" onClick={onToggleCustomizer}>
                             Customize
                         </Button>
