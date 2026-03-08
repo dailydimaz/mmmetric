@@ -2069,6 +2069,39 @@ export type Database = {
           },
         ]
       }
+      failed_events: {
+        Row: {
+          created_at: string
+          error_code: string | null
+          error_message: string | null
+          event_name: string
+          id: string
+          payload: Json
+          site_id: string
+          source: string | null
+        }
+        Insert: {
+          created_at?: string
+          error_code?: string | null
+          error_message?: string | null
+          event_name?: string
+          id?: string
+          payload: Json
+          site_id: string
+          source?: string | null
+        }
+        Update: {
+          created_at?: string
+          error_code?: string | null
+          error_message?: string | null
+          event_name?: string
+          id?: string
+          payload?: Json
+          site_id?: string
+          source?: string | null
+        }
+        Relationships: []
+      }
       funnels: {
         Row: {
           created_at: string
