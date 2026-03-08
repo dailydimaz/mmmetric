@@ -118,6 +118,13 @@ export function VisitorChart({ siteId, data, isLoading, showComparison = true, o
             {onDateClick && !selectedDate && (
               <span className="text-xs text-muted-foreground">Click chart to filter</span>
             )}
+            {onIntervalChange && (
+              <IntervalSelector
+                value={currentInterval}
+                onChange={onIntervalChange}
+                dateRange={dateRange}
+              />
+            )}
           </div>
         </CardHeader>
 
