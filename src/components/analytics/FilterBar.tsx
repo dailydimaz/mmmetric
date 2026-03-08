@@ -44,6 +44,7 @@ interface FilterBarProps {
 
 const FILTER_OPTIONS: { key: keyof AnalyticsFilter; label: string; placeholder: string }[] = [
     { key: "country", label: "Country", placeholder: "e.g. US, GB, DE" },
+    { key: "region", label: "Region", placeholder: "e.g. California, Bayern" },
     { key: "browser", label: "Browser", placeholder: "e.g. Chrome, Firefox" },
     { key: "os", label: "OS", placeholder: "e.g. Windows, MacOS" },
     { key: "device", label: "Device", placeholder: "e.g. Desktop, Mobile" },

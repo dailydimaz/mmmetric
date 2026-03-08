@@ -326,6 +326,8 @@ export function SiteAnalytics({
                             cities={cityStats}
                             isLoading={geoLoading || citiesLoading}
                             onBreakdown={(country) => onBreakdown('country', country)}
+                            siteId={site.id}
+                            dateRange={dateRange}
                         />
                     )}
                     {shouldShow('language_stats') && (
