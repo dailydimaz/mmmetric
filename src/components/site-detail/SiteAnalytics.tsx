@@ -276,7 +276,7 @@ export function SiteAnalytics({
                 )}
 
                 {shouldShow('visitor_chart') && (
-                    <VisitorChart siteId={site.id} data={timeSeries} isLoading={timeSeriesLoading} showComparison={showComparison} />
+                    <VisitorChart siteId={site.id} data={timeSeries} isLoading={timeSeriesLoading} showComparison={showComparison} dateRange={dateRange} interval={chartInterval} onIntervalChange={onChartIntervalChange} />
                 )}
 
                 {shouldShow('forecast') && (
