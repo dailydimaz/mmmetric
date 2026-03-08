@@ -27,40 +27,80 @@
 
 ## ✨ Features
 
-mmmetric goes beyond basic page views to provide a comprehensive, privacy-respecting analytics suite:
-
 ### Core Analytics
 - **Privacy-First & Cookie-less**: No personal data collection. Fully GDPR/CCPA compliant out of the box.
-- **Real-time Engine**: Watch visitors interact with your site as it happens.
-- **Lightweight Tracker**: < 1KB standard script with zero impact on Core Web Vitals.
-- **Multi-Site Management**: Group and manage multiple domains under unified dashboards.
+- **Real-time Dashboard**: Live visitor count, active pages, and activity feed (`RealtimeStats`, `RealtimeActivityFeed`).
+- **Lightweight Tracker**: Three script variants — Lite (< 1.5 KB), Standard, and Full (with Web Vitals & Form tracking).
+- **Multi-Site Management**: Group and manage multiple domains under unified dashboards (`SiteGroups`, `SiteGroupDashboard`).
 - **Localization**: Built-in support for multiple languages (EN, ID, TH, VI, MY, PH).
-- **Views per Visit Metric**: Track engagement depth with pages viewed per session.
-- **Keyboard Shortcuts**: Quick date range switching (T, D, W, M keys).
+- **Views per Visit Metric**: Track engagement depth with pages viewed per session (`EngagementStats`).
+- **Keyboard Shortcuts**: Quick date range switching (T, D, W, M), navigation (G+D, G+S, G+H), and search (/) (`useKeyboardShortcuts`).
+- **Flexible Chart Intervals**: Toggle between hourly, daily, weekly, and monthly aggregations (`IntervalSelector`).
+- **Public Dashboards**: Share read-only analytics dashboards via token-based URLs (`PublicDashboard`).
+- **Dark Mode**: Full light/dark theme support (`ThemeProvider`, `ThemeToggle`).
 
-### Advanced Behavior & Conversion
-- **Session Recordings**: Visual playback of user interactions and navigation paths.
-- **A/B Testing & Experiments**: Built-in experiment management and statistical reporting.
-- **Page Overlays & Heatmaps**: Visual analytics laid directly over your website UI.
-- **Funnel & Journey Analysis**: Understand conversion funnels and multi-step user paths.
-- **Retention Cohorts**: Track user engagement and retention over time.
-- **Custom Event Tracking**: Track button clicks, form submissions, and unique conversions.
-- **Custom Properties Breakdown**: Drill down into event metadata with key/value analytics.
-- **Saved Segments**: Save and reuse filter combinations for quick analysis.
+### Visitor & Engagement Analytics
+- **Top Pages & Entry/Exit Pages**: Most-visited pages plus entry and exit point analysis (`TopPages`, `EntryExitStats`).
+- **Referrer Tracking**: Top traffic sources with UTM parameter breakdown (`TopReferrers`, `UTMStats`).
+- **Device, Browser & OS Stats**: Visitor device breakdown with filtering (`DeviceStats`).
+- **Geo Analytics**: Country → Region → City drill-down for visitor locations (`GeoStats`, `GeoMap`, `useRegionStats`).
+- **Language Stats**: Visitor language distribution (`LanguageStats`).
+- **Scroll & Reading Depth**: Measure how far visitors scroll and read (`ScrollDepthStats`, `ReadingDepthStats`).
+- **Outbound Link Tracking**: Track clicks to external sites (`OutboundLinksStats`).
+- **File Download Tracking**: Monitor file download events (`FileDownloadsStats`).
+- **Social Share Tracking**: Measure content virality and sharing metrics (`SocialShareStats`).
+- **Video Analytics**: Track video engagement metrics (`VideoAnalyticsStats`).
 
-### Diagnostics & Attribution
-- **Multi-Touch Attribution**: Track user sources and campaign effectiveness.
-- **Campaign Builder**: Built-in tool for standardizing UTM parameters.
-- **Site Search Analytics**: Analyze internal search queries on your platform.
-- **Error Tracking**: Client-side Javascript error reporting and logging.
-- **Social Share Tracking**: Measure content virality and sharing metrics.
+### Behavior & Conversion
+- **Session Recordings**: Visual playback of user interactions and navigation paths (`SessionRecordings`, `SessionPlayer`).
+- **A/B Testing & Experiments**: Built-in experiment management with statistical reporting (`Experiments`, `ExperimentResults`).
+- **Page Overlays & Heatmaps**: Visual analytics laid directly over your website UI (`PageOverlay`, `HeatmapView`).
+- **Funnel Analysis**: Build and track multi-step conversion funnels (`Funnels`, `FunnelDetail`, `FunnelBuilder`, `FunnelChart`).
+- **Journey Analysis**: Visualize multi-step user navigation paths (`Journeys`, `JourneyFlow`, `JourneyStats`).
+- **Retention Cohorts**: Track user engagement and retention over time with matrix view (`Retention`, `Cohorts`, `RetentionMatrix`).
+- **Custom Event Tracking**: Track button clicks, form submissions, and unique conversions (`CustomEvents`).
+- **Custom Properties Breakdown**: Drill down into event metadata with key/value analytics (`CustomPropertiesBreakdown`).
+- **Goal Tracking**: Set and monitor conversion goals (`GoalSetup`, `GoalsCard`).
+- **Form Analytics**: Automatic form interaction tracking via the Full tracker (`FormStats`).
+- **Site Search Analytics**: Analyze internal search queries (`SiteSearchStats`).
+- **Saved Segments**: Save and reuse filter combinations for quick analysis (`useSegments`, `FilterBar`).
+
+### Diagnostics & Intelligence
+- **Error Tracking**: Client-side JavaScript error reporting and logging (`ErrorTrackingStats`).
+- **Web Vitals**: Core Web Vitals performance monitoring (LCP, FID, CLS) via the Full tracker (`WebVitalsStats`).
+- **Multi-Touch Attribution**: Track user sources and campaign effectiveness (`Attribution`, `AttributionStats`, `AttributionChart`).
+- **Content Decay Monitoring**: Detect declining page performance over time (`ContentDecayAlerts`, `useContentDecay`).
+- **Anomaly Detection**: Automatic detection of unusual traffic patterns (`AnomalyDetectionStats`, `useAnomalyDetection`).
+- **Traffic Forecasting**: Predictive analytics for future traffic trends (`ForecastChart`, `useForecast`).
+- **AI-Powered Insights**: Auto-generated analytics insights and custom insight builder (`Insights`, `InsightsBuilder`, `InsightsList`).
+- **Industry Benchmarks**: Compare your metrics against industry averages (`BenchmarkCard`, `useBenchmarks`).
 
 ### Comparison & Reporting
-- **Year-over-Year Comparison**: Compare current metrics against the same period last year.
-- **Flexible Chart Intervals**: Toggle between hourly, daily, weekly, and monthly aggregations.
-- **Region-level Geo Analytics**: Country → Region → City drill-down for visitor locations.
-- **Automated Email Digests**: Weekly HTML reports with top metrics, pages, and referrers.
-- **Slack & Discord Notifications**: Real-time alerts and scheduled digests to chat platforms.
+- **Year-over-Year Comparison**: Compare current metrics against the same period last year (`useYoyComparison`, `VisitorChart`).
+- **Previous Period Comparison**: Compare current metrics to the prior equivalent period.
+- **Campaign Builder**: Built-in tool for standardizing UTM parameters (`CampaignBuilder`).
+- **Annotations**: Add notes to specific dates for context on traffic changes (`AnnotationsCard`, `useAnnotations`).
+- **Data Export**: Export analytics data in multiple formats (`ExportButton`, `DataExport`).
+- **Automated Email Digests**: Weekly HTML reports with top metrics, pages, and referrers (`email-digest` edge function).
+- **Slack Notifications**: Real-time alerts and scheduled digests (`SlackIntegrationCard`, `slack-notify`).
+- **Discord Notifications**: Webhook-based alerts and digests (`ChatIntegrationsCard`, `chat-notify`).
+- **Custom Alerts**: Configurable metric-based alerts with email/Slack/Discord channels (`AlertsManager`, `check-alerts`).
+
+### Platform & Settings
+- **Custom Dashboards**: Build personalized dashboard layouts (`CustomDashboardsCard`, `useCustomDashboards`).
+- **Team Management**: Invite team members and manage roles (`TeamCard`, `useTeam`).
+- **API Keys**: Programmatic access to analytics data (`ApiKeysCard`, `useApiKeys`, `public-api`).
+- **Two-Factor Auth**: TOTP-based 2FA with backup codes (`TwoFactorSetup`, `BackupCodes`).
+- **SSO / SAML**: Enterprise single sign-on support (`SSOConfigCard`, `sso-saml`).
+- **Embed Widget**: Embed analytics snippets into external dashboards (`EmbedWidgetCard`, `embed-widget`).
+- **Short Links**: Branded short URL tracking (`Links`, `LinksStats`, `redirect`).
+- **White Labeling**: Custom branding for self-hosted instances (`WhiteLabelingCard`).
+- **Webhook Integration**: Push analytics events to external endpoints (`WebhookIntegrationCard`, `useWebhookIntegration`).
+- **Tag Manager**: Manage tracking tags without code changes (`TagManagerCard`).
+- **Tracking Tiers**: Choose between Lite, Standard, and Full tracking modes (`TrackingTierSelector`).
+- **Login History & Session Management**: View login history and manage active sessions (`LoginHistory`, `SessionManagement`).
+- **Data Import**: Import data from Google Analytics and server logs (`DataImport`, `LogImportCard`, `GAImportWizard`, `import-data`).
+- **Billing & Usage**: Usage tracking with plan limits and upgrade prompts (`UsageCard`, `UsageAlert`, `PlanCard`).
 
 ## 🚀 Getting Started
 
@@ -151,7 +191,7 @@ For visitor geolocation, mmmetric uses a self-hosted IP database to avoid extern
 mmmetric offers multiple tracking scripts depending on your needs. Add the chosen script to your website's `<head>` tag. **The `data-api` attribute should point to your Supabase Edge Functions URL.**
 
 **1. Standard Tracker (Recommended)**
-Tracks pageviews, unique visitors, and sessions.
+Tracks pageviews, unique visitors, sessions, outbound links, and file downloads.
 ```html
 <script defer 
   src="https://your-analytics-domain.com/track.js" 
@@ -161,7 +201,7 @@ Tracks pageviews, unique visitors, and sessions.
 ```
 
 **2. Full Tracker (Web Vitals & Forms)**
-Includes Core Web Vitals performance tracking and automatic Form Analytics.
+Includes Core Web Vitals performance tracking, automatic Form Analytics, and error monitoring.
 ```html
 <script defer 
   src="https://your-analytics-domain.com/track-full.js" 
@@ -171,7 +211,7 @@ Includes Core Web Vitals performance tracking and automatic Form Analytics.
 ```
 
 **3. Lite Tracker**
-A stripped-down version for absolute minimal payload size.
+Ultra-minimal: pageviews, sessions, referrer, SPA support, and custom events only.
 ```html
 <script defer 
   src="https://your-analytics-domain.com/track-lite.js" 
@@ -179,6 +219,19 @@ A stripped-down version for absolute minimal payload size.
   data-api="https://your-supabase-url.supabase.co/functions/v1/track">
 </script>
 ```
+
+### Script Configuration Attributes
+
+| Attribute | Default | Description |
+|-----------|---------|-------------|
+| `data-site` | Required | Your site tracking ID |
+| `data-api` | Auto-detected | Tracking API endpoint |
+| `data-auto-track` | `true` | Auto-track pageviews |
+| `data-domains` | All | Comma-separated allowed domains |
+| `data-do-not-track` | `false` | Respect browser DNT setting |
+| `data-exclude-search` | `false` | Strip query strings from URLs |
+| `data-exclude-hash` | `false` | Strip hash fragments from URLs |
+| `data-tag` | None | Global tag applied to all events |
 
 ### Tracking Custom Events
 
@@ -188,6 +241,10 @@ mmmetric.track('button_click', { button_id: 'cta-hero' });
 
 // Track a form submission manually
 mmmetric.track('form_submit', { form_name: 'newsletter' });
+
+// Identify a user (optional, privacy-respecting)
+mmmetric.identify('user-123', { plan: 'pro' });
+mmmetric.identify({ plan: 'pro' }); // Without custom ID
 ```
 
 ### Tracking Pixel (Email/No-JS)
@@ -200,17 +257,67 @@ For environments without JavaScript (like email newsletters):
 
 ## 🔌 Integrations
 
-mmmetric is designed to integrate cleanly with your existing ecosystem natively:
-- **Google Analytics Import Wizards:** Migrate historical metrics seamlessly from Universal Analytics and GA4 directly into mmmetric via `src/pages/GAImportWizard.tsx`.
-- **Google Search Console:** Built-in dashboard to pull and display your GSC SEO metrics alongside your web analytics.
-- **Mobile SDKs:** Support for tracking mobile applications (consult `src/pages/MobileSDKs.tsx` for platform status).
+- **Google Analytics Import**: Migrate historical metrics from Universal Analytics and GA4 (`GAImportWizard`).
+- **Google Search Console**: Built-in dashboard for GSC SEO metrics (`GSCDashboard`).
+- **Shopify**: Connect and sync Shopify store analytics (`ShopifyConnectDialog`, `shopify-connect`, `shopify-sync`).
+- **Slack**: Real-time notifications and scheduled digests (`SlackIntegrationCard`, `slack-notify`).
+- **Discord**: Webhook-based alerts (`ChatIntegrationsCard`, `chat-notify`, `send-chat-digest`).
+- **Looker Studio**: Connect analytics data to Looker Studio dashboards (`LookerStudioCard`).
+- **Webhooks**: Push events to any HTTP endpoint (`WebhookIntegrationCard`).
+- **Mobile SDKs**: Support for tracking mobile applications (`MobileSDKs`).
+- **Public API**: RESTful API for programmatic access (`public-api`, `ApiKeysCard`).
+- **Embed Widget**: Embeddable analytics snippets for external dashboards (`EmbedWidgetCard`, `embed-widget`).
 
 ## 🏗️ Tech Stack
 
-- **Frontend**: React, TypeScript, Vite
-- **Styling**: Tailwind CSS v4, shadcn/ui
-- **Backend**: Supabase (PostgreSQL + Auth + Edge Functions)
+- **Frontend**: React 18, TypeScript, Vite
+- **Styling**: Tailwind CSS v4, shadcn/ui, Framer Motion
+- **Charts**: Recharts, D3 (geo), react-simple-maps, pigeon-maps
+- **Backend**: Supabase (PostgreSQL + Auth + Edge Functions + Storage)
 - **State Management**: TanStack Query
+- **Routing**: React Router v6
+
+## 📁 Project Structure
+
+```
+src/
+├── assets/              # Static assets (logo, images)
+├── components/
+│   ├── analytics/       # All analytics widgets (50+ components)
+│   ├── auth/            # Authentication components
+│   ├── billing/         # Plan, usage, and upgrade components
+│   ├── dashboard/       # Dashboard layout and navigation
+│   ├── integrations/    # Third-party integration UIs
+│   ├── landing/         # Marketing/landing page components
+│   ├── links/           # Short link management
+│   ├── migration/       # Data migration wizards
+│   ├── onboarding/      # New user onboarding flow
+│   ├── sessions/        # Session management
+│   ├── settings/        # All settings panels (24 components)
+│   ├── site-detail/     # Site-specific analytics layout
+│   └── ui/              # shadcn/ui primitives
+├── hooks/               # 50+ custom React hooks
+├── lib/                 # Utilities and config
+├── pages/               # 40+ route pages
+├── tracker/             # Client-side tracking scripts (Lite, Standard, Full)
+│   └── overlay.tsx      # Page overlay renderer
+└── integrations/        # Supabase client and types
+
+supabase/
+├── functions/           # 20+ Edge Functions
+│   ├── track/           # Event ingestion endpoint
+│   ├── pixel/           # Tracking pixel for no-JS
+│   ├── email-digest/    # Weekly email reports
+│   ├── check-alerts/    # Alert evaluation
+│   ├── public-api/      # REST API
+│   ├── session-recording/ # Recording playback
+│   └── ...              # slack-notify, chat-notify, sso-saml, etc.
+├── migrations/          # Database migrations
+└── config.toml          # Supabase configuration
+
+docs/
+└── geoip-import.md      # GeoIP database setup guide
+```
 
 ## 🤝 Contributing
 
