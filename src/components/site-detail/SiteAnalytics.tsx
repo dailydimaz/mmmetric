@@ -111,6 +111,7 @@ interface SiteAnalyticsProps {
 export function SiteAnalytics({
     site,
     dateRange,
+    filters,
     stats,
     statsLoading,
     timeSeries,
