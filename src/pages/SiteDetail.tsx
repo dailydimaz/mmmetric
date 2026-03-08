@@ -110,6 +110,14 @@ export default function SiteDetail() {
   const [breakdown, setBreakdown] = useState<{ dimension: BreakdownDimension; value: string } | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
+  const handleDateRangeShortcut = useCallback((range: string) => {
+    if (["today", "7d", "30d", "90d"].includes(range)) {
+      setDateRange(range as DateRange);
+    }
+  }, []);
+
+  useKeyboardShortcuts({ onDateRangeChange: handleDateRangeShortcut });
+
   const site = sites.find((s) => s.id === siteId);
 
   // Analytics hooks
