@@ -59,6 +59,8 @@ export default function SiteDetail() {
     return "7d";
   });
 
+  const [chartInterval, setChartInterval] = useState<ChartInterval>(() => getDefaultInterval("7d"));
+
   const [filters, setFilters] = useState<AnalyticsFilter>(() => {
     const newFilters: AnalyticsFilter = {};
     const country = searchParams.get("country");
