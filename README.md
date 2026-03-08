@@ -35,6 +35,8 @@ mmmetric goes beyond basic page views to provide a comprehensive, privacy-respec
 - **Lightweight Tracker**: < 1KB standard script with zero impact on Core Web Vitals.
 - **Multi-Site Management**: Group and manage multiple domains under unified dashboards.
 - **Localization**: Built-in support for multiple languages (EN, ID, TH, VI, MY, PH).
+- **Views per Visit Metric**: Track engagement depth with pages viewed per session.
+- **Keyboard Shortcuts**: Quick date range switching (T, D, W, M keys).
 
 ### Advanced Behavior & Conversion
 - **Session Recordings**: Visual playback of user interactions and navigation paths.
@@ -43,6 +45,8 @@ mmmetric goes beyond basic page views to provide a comprehensive, privacy-respec
 - **Funnel & Journey Analysis**: Understand conversion funnels and multi-step user paths.
 - **Retention Cohorts**: Track user engagement and retention over time.
 - **Custom Event Tracking**: Track button clicks, form submissions, and unique conversions.
+- **Custom Properties Breakdown**: Drill down into event metadata with key/value analytics.
+- **Saved Segments**: Save and reuse filter combinations for quick analysis.
 
 ### Diagnostics & Attribution
 - **Multi-Touch Attribution**: Track user sources and campaign effectiveness.
@@ -50,6 +54,13 @@ mmmetric goes beyond basic page views to provide a comprehensive, privacy-respec
 - **Site Search Analytics**: Analyze internal search queries on your platform.
 - **Error Tracking**: Client-side Javascript error reporting and logging.
 - **Social Share Tracking**: Measure content virality and sharing metrics.
+
+### Comparison & Reporting
+- **Year-over-Year Comparison**: Compare current metrics against the same period last year.
+- **Flexible Chart Intervals**: Toggle between hourly, daily, weekly, and monthly aggregations.
+- **Region-level Geo Analytics**: Country → Region → City drill-down for visitor locations.
+- **Automated Email Digests**: Weekly HTML reports with top metrics, pages, and referrers.
+- **Slack & Discord Notifications**: Real-time alerts and scheduled digests to chat platforms.
 
 ## 🚀 Getting Started
 
