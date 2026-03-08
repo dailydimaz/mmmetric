@@ -130,6 +130,8 @@ export function SiteAnalytics({
     utmLoading,
     showComparison,
     visibleWidgets,
+    chartInterval,
+    onChartIntervalChange,
     onBreakdown,
     onCreateGoal
 }: SiteAnalyticsProps) {
