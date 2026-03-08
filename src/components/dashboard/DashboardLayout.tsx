@@ -74,6 +74,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const location = useLocation();
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { t } = useI18n();
 
   const params = useParams<{ siteId?: string }>();
   const urlSiteId = params.siteId;
