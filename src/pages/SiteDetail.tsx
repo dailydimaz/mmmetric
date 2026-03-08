@@ -34,6 +34,8 @@ import {
   DateRange,
   AnalyticsFilter
 } from "@/hooks/useAnalytics";
+import { getDefaultInterval } from "@/components/analytics";
+import type { ChartInterval } from "@/components/analytics";
 
 // New Components
 import { SiteHeader } from "@/components/site-detail/SiteHeader";
