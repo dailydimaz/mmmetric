@@ -24,7 +24,7 @@ interface VisitorChartProps {
   onIntervalChange?: (interval: ChartInterval) => void;
 }
 
-export function VisitorChart({ siteId, data, isLoading, showComparison = true, onDateClick }: VisitorChartProps) {
+export function VisitorChart({ siteId, data, isLoading, showComparison = true, onDateClick, dateRange = "7d", interval, onIntervalChange }: VisitorChartProps) {
   const { data: annotations } = useAnnotations(siteId || "");
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
