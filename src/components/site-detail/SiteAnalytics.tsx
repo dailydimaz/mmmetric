@@ -51,6 +51,7 @@ import {
     BenchmarkCard,
 } from "@/components/analytics";
 import { isSelfHosted } from "@/lib/billing";
+import type { ChartInterval } from "@/components/analytics/IntervalSelector";
 import {
     AnalyticsFilter,
     DateRange,
