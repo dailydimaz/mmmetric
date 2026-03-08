@@ -65,12 +65,8 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     return match?.code || 'en';
   });
 
-  const [translations, setTranslations] = useState<Translations>({});
-  const [enFallback, setEnFallback] = useState<Translations>({});
-
-  useEffect(() => {
-    loadTranslations('en').then(setEnFallback);
-  }, []);
+  const [translations, setTranslations] = useState<Translations>(enTranslations);
+  const [enFallback] = useState<Translations>(enTranslations);
 
   useEffect(() => {
     loadTranslations(locale).then(setTranslations);
