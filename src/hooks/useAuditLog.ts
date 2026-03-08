@@ -24,7 +24,7 @@ export function useAuditLog(siteId?: string, limit = 50) {
         p_offset: 0,
       } as any);
       if (error) throw error;
-      return (data || []) as AuditLogEntry[];
+      return (data || []) as unknown as AuditLogEntry[];
     },
     enabled: !!user,
   });

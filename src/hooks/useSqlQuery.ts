@@ -71,7 +71,7 @@ export function useSqlQuery(siteId: string | undefined) {
 
       if (error) throw error;
       const executionTime = Math.round(performance.now() - start);
-      const rows = Array.isArray(data) ? data : [];
+      const rows = (Array.isArray(data) ? data : []) as Record<string, any>[];
       const columns = rows.length > 0 ? Object.keys(rows[0]) : [];
 
       return { columns, rows, rowCount: rows.length, executionTime };

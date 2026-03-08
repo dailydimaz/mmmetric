@@ -89,7 +89,7 @@ export function useQueryBuilder(siteId: string | undefined) {
 
       if (error) throw error;
       const executionTime = Math.round(performance.now() - start);
-      const rows = Array.isArray(data) ? data : (data || []);
+      const rows = (Array.isArray(data) ? data : (data || [])) as Record<string, any>[];
       return { rows, executionTime };
     },
     onSuccess: (data) => setResult(data),
