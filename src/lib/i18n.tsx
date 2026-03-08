@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useCallback, ReactNode, useEffect } from 'react';
+import enTranslations from '@/i18n/en';
 
 export type Locale = 'en' | 'id' | 'th' | 'vi' | 'ms' | 'fil';
 
