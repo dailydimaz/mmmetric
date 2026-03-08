@@ -175,6 +175,17 @@ export function StatsCards({ stats, isLoading, visibleMetrics, showComparison = 
           index={cardIndex++}
         />
       )}
+      {show('views_per_visit') && (
+        <StatCard
+          title="Views / Visit"
+          value={stats?.viewsPerVisit ? stats.viewsPerVisit.toFixed(2) : "—"}
+          desc="Pages per session"
+          icon={<Layers className="h-5 w-5" />}
+          isLoading={isLoading}
+          showComparison={showComparison}
+          index={cardIndex++}
+        />
+      )}
     </div>
   );
 }
