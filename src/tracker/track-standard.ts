@@ -1,4 +1,4 @@
-// @ts-nocheck
+// @ts-nocheck — tracker scripts run outside React/TS context
 /**
  * mmmetric Analytics - STANDARD Tracking Script
  * Balanced: Pageviews, sessions, UTM, scroll depth, engagement, outbound links, file downloads

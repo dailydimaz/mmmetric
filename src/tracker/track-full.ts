@@ -1,4 +1,4 @@
-// @ts-nocheck
+// @ts-nocheck — tracker scripts run outside React/TS context
 /**
  * mmmetric Analytics - Lightweight Tracking Script
  */
