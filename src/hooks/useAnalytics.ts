@@ -11,6 +11,7 @@ export interface AnalyticsFilter {
   os?: string;
   device?: string;
   referrerPattern?: string;
+  tag?: string;
 }
 
 interface AnalyticsParams {
