@@ -47,6 +47,7 @@ const getNavItems = (siteId: string | null, billingEnabled: boolean) => {
     { icon: Lightbulb, label: "Insights", href: siteId ? `/dashboard/sites/${siteId}/insights` : "/dashboard", siteSpecific: true },
     { icon: Target, label: "Attribution", href: siteId ? `/dashboard/sites/${siteId}/attribution` : "/dashboard", siteSpecific: true },
     { icon: FlaskConical, label: "A/B Tests", href: siteId ? `/dashboard/sites/${siteId}/experiments` : "/dashboard", siteSpecific: true },
+    { icon: Activity, label: "Sessions", href: siteId ? `/dashboard/sites/${siteId}/sessions` : "/dashboard", siteSpecific: true },
   ];
 
   // Add cloud-only items
