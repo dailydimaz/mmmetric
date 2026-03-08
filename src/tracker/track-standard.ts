@@ -2,6 +2,8 @@
 /**
  * mmmetric Analytics - STANDARD Tracking Script
  * Balanced: Pageviews, sessions, UTM, scroll depth, engagement, outbound links, file downloads
+ * Config: data-auto-track, data-domains, data-do-not-track, data-exclude-search,
+ *         data-exclude-hash, data-before-send, data-tag
  * Target: < 3 KB gzipped
  */
 (function () {
@@ -11,6 +13,15 @@
     const script = document.currentScript || document.querySelector('script[data-site]');
     const siteId = script?.getAttribute('data-site');
     const crossDomains = (script?.getAttribute('data-cross-domain') || '').split(',').map(d => d.trim()).filter(Boolean);
+
+    // Config flags
+    const autoTrack = script?.getAttribute('data-auto-track') !== 'false';
+    const allowedDomains = (script?.getAttribute('data-domains') || '').split(',').map(d => d.trim()).filter(Boolean);
+    const respectDnt = script?.getAttribute('data-do-not-track') === 'true';
+    const excludeSearch = script?.getAttribute('data-exclude-search') === 'true';
+    const excludeHash = script?.getAttribute('data-exclude-hash') === 'true';
+    const beforeSendFn = script?.getAttribute('data-before-send');
+    const globalTag = script?.getAttribute('data-tag') || null;
 
     // API URL derivation
     let apiUrl = script?.getAttribute('data-api');
@@ -27,6 +38,12 @@
     }
 
     if (!siteId || !apiUrl) return;
+
+    // DNT check
+    if (respectDnt && navigator.doNotTrack === '1') return;
+
+    // Domain allowlist check
+    if (allowedDomains.length && !allowedDomains.some(d => location.hostname === d || location.hostname.endsWith('.' + d))) return;
 
     // Session
     let sessionId = null;
@@ -70,6 +87,13 @@
         } catch { return null; }
     };
 
+    const getUrl = () => {
+        let u = window.location.pathname;
+        if (!excludeSearch && window.location.search) u += window.location.search;
+        if (!excludeHash && window.location.hash) u += window.location.hash;
+        return u;
+    };
+
     const track = (eventName, properties) => {
         const utm = getUtmParams();
         const merged = { ...properties };
@@ -79,12 +103,22 @@
         const payload = {
             site_id: siteId,
             event_name: eventName || 'pageview',
-            url: window.location.pathname,
+            url: getUrl(),
+            title: document.title || null,
+            hostname: window.location.hostname,
             referrer: getReferrer(),
             session_id: getSessionId(),
             language: navigator.language || navigator.userLanguage,
             properties: Object.keys(merged).length ? merged : {}
         };
+        if (globalTag) payload.tag = globalTag;
+
+        // before-send hook
+        if (beforeSendFn && typeof window[beforeSendFn] === 'function') {
+            const result = window[beforeSendFn](eventName, payload);
+            if (result === false || result === null) return; // cancel
+            if (typeof result === 'object') Object.assign(payload, result);
+        }
 
         if (navigator.sendBeacon) {
             const blob = new Blob([JSON.stringify(payload)], { type: 'text/plain' });
@@ -185,7 +219,7 @@
             lastPath = window.location.pathname;
             startTime = Date.now();
             engaged = false;
-            track('pageview');
+            if (autoTrack) track('pageview');
         }
     };
 
@@ -211,6 +245,18 @@
     // Expose global for custom events
     (window as any).mmmetric = (eventName: string, props?: Record<string, unknown>) => {
         track(eventName, props || {});
+    };
+
+    // identify() support
+    (window as any).mmmetric.identify = (idOrData?: string | Record<string, unknown>, data?: Record<string, unknown>) => {
+        const payload: Record<string, unknown> = {};
+        if (typeof idOrData === 'string') {
+            payload.custom_id = idOrData;
+            if (data && typeof data === 'object') payload.data = data;
+        } else if (typeof idOrData === 'object') {
+            payload.data = idOrData;
+        }
+        track('identify', payload);
     };
 
     // Forms
@@ -274,7 +320,7 @@
     };
 
     const init = () => {
-        track('pageview');
+        if (autoTrack) track('pageview');
         setupOutbound();
         setupDownloads();
         setupScroll();
