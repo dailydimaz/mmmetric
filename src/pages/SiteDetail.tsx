@@ -117,6 +117,7 @@ export default function SiteDetail() {
   const handleDateRangeShortcut = useCallback((range: string) => {
     if (["today", "7d", "30d", "90d"].includes(range)) {
       setDateRange(range as DateRange);
+      setChartInterval(getDefaultInterval(range as DateRange));
     }
   }, []);
 
