@@ -386,7 +386,7 @@ serve(async (req) => {
     // First verify the site exists and get domain for origin validation
     const { data: site, error: siteError } = await supabase
       .from('sites')
-      .select('id, domain, user_id')
+      .select('id, domain, user_id, excluded_ips, excluded_url_params, require_consent')
       .eq('tracking_id', site_id)
       .maybeSingle();
 
@@ -403,6 +403,43 @@ serve(async (req) => {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
+    }
+
+    // Check IP exclusion
+    const excludedIps: string[] = (site as any).excluded_ips || [];
+    if (excludedIps.length > 0 && clientIp !== 'unknown') {
+      const isExcluded = excludedIps.some(exc => {
+        if (exc.includes('/')) {
+          // CIDR check - simplified: exact match only for now
+          return clientIp.startsWith(exc.split('/')[0].replace(/\.\d+$/, ''));
+        }
+        return clientIp === exc;
+      });
+      if (isExcluded) {
+        return new Response(JSON.stringify({ success: true, excluded: true }), {
+          status: 200,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+    }
+
+    // Check consent mode - if require_consent is true and no consent flag in payload, skip
+    if ((site as any).require_consent && !body.consent_given) {
+      return new Response(JSON.stringify({ success: true, consent_required: true }), {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Strip excluded URL parameters
+    const excludedParams: string[] = (site as any).excluded_url_params || [];
+    let cleanUrl = url;
+    if (cleanUrl && excludedParams.length > 0) {
+      try {
+        const urlObj = new URL(cleanUrl, 'https://placeholder.com');
+        excludedParams.forEach(p => urlObj.searchParams.delete(p));
+        cleanUrl = urlObj.pathname + (urlObj.search || '') + (urlObj.hash || '');
+      } catch { /* keep original */ }
     }
 
     // Check usage limit (cached in usage_records, updated every 5 min by cron)
