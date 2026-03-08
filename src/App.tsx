@@ -107,6 +107,7 @@ const AppRoutes = () => {
           <Route path="/dashboard/sites/:siteId/attribution" element={<Attribution />} />
           <Route path="/dashboard/sites/:siteId/experiments" element={<Experiments />} />
           <Route path="/dashboard/sites/:siteId/recordings" element={<SessionRecordings />} />
+          <Route path="/dashboard/sites/:siteId/sessions" element={<Sessions />} />
           <Route path="/dashboard/settings" element={<Settings />} />
           <Route path="/tools/campaign-builder" element={<CampaignBuilder />} />
           <Route path="/tools/page-overlay" element={<PageOverlay />} />
