@@ -278,9 +278,10 @@ serve(async (req) => {
             ip_address: clientIp
           });
 
-          if (!geoError && geoData && geoData.length > 0) {
+        if (!geoError && geoData && geoData.length > 0) {
             geoCountry = geoData[0].country?.toUpperCase() || null;
             geoCity = geoData[0].city || null;
+            // Region from DB if available (not currently in lookup_geoip but preserved from headers)
             if (geoData[0].latitude != null && geoData[0].longitude != null) {
               geoLatitude = Number(geoData[0].latitude);
               geoLongitude = Number(geoData[0].longitude);
