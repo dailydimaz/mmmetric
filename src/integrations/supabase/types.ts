@@ -750,6 +750,7 @@ export type Database = {
           created_at: string
           device_type: string | null
           event_name: string
+          hostname: string | null
           id: string
           language: string | null
           os: string | null
@@ -757,6 +758,8 @@ export type Database = {
           referrer: string | null
           session_id: string | null
           site_id: string
+          tag: string | null
+          title: string | null
           url: string | null
           visitor_id: string | null
         }
@@ -767,6 +770,7 @@ export type Database = {
           created_at?: string
           device_type?: string | null
           event_name?: string
+          hostname?: string | null
           id?: string
           language?: string | null
           os?: string | null
@@ -774,6 +778,8 @@ export type Database = {
           referrer?: string | null
           session_id?: string | null
           site_id: string
+          tag?: string | null
+          title?: string | null
           url?: string | null
           visitor_id?: string | null
         }
@@ -784,6 +790,7 @@ export type Database = {
           created_at?: string
           device_type?: string | null
           event_name?: string
+          hostname?: string | null
           id?: string
           language?: string | null
           os?: string | null
@@ -791,6 +798,8 @@ export type Database = {
           referrer?: string | null
           session_id?: string | null
           site_id?: string
+          tag?: string | null
+          title?: string | null
           url?: string | null
           visitor_id?: string | null
         }
@@ -804,6 +813,7 @@ export type Database = {
           created_at: string
           device_type: string | null
           event_name: string
+          hostname: string | null
           id: string
           language: string | null
           os: string | null
@@ -811,6 +821,8 @@ export type Database = {
           referrer: string | null
           session_id: string | null
           site_id: string
+          tag: string | null
+          title: string | null
           url: string | null
           visitor_id: string | null
         }
@@ -821,6 +833,7 @@ export type Database = {
           created_at?: string
           device_type?: string | null
           event_name?: string
+          hostname?: string | null
           id?: string
           language?: string | null
           os?: string | null
@@ -828,6 +841,8 @@ export type Database = {
           referrer?: string | null
           session_id?: string | null
           site_id: string
+          tag?: string | null
+          title?: string | null
           url?: string | null
           visitor_id?: string | null
         }
@@ -838,6 +853,7 @@ export type Database = {
           created_at?: string
           device_type?: string | null
           event_name?: string
+          hostname?: string | null
           id?: string
           language?: string | null
           os?: string | null
@@ -845,6 +861,8 @@ export type Database = {
           referrer?: string | null
           session_id?: string | null
           site_id?: string
+          tag?: string | null
+          title?: string | null
           url?: string | null
           visitor_id?: string | null
         }
@@ -858,6 +876,7 @@ export type Database = {
           created_at: string
           device_type: string | null
           event_name: string
+          hostname: string | null
           id: string
           language: string | null
           os: string | null
@@ -865,6 +884,8 @@ export type Database = {
           referrer: string | null
           session_id: string | null
           site_id: string
+          tag: string | null
+          title: string | null
           url: string | null
           visitor_id: string | null
         }
@@ -875,6 +896,7 @@ export type Database = {
           created_at?: string
           device_type?: string | null
           event_name?: string
+          hostname?: string | null
           id?: string
           language?: string | null
           os?: string | null
@@ -882,6 +904,8 @@ export type Database = {
           referrer?: string | null
           session_id?: string | null
           site_id: string
+          tag?: string | null
+          title?: string | null
           url?: string | null
           visitor_id?: string | null
         }
@@ -892,6 +916,7 @@ export type Database = {
           created_at?: string
           device_type?: string | null
           event_name?: string
+          hostname?: string | null
           id?: string
           language?: string | null
           os?: string | null
@@ -899,6 +924,8 @@ export type Database = {
           referrer?: string | null
           session_id?: string | null
           site_id?: string
+          tag?: string | null
+          title?: string | null
           url?: string | null
           visitor_id?: string | null
         }
@@ -912,6 +939,7 @@ export type Database = {
           created_at: string
           device_type: string | null
           event_name: string
+          hostname: string | null
           id: string
           language: string | null
           os: string | null
@@ -919,6 +947,8 @@ export type Database = {
           referrer: string | null
           session_id: string | null
           site_id: string
+          tag: string | null
+          title: string | null
           url: string | null
           visitor_id: string | null
         }
@@ -929,6 +959,7 @@ export type Database = {
           created_at?: string
           device_type?: string | null
           event_name?: string
+          hostname?: string | null
           id?: string
           language?: string | null
           os?: string | null
@@ -936,6 +967,8 @@ export type Database = {
           referrer?: string | null
           session_id?: string | null
           site_id: string
+          tag?: string | null
+          title?: string | null
           url?: string | null
           visitor_id?: string | null
         }
@@ -946,6 +979,7 @@ export type Database = {
           created_at?: string
           device_type?: string | null
           event_name?: string
+          hostname?: string | null
           id?: string
           language?: string | null
           os?: string | null
@@ -953,6 +987,8 @@ export type Database = {
           referrer?: string | null
           session_id?: string | null
           site_id?: string
+          tag?: string | null
+          title?: string | null
           url?: string | null
           visitor_id?: string | null
         }
@@ -966,6 +1002,7 @@ export type Database = {
           created_at: string
           device_type: string | null
           event_name: string
+          hostname: string | null
           id: string
           language: string | null
           os: string | null
@@ -973,6 +1010,8 @@ export type Database = {
           referrer: string | null
           session_id: string | null
           site_id: string
+          tag: string | null
+          title: string | null
           url: string | null
           visitor_id: string | null
         }
@@ -983,6 +1022,7 @@ export type Database = {
           created_at?: string
           device_type?: string | null
           event_name?: string
+          hostname?: string | null
           id?: string
           language?: string | null
           os?: string | null
@@ -990,6 +1030,8 @@ export type Database = {
           referrer?: string | null
           session_id?: string | null
           site_id: string
+          tag?: string | null
+          title?: string | null
           url?: string | null
           visitor_id?: string | null
         }
@@ -1000,6 +1042,7 @@ export type Database = {
           created_at?: string
           device_type?: string | null
           event_name?: string
+          hostname?: string | null
           id?: string
           language?: string | null
           os?: string | null
@@ -1007,6 +1050,8 @@ export type Database = {
           referrer?: string | null
           session_id?: string | null
           site_id?: string
+          tag?: string | null
+          title?: string | null
           url?: string | null
           visitor_id?: string | null
         }
@@ -1020,6 +1065,7 @@ export type Database = {
           created_at: string
           device_type: string | null
           event_name: string
+          hostname: string | null
           id: string
           language: string | null
           os: string | null
@@ -1027,6 +1073,8 @@ export type Database = {
           referrer: string | null
           session_id: string | null
           site_id: string
+          tag: string | null
+          title: string | null
           url: string | null
           visitor_id: string | null
         }
@@ -1037,6 +1085,7 @@ export type Database = {
           created_at?: string
           device_type?: string | null
           event_name?: string
+          hostname?: string | null
           id?: string
           language?: string | null
           os?: string | null
@@ -1044,6 +1093,8 @@ export type Database = {
           referrer?: string | null
           session_id?: string | null
           site_id: string
+          tag?: string | null
+          title?: string | null
           url?: string | null
           visitor_id?: string | null
         }
@@ -1054,6 +1105,7 @@ export type Database = {
           created_at?: string
           device_type?: string | null
           event_name?: string
+          hostname?: string | null
           id?: string
           language?: string | null
           os?: string | null
@@ -1061,6 +1113,8 @@ export type Database = {
           referrer?: string | null
           session_id?: string | null
           site_id?: string
+          tag?: string | null
+          title?: string | null
           url?: string | null
           visitor_id?: string | null
         }
@@ -1074,6 +1128,7 @@ export type Database = {
           created_at: string
           device_type: string | null
           event_name: string
+          hostname: string | null
           id: string
           language: string | null
           os: string | null
@@ -1081,6 +1136,8 @@ export type Database = {
           referrer: string | null
           session_id: string | null
           site_id: string
+          tag: string | null
+          title: string | null
           url: string | null
           visitor_id: string | null
         }
@@ -1091,6 +1148,7 @@ export type Database = {
           created_at?: string
           device_type?: string | null
           event_name?: string
+          hostname?: string | null
           id?: string
           language?: string | null
           os?: string | null
@@ -1098,6 +1156,8 @@ export type Database = {
           referrer?: string | null
           session_id?: string | null
           site_id: string
+          tag?: string | null
+          title?: string | null
           url?: string | null
           visitor_id?: string | null
         }
@@ -1108,6 +1168,7 @@ export type Database = {
           created_at?: string
           device_type?: string | null
           event_name?: string
+          hostname?: string | null
           id?: string
           language?: string | null
           os?: string | null
@@ -1115,6 +1176,8 @@ export type Database = {
           referrer?: string | null
           session_id?: string | null
           site_id?: string
+          tag?: string | null
+          title?: string | null
           url?: string | null
           visitor_id?: string | null
         }
@@ -1128,6 +1191,7 @@ export type Database = {
           created_at: string
           device_type: string | null
           event_name: string
+          hostname: string | null
           id: string
           language: string | null
           os: string | null
@@ -1135,6 +1199,8 @@ export type Database = {
           referrer: string | null
           session_id: string | null
           site_id: string
+          tag: string | null
+          title: string | null
           url: string | null
           visitor_id: string | null
         }
@@ -1145,6 +1211,7 @@ export type Database = {
           created_at?: string
           device_type?: string | null
           event_name?: string
+          hostname?: string | null
           id?: string
           language?: string | null
           os?: string | null
@@ -1152,6 +1219,8 @@ export type Database = {
           referrer?: string | null
           session_id?: string | null
           site_id: string
+          tag?: string | null
+          title?: string | null
           url?: string | null
           visitor_id?: string | null
         }
@@ -1162,6 +1231,7 @@ export type Database = {
           created_at?: string
           device_type?: string | null
           event_name?: string
+          hostname?: string | null
           id?: string
           language?: string | null
           os?: string | null
@@ -1169,6 +1239,8 @@ export type Database = {
           referrer?: string | null
           session_id?: string | null
           site_id?: string
+          tag?: string | null
+          title?: string | null
           url?: string | null
           visitor_id?: string | null
         }
@@ -1182,6 +1254,7 @@ export type Database = {
           created_at: string
           device_type: string | null
           event_name: string
+          hostname: string | null
           id: string
           language: string | null
           os: string | null
@@ -1189,6 +1262,8 @@ export type Database = {
           referrer: string | null
           session_id: string | null
           site_id: string
+          tag: string | null
+          title: string | null
           url: string | null
           visitor_id: string | null
         }
@@ -1199,6 +1274,7 @@ export type Database = {
           created_at?: string
           device_type?: string | null
           event_name?: string
+          hostname?: string | null
           id?: string
           language?: string | null
           os?: string | null
@@ -1206,6 +1282,8 @@ export type Database = {
           referrer?: string | null
           session_id?: string | null
           site_id: string
+          tag?: string | null
+          title?: string | null
           url?: string | null
           visitor_id?: string | null
         }
@@ -1216,6 +1294,7 @@ export type Database = {
           created_at?: string
           device_type?: string | null
           event_name?: string
+          hostname?: string | null
           id?: string
           language?: string | null
           os?: string | null
@@ -1223,6 +1302,8 @@ export type Database = {
           referrer?: string | null
           session_id?: string | null
           site_id?: string
+          tag?: string | null
+          title?: string | null
           url?: string | null
           visitor_id?: string | null
         }
@@ -1236,6 +1317,7 @@ export type Database = {
           created_at: string
           device_type: string | null
           event_name: string
+          hostname: string | null
           id: string
           language: string | null
           os: string | null
@@ -1243,6 +1325,8 @@ export type Database = {
           referrer: string | null
           session_id: string | null
           site_id: string
+          tag: string | null
+          title: string | null
           url: string | null
           visitor_id: string | null
         }
@@ -1253,6 +1337,7 @@ export type Database = {
           created_at?: string
           device_type?: string | null
           event_name?: string
+          hostname?: string | null
           id?: string
           language?: string | null
           os?: string | null
@@ -1260,6 +1345,8 @@ export type Database = {
           referrer?: string | null
           session_id?: string | null
           site_id: string
+          tag?: string | null
+          title?: string | null
           url?: string | null
           visitor_id?: string | null
         }
@@ -1270,6 +1357,7 @@ export type Database = {
           created_at?: string
           device_type?: string | null
           event_name?: string
+          hostname?: string | null
           id?: string
           language?: string | null
           os?: string | null
@@ -1277,6 +1365,8 @@ export type Database = {
           referrer?: string | null
           session_id?: string | null
           site_id?: string
+          tag?: string | null
+          title?: string | null
           url?: string | null
           visitor_id?: string | null
         }
@@ -1290,6 +1380,7 @@ export type Database = {
           created_at: string
           device_type: string | null
           event_name: string
+          hostname: string | null
           id: string
           language: string | null
           os: string | null
@@ -1297,6 +1388,8 @@ export type Database = {
           referrer: string | null
           session_id: string | null
           site_id: string
+          tag: string | null
+          title: string | null
           url: string | null
           visitor_id: string | null
         }
@@ -1307,6 +1400,7 @@ export type Database = {
           created_at?: string
           device_type?: string | null
           event_name?: string
+          hostname?: string | null
           id?: string
           language?: string | null
           os?: string | null
@@ -1314,6 +1408,8 @@ export type Database = {
           referrer?: string | null
           session_id?: string | null
           site_id: string
+          tag?: string | null
+          title?: string | null
           url?: string | null
           visitor_id?: string | null
         }
@@ -1324,6 +1420,7 @@ export type Database = {
           created_at?: string
           device_type?: string | null
           event_name?: string
+          hostname?: string | null
           id?: string
           language?: string | null
           os?: string | null
@@ -1331,6 +1428,8 @@ export type Database = {
           referrer?: string | null
           session_id?: string | null
           site_id?: string
+          tag?: string | null
+          title?: string | null
           url?: string | null
           visitor_id?: string | null
         }
@@ -1344,6 +1443,7 @@ export type Database = {
           created_at: string
           device_type: string | null
           event_name: string
+          hostname: string | null
           id: string
           language: string | null
           os: string | null
@@ -1351,6 +1451,8 @@ export type Database = {
           referrer: string | null
           session_id: string | null
           site_id: string
+          tag: string | null
+          title: string | null
           url: string | null
           visitor_id: string | null
         }
@@ -1361,6 +1463,7 @@ export type Database = {
           created_at?: string
           device_type?: string | null
           event_name?: string
+          hostname?: string | null
           id?: string
           language?: string | null
           os?: string | null
@@ -1368,6 +1471,8 @@ export type Database = {
           referrer?: string | null
           session_id?: string | null
           site_id: string
+          tag?: string | null
+          title?: string | null
           url?: string | null
           visitor_id?: string | null
         }
@@ -1378,6 +1483,7 @@ export type Database = {
           created_at?: string
           device_type?: string | null
           event_name?: string
+          hostname?: string | null
           id?: string
           language?: string | null
           os?: string | null
@@ -1385,6 +1491,8 @@ export type Database = {
           referrer?: string | null
           session_id?: string | null
           site_id?: string
+          tag?: string | null
+          title?: string | null
           url?: string | null
           visitor_id?: string | null
         }
@@ -1398,6 +1506,7 @@ export type Database = {
           created_at: string
           device_type: string | null
           event_name: string
+          hostname: string | null
           id: string
           language: string | null
           os: string | null
@@ -1405,6 +1514,8 @@ export type Database = {
           referrer: string | null
           session_id: string | null
           site_id: string
+          tag: string | null
+          title: string | null
           url: string | null
           visitor_id: string | null
         }
@@ -1415,6 +1526,7 @@ export type Database = {
           created_at?: string
           device_type?: string | null
           event_name?: string
+          hostname?: string | null
           id?: string
           language?: string | null
           os?: string | null
@@ -1422,6 +1534,8 @@ export type Database = {
           referrer?: string | null
           session_id?: string | null
           site_id: string
+          tag?: string | null
+          title?: string | null
           url?: string | null
           visitor_id?: string | null
         }
@@ -1432,6 +1546,7 @@ export type Database = {
           created_at?: string
           device_type?: string | null
           event_name?: string
+          hostname?: string | null
           id?: string
           language?: string | null
           os?: string | null
@@ -1439,6 +1554,8 @@ export type Database = {
           referrer?: string | null
           session_id?: string | null
           site_id?: string
+          tag?: string | null
+          title?: string | null
           url?: string | null
           visitor_id?: string | null
         }
@@ -1452,6 +1569,7 @@ export type Database = {
           created_at: string
           device_type: string | null
           event_name: string
+          hostname: string | null
           id: string
           language: string | null
           os: string | null
@@ -1459,6 +1577,8 @@ export type Database = {
           referrer: string | null
           session_id: string | null
           site_id: string
+          tag: string | null
+          title: string | null
           url: string | null
           visitor_id: string | null
         }
@@ -1469,6 +1589,7 @@ export type Database = {
           created_at?: string
           device_type?: string | null
           event_name?: string
+          hostname?: string | null
           id?: string
           language?: string | null
           os?: string | null
@@ -1476,6 +1597,8 @@ export type Database = {
           referrer?: string | null
           session_id?: string | null
           site_id: string
+          tag?: string | null
+          title?: string | null
           url?: string | null
           visitor_id?: string | null
         }
@@ -1486,6 +1609,7 @@ export type Database = {
           created_at?: string
           device_type?: string | null
           event_name?: string
+          hostname?: string | null
           id?: string
           language?: string | null
           os?: string | null
@@ -1493,6 +1617,8 @@ export type Database = {
           referrer?: string | null
           session_id?: string | null
           site_id?: string
+          tag?: string | null
+          title?: string | null
           url?: string | null
           visitor_id?: string | null
         }
@@ -1506,6 +1632,7 @@ export type Database = {
           created_at: string
           device_type: string | null
           event_name: string
+          hostname: string | null
           id: string
           language: string | null
           os: string | null
@@ -1513,6 +1640,8 @@ export type Database = {
           referrer: string | null
           session_id: string | null
           site_id: string
+          tag: string | null
+          title: string | null
           url: string | null
           visitor_id: string | null
         }
@@ -1523,6 +1652,7 @@ export type Database = {
           created_at?: string
           device_type?: string | null
           event_name?: string
+          hostname?: string | null
           id?: string
           language?: string | null
           os?: string | null
@@ -1530,6 +1660,8 @@ export type Database = {
           referrer?: string | null
           session_id?: string | null
           site_id: string
+          tag?: string | null
+          title?: string | null
           url?: string | null
           visitor_id?: string | null
         }
@@ -1540,6 +1672,7 @@ export type Database = {
           created_at?: string
           device_type?: string | null
           event_name?: string
+          hostname?: string | null
           id?: string
           language?: string | null
           os?: string | null
@@ -1547,6 +1680,8 @@ export type Database = {
           referrer?: string | null
           session_id?: string | null
           site_id?: string
+          tag?: string | null
+          title?: string | null
           url?: string | null
           visitor_id?: string | null
         }
@@ -1560,6 +1695,7 @@ export type Database = {
           created_at: string
           device_type: string | null
           event_name: string
+          hostname: string | null
           id: string
           language: string | null
           os: string | null
@@ -1567,6 +1703,8 @@ export type Database = {
           referrer: string | null
           session_id: string | null
           site_id: string
+          tag: string | null
+          title: string | null
           url: string | null
           visitor_id: string | null
         }
@@ -1577,6 +1715,7 @@ export type Database = {
           created_at?: string
           device_type?: string | null
           event_name?: string
+          hostname?: string | null
           id?: string
           language?: string | null
           os?: string | null
@@ -1584,6 +1723,8 @@ export type Database = {
           referrer?: string | null
           session_id?: string | null
           site_id: string
+          tag?: string | null
+          title?: string | null
           url?: string | null
           visitor_id?: string | null
         }
@@ -1594,6 +1735,7 @@ export type Database = {
           created_at?: string
           device_type?: string | null
           event_name?: string
+          hostname?: string | null
           id?: string
           language?: string | null
           os?: string | null
@@ -1601,6 +1743,8 @@ export type Database = {
           referrer?: string | null
           session_id?: string | null
           site_id?: string
+          tag?: string | null
+          title?: string | null
           url?: string | null
           visitor_id?: string | null
         }
@@ -1614,6 +1758,7 @@ export type Database = {
           created_at: string
           device_type: string | null
           event_name: string
+          hostname: string | null
           id: string
           language: string | null
           os: string | null
@@ -1621,6 +1766,8 @@ export type Database = {
           referrer: string | null
           session_id: string | null
           site_id: string
+          tag: string | null
+          title: string | null
           url: string | null
           visitor_id: string | null
         }
@@ -1631,6 +1778,7 @@ export type Database = {
           created_at?: string
           device_type?: string | null
           event_name?: string
+          hostname?: string | null
           id?: string
           language?: string | null
           os?: string | null
@@ -1638,6 +1786,8 @@ export type Database = {
           referrer?: string | null
           session_id?: string | null
           site_id: string
+          tag?: string | null
+          title?: string | null
           url?: string | null
           visitor_id?: string | null
         }
@@ -1648,6 +1798,7 @@ export type Database = {
           created_at?: string
           device_type?: string | null
           event_name?: string
+          hostname?: string | null
           id?: string
           language?: string | null
           os?: string | null
@@ -1655,6 +1806,8 @@ export type Database = {
           referrer?: string | null
           session_id?: string | null
           site_id?: string
+          tag?: string | null
+          title?: string | null
           url?: string | null
           visitor_id?: string | null
         }
@@ -1668,6 +1821,7 @@ export type Database = {
           created_at: string
           device_type: string | null
           event_name: string
+          hostname: string | null
           id: string
           language: string | null
           os: string | null
@@ -1675,6 +1829,8 @@ export type Database = {
           referrer: string | null
           session_id: string | null
           site_id: string
+          tag: string | null
+          title: string | null
           url: string | null
           visitor_id: string | null
         }
@@ -1685,6 +1841,7 @@ export type Database = {
           created_at?: string
           device_type?: string | null
           event_name?: string
+          hostname?: string | null
           id?: string
           language?: string | null
           os?: string | null
@@ -1692,6 +1849,8 @@ export type Database = {
           referrer?: string | null
           session_id?: string | null
           site_id: string
+          tag?: string | null
+          title?: string | null
           url?: string | null
           visitor_id?: string | null
         }
@@ -1702,6 +1861,7 @@ export type Database = {
           created_at?: string
           device_type?: string | null
           event_name?: string
+          hostname?: string | null
           id?: string
           language?: string | null
           os?: string | null
@@ -1709,6 +1869,8 @@ export type Database = {
           referrer?: string | null
           session_id?: string | null
           site_id?: string
+          tag?: string | null
+          title?: string | null
           url?: string | null
           visitor_id?: string | null
         }
@@ -1722,6 +1884,7 @@ export type Database = {
           created_at: string
           device_type: string | null
           event_name: string
+          hostname: string | null
           id: string
           language: string | null
           os: string | null
@@ -1729,6 +1892,8 @@ export type Database = {
           referrer: string | null
           session_id: string | null
           site_id: string
+          tag: string | null
+          title: string | null
           url: string | null
           visitor_id: string | null
         }
@@ -1739,6 +1904,7 @@ export type Database = {
           created_at?: string
           device_type?: string | null
           event_name?: string
+          hostname?: string | null
           id?: string
           language?: string | null
           os?: string | null
@@ -1746,6 +1912,8 @@ export type Database = {
           referrer?: string | null
           session_id?: string | null
           site_id: string
+          tag?: string | null
+          title?: string | null
           url?: string | null
           visitor_id?: string | null
         }
@@ -1756,6 +1924,7 @@ export type Database = {
           created_at?: string
           device_type?: string | null
           event_name?: string
+          hostname?: string | null
           id?: string
           language?: string | null
           os?: string | null
@@ -1763,6 +1932,8 @@ export type Database = {
           referrer?: string | null
           session_id?: string | null
           site_id?: string
+          tag?: string | null
+          title?: string | null
           url?: string | null
           visitor_id?: string | null
         }
@@ -1776,6 +1947,7 @@ export type Database = {
           created_at: string
           device_type: string | null
           event_name: string
+          hostname: string | null
           id: string
           language: string | null
           os: string | null
@@ -1783,6 +1955,8 @@ export type Database = {
           referrer: string | null
           session_id: string | null
           site_id: string
+          tag: string | null
+          title: string | null
           url: string | null
           visitor_id: string | null
         }
@@ -1793,6 +1967,7 @@ export type Database = {
           created_at?: string
           device_type?: string | null
           event_name?: string
+          hostname?: string | null
           id?: string
           language?: string | null
           os?: string | null
@@ -1800,6 +1975,8 @@ export type Database = {
           referrer?: string | null
           session_id?: string | null
           site_id: string
+          tag?: string | null
+          title?: string | null
           url?: string | null
           visitor_id?: string | null
         }
@@ -1810,6 +1987,7 @@ export type Database = {
           created_at?: string
           device_type?: string | null
           event_name?: string
+          hostname?: string | null
           id?: string
           language?: string | null
           os?: string | null
@@ -1817,6 +1995,8 @@ export type Database = {
           referrer?: string | null
           session_id?: string | null
           site_id?: string
+          tag?: string | null
+          title?: string | null
           url?: string | null
           visitor_id?: string | null
         }
@@ -1830,6 +2010,7 @@ export type Database = {
           created_at: string
           device_type: string | null
           event_name: string
+          hostname: string | null
           id: string
           language: string | null
           os: string | null
@@ -1837,6 +2018,8 @@ export type Database = {
           referrer: string | null
           session_id: string | null
           site_id: string
+          tag: string | null
+          title: string | null
           url: string | null
           visitor_id: string | null
         }
@@ -1847,6 +2030,7 @@ export type Database = {
           created_at?: string
           device_type?: string | null
           event_name?: string
+          hostname?: string | null
           id?: string
           language?: string | null
           os?: string | null
@@ -1854,6 +2038,8 @@ export type Database = {
           referrer?: string | null
           session_id?: string | null
           site_id: string
+          tag?: string | null
+          title?: string | null
           url?: string | null
           visitor_id?: string | null
         }
@@ -1864,6 +2050,7 @@ export type Database = {
           created_at?: string
           device_type?: string | null
           event_name?: string
+          hostname?: string | null
           id?: string
           language?: string | null
           os?: string | null
@@ -1871,6 +2058,8 @@ export type Database = {
           referrer?: string | null
           session_id?: string | null
           site_id?: string
+          tag?: string | null
+          title?: string | null
           url?: string | null
           visitor_id?: string | null
         }
@@ -1884,6 +2073,7 @@ export type Database = {
           created_at: string
           device_type: string | null
           event_name: string
+          hostname: string | null
           id: string
           language: string | null
           os: string | null
@@ -1891,6 +2081,8 @@ export type Database = {
           referrer: string | null
           session_id: string | null
           site_id: string
+          tag: string | null
+          title: string | null
           url: string | null
           visitor_id: string | null
         }
@@ -1901,6 +2093,7 @@ export type Database = {
           created_at?: string
           device_type?: string | null
           event_name?: string
+          hostname?: string | null
           id?: string
           language?: string | null
           os?: string | null
@@ -1908,6 +2101,8 @@ export type Database = {
           referrer?: string | null
           session_id?: string | null
           site_id: string
+          tag?: string | null
+          title?: string | null
           url?: string | null
           visitor_id?: string | null
         }
@@ -1918,6 +2113,7 @@ export type Database = {
           created_at?: string
           device_type?: string | null
           event_name?: string
+          hostname?: string | null
           id?: string
           language?: string | null
           os?: string | null
@@ -1925,6 +2121,8 @@ export type Database = {
           referrer?: string | null
           session_id?: string | null
           site_id?: string
+          tag?: string | null
+          title?: string | null
           url?: string | null
           visitor_id?: string | null
         }
@@ -2850,6 +3048,47 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "segments_site_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: false
+            referencedRelation: "sites"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      session_data: {
+        Row: {
+          created_at: string
+          custom_id: string | null
+          data: Json | null
+          id: string
+          session_id: string
+          site_id: string
+          updated_at: string
+          visitor_id: string
+        }
+        Insert: {
+          created_at?: string
+          custom_id?: string | null
+          data?: Json | null
+          id?: string
+          session_id: string
+          site_id: string
+          updated_at?: string
+          visitor_id: string
+        }
+        Update: {
+          created_at?: string
+          custom_id?: string | null
+          data?: Json | null
+          id?: string
+          session_id?: string
+          site_id?: string
+          updated_at?: string
+          visitor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "session_data_site_id_fkey"
             columns: ["site_id"]
             isOneToOne: false
             referencedRelation: "sites"
@@ -3846,6 +4085,21 @@ export type Database = {
         Args: {
           _end_date: string
           _limit?: number
+          _site_id: string
+          _start_date: string
+        }
+        Returns: Json
+      }
+      get_session_detail: {
+        Args: { _session_id: string; _site_id: string }
+        Returns: Json
+      }
+      get_sessions_list: {
+        Args: {
+          _end_date: string
+          _filters?: Json
+          _page?: number
+          _per_page?: number
           _site_id: string
           _start_date: string
         }
