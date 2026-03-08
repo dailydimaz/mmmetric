@@ -50,7 +50,7 @@ export function useSqlQuery(siteId: string | undefined) {
   const [history, setHistory] = useState<{ sql: string; timestamp: Date }[]>([]);
 
   const executeQuery = useMutation({
-    mutationFn: async (rawSql: string) => {
+    mutationFn: async (_rawSql: string) => {
       if (!siteId) throw new Error('No site selected');
       const start = performance.now();
 
