@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Globe, Settings, Loader2 } from "lucide-react";
+import { ArrowLeft, Globe, Settings, Loader2, Search, FileText, Database, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
