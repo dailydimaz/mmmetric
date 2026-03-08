@@ -198,7 +198,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 <item.icon className={cn("h-4 w-4", isActive ? "text-sidebar-foreground" : "text-sidebar-foreground/50 group-hover:text-sidebar-foreground")} />
-                {item.label}
+                {t(item.label)}
                 {isActive && <span className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-primary rounded-r-full"></span>}
               </Link>
             );
