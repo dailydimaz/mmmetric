@@ -250,7 +250,7 @@ export function VisitorChart({ siteId, data, isLoading, showComparison = true, o
                   <Area
                     type="monotone"
                     dataKey="prevPageviews"
-                    name="Previous Pageviews"
+                    name={compareMode === "yoy" ? "Last Year Pageviews" : "Previous Pageviews"}
                     stroke="hsl(var(--primary))"
                     strokeDasharray="4 4"
                     fillOpacity={0}
