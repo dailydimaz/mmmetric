@@ -64,13 +64,14 @@ export function VisitorChart({ siteId, data, isLoading, showComparison = true, o
     );
   }
 
-  const chartData = data?.map(d => ({
+  const currentInterval = interval || getDefaultInterval(dateRange);
+  const groupedData = groupTimeSeriesByInterval(data || [], currentInterval);
+  
+  const displayFormat = currentInterval === "month" ? "MMM yyyy" : currentInterval === "week" ? "MMM d" : "MMM d";
+  const chartData = groupedData.map(d => ({
     ...d,
-    displayDate: format(parseISO(d.date), "MMM d"),
-  })) || [];
-
-  return (
-    <motion.div
+    displayDate: format(parseISO(d.date), displayFormat),
+  }));
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.1 }}
