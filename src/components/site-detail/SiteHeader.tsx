@@ -53,6 +53,7 @@ export function SiteHeader({
     onToggleSettings,
     onToggleCustomizer,
 }: SiteHeaderProps) {
+    const navigate = useNavigate();
 
     return (
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
