@@ -507,11 +507,33 @@ serve(async (req) => {
       }
     }
 
+    // Handle content tracking events
+    if (event_name === 'content_impression' || event_name === 'content_interaction') {
+      try {
+        await supabase.from('content_impressions').insert({
+          site_id: site.id,
+          visitor_id,
+          session_id,
+          content_name: properties.content_name || 'unknown',
+          content_piece: properties.content_piece || null,
+          content_target: properties.content_target || null,
+          interaction_type: event_name === 'content_interaction' ? 'click' : 'impression',
+          url: cleanUrl,
+        });
+      } catch (e) {
+        console.warn('Content impression insert failed:', e);
+      }
+      return new Response(JSON.stringify({ success: true }), {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     // Insert the event into the partitioned table (single-write, legacy dual-write removed)
     const eventData = {
       site_id: site.id,
       event_name,
-      url,
+      url: cleanUrl,
       referrer,
       visitor_id,
       session_id,
