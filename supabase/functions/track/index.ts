@@ -2,7 +2,7 @@ import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { getLocationFromHeaders, getCachedGeo, setCachedGeo, isPrivateIp, lookupGeoApiFallback } from "../_shared/detect.ts";
-import { parseUserAgent, generateVisitorId, isBot } from "../_shared/parsing.ts";
+import { parseUserAgent, generateVisitorId, isBot, getBotName } from "../_shared/parsing.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -323,9 +323,31 @@ serve(async (req) => {
     // Parse user agent
     const { browser, os, device_type } = parseUserAgent(userAgent);
 
-    // Bot detection
+    // Bot detection - log as bot_hit event for reporting instead of silently ignoring
     if (isBot(userAgent)) {
-      // Return success to bot to avoid retries/errors
+      const botName = getBotName(userAgent);
+      // Still insert into events_partitioned as bot_hit for analytics
+      try {
+        const visitor_id_bot = await generateVisitorId(clientIp, userAgent);
+        await supabase.from('events_partitioned').insert({
+          site_id: site.id,
+          event_name: 'bot_hit',
+          url,
+          visitor_id: visitor_id_bot,
+          session_id: 'bot',
+          browser: botName,
+          os: 'Bot',
+          device_type: 'bot',
+          country: geoCountry,
+          city: geoCity,
+          region: geoRegion,
+          language: null,
+          properties: { bot_name: botName, user_agent: userAgent.substring(0, 200) },
+          title: null,
+          hostname: null,
+          tag: null,
+        });
+      } catch { /* best effort */ }
       return new Response(JSON.stringify({ success: true, ignored: true }), {
         status: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -364,7 +386,7 @@ serve(async (req) => {
     // First verify the site exists and get domain for origin validation
     const { data: site, error: siteError } = await supabase
       .from('sites')
-      .select('id, domain, user_id')
+      .select('id, domain, user_id, excluded_ips, excluded_url_params, require_consent')
       .eq('tracking_id', site_id)
       .maybeSingle();
 
@@ -381,6 +403,43 @@ serve(async (req) => {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
+    }
+
+    // Check IP exclusion
+    const excludedIps: string[] = (site as any).excluded_ips || [];
+    if (excludedIps.length > 0 && clientIp !== 'unknown') {
+      const isExcluded = excludedIps.some(exc => {
+        if (exc.includes('/')) {
+          // CIDR check - simplified: exact match only for now
+          return clientIp.startsWith(exc.split('/')[0].replace(/\.\d+$/, ''));
+        }
+        return clientIp === exc;
+      });
+      if (isExcluded) {
+        return new Response(JSON.stringify({ success: true, excluded: true }), {
+          status: 200,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+    }
+
+    // Check consent mode - if require_consent is true and no consent flag in payload, skip
+    if ((site as any).require_consent && !body.consent_given) {
+      return new Response(JSON.stringify({ success: true, consent_required: true }), {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Strip excluded URL parameters
+    const excludedParams: string[] = (site as any).excluded_url_params || [];
+    let cleanUrl = url;
+    if (cleanUrl && excludedParams.length > 0) {
+      try {
+        const urlObj = new URL(cleanUrl, 'https://placeholder.com');
+        excludedParams.forEach(p => urlObj.searchParams.delete(p));
+        cleanUrl = urlObj.pathname + (urlObj.search || '') + (urlObj.hash || '');
+      } catch { /* keep original */ }
     }
 
     // Check usage limit (cached in usage_records, updated every 5 min by cron)
@@ -448,11 +507,33 @@ serve(async (req) => {
       }
     }
 
+    // Handle content tracking events
+    if (event_name === 'content_impression' || event_name === 'content_interaction') {
+      try {
+        await supabase.from('content_impressions').insert({
+          site_id: site.id,
+          visitor_id,
+          session_id,
+          content_name: properties.content_name || 'unknown',
+          content_piece: properties.content_piece || null,
+          content_target: properties.content_target || null,
+          interaction_type: event_name === 'content_interaction' ? 'click' : 'impression',
+          url: cleanUrl,
+        });
+      } catch (e) {
+        console.warn('Content impression insert failed:', e);
+      }
+      return new Response(JSON.stringify({ success: true }), {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     // Insert the event into the partitioned table (single-write, legacy dual-write removed)
     const eventData = {
       site_id: site.id,
       event_name,
-      url,
+      url: cleanUrl,
       referrer,
       visitor_id,
       session_id,

@@ -1387,8 +1387,73 @@
         });
     };
 
-    const init = () => {
+    // Content Tracking - Track element impressions and clicks (data-track-content)
+    const setupContentTracking = () => {
+        const observed = new WeakSet();
+        const trackContent = (el: Element, type: 'impression' | 'click') => {
+            const name = el.getAttribute('data-content-name') || el.getAttribute('data-track-content') || el.id || 'unknown';
+            const piece = el.getAttribute('data-content-piece') || el.querySelector('img')?.getAttribute('src') || el.textContent?.substring(0, 100) || null;
+            const target = el.getAttribute('data-content-target') || el.querySelector('a')?.getAttribute('href') || null;
+            track(type === 'click' ? 'content_interaction' : 'content_impression', {
+                content_name: name,
+                content_piece: piece,
+                content_target: target,
+            });
+        };
+
+        // Use IntersectionObserver for impressions
+        if (typeof IntersectionObserver !== 'undefined') {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting && !observed.has(entry.target)) {
+                        observed.add(entry.target);
+                        trackContent(entry.target, 'impression');
+                    }
+                });
+            }, { threshold: 0.5 });
+
+            const observeAll = () => {
+                document.querySelectorAll('[data-track-content]').forEach(el => observer.observe(el));
+            };
+            observeAll();
+            // Re-observe on DOM changes
+            new MutationObserver(observeAll).observe(document.body, { childList: true, subtree: true });
+        }
+
+        // Track clicks on content elements
+        document.addEventListener('click', (e) => {
+            const target = (e.target as HTMLElement).closest('[data-track-content]');
+            if (target) trackContent(target, 'click');
+        }, true);
+    };
+
+    // Consent mode support
+    let consentGiven = script?.getAttribute('data-require-consent') !== 'true';
+    const originalTrack = track;
+
+    const consentAwareTrack = (eventName: string, properties?: Record<string, unknown>) => {
+        if (!consentGiven) return;
+        originalTrack(eventName, properties);
+    };
+
+    // Override track if consent required
+    if (!consentGiven) {
+        (window as any).mmmetric = (e: string, p?: Record<string, unknown>) => { consentAwareTrack(e, p || {}); };
+    }
+
+    // Consent API
+    (window as any).mmmetric.consent = () => {
+        consentGiven = true;
+        // Send initial pageview after consent
         if (autoTrack) track('pageview');
+    };
+
+    (window as any).mmmetric.revokeConsent = () => {
+        consentGiven = false;
+    };
+
+    const init = () => {
+        if (autoTrack && consentGiven) track('pageview');
         setupOutbound();
         setupDownloads();
         setupScroll();
@@ -1402,9 +1467,12 @@
         setupHeatmapTracking();
         setupScrollHeatmap();
         setupSessionRecording();
+        setupContentTracking();
         fetchConfig();
         setTimeout(() => {
-            if (document.title.toLowerCase().includes('404')) track('404', { url: window.location.href, referrer: document.referrer });
+            if (document.title.toLowerCase().includes('404') || document.querySelector('meta[name="status"][content="404"]')) {
+                track('404', { url: window.location.href, referrer: document.referrer, title: document.title });
+            }
         }, 1000);
     };
 

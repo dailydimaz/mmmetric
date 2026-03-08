@@ -595,6 +595,53 @@ export type Database = {
           },
         ]
       }
+      content_impressions: {
+        Row: {
+          content_name: string
+          content_piece: string | null
+          content_target: string | null
+          created_at: string
+          id: string
+          interaction_type: string
+          session_id: string | null
+          site_id: string
+          url: string | null
+          visitor_id: string | null
+        }
+        Insert: {
+          content_name: string
+          content_piece?: string | null
+          content_target?: string | null
+          created_at?: string
+          id?: string
+          interaction_type?: string
+          session_id?: string | null
+          site_id: string
+          url?: string | null
+          visitor_id?: string | null
+        }
+        Update: {
+          content_name?: string
+          content_piece?: string | null
+          content_target?: string | null
+          created_at?: string
+          id?: string
+          interaction_type?: string
+          session_id?: string | null
+          site_id?: string
+          url?: string | null
+          visitor_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_impressions_site_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: false
+            referencedRelation: "sites"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       custom_dashboards: {
         Row: {
           created_at: string
@@ -2407,6 +2454,50 @@ export type Database = {
           },
         ]
       }
+      gdpr_requests: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          id: string
+          request_type: string
+          result_data: Json | null
+          site_id: string
+          status: string
+          user_id: string
+          visitor_id_hash: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          request_type: string
+          result_data?: Json | null
+          site_id: string
+          status?: string
+          user_id: string
+          visitor_id_hash: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          request_type?: string
+          result_data?: Json | null
+          site_id?: string
+          status?: string
+          user_id?: string
+          visitor_id_hash?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gdpr_requests_site_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: false
+            referencedRelation: "sites"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       geoip_blocks: {
         Row: {
           geoname_id: number | null
@@ -3370,9 +3461,12 @@ export type Database = {
           custom_css: string | null
           custom_domain: string | null
           domain: string | null
+          excluded_ips: string[] | null
+          excluded_url_params: string[] | null
           id: string
           name: string
           remove_branding: boolean | null
+          require_consent: boolean | null
           timezone: string | null
           tracking_id: string
           tracking_tier: string
@@ -3387,9 +3481,12 @@ export type Database = {
           custom_css?: string | null
           custom_domain?: string | null
           domain?: string | null
+          excluded_ips?: string[] | null
+          excluded_url_params?: string[] | null
           id?: string
           name: string
           remove_branding?: boolean | null
+          require_consent?: boolean | null
           timezone?: string | null
           tracking_id?: string
           tracking_tier?: string
@@ -3404,9 +3501,12 @@ export type Database = {
           custom_css?: string | null
           custom_domain?: string | null
           domain?: string | null
+          excluded_ips?: string[] | null
+          excluded_url_params?: string[] | null
           id?: string
           name?: string
           remove_branding?: boolean | null
+          require_consent?: boolean | null
           timezone?: string | null
           tracking_id?: string
           tracking_tier?: string
@@ -3901,6 +4001,14 @@ export type Database = {
       create_future_partitions: { Args: never; Returns: undefined }
       delete_expired_data: { Args: never; Returns: undefined }
       delete_expired_events: { Args: never; Returns: number }
+      gdpr_delete_visitor: {
+        Args: { _site_id: string; _visitor_id: string }
+        Returns: number
+      }
+      gdpr_lookup_visitor: {
+        Args: { _site_id: string; _visitor_id: string }
+        Returns: Json
+      }
       get_attribution_stats: {
         Args: {
           _attribution_model?: string
@@ -3910,6 +4018,14 @@ export type Database = {
           _start_date: string
         }
         Returns: Json
+      }
+      get_bot_stats: {
+        Args: { _end_date: string; _site_id: string; _start_date: string }
+        Returns: {
+          bot_name: string
+          hit_count: number
+          last_seen: string
+        }[]
       }
       get_browser_stats: {
         Args: {
@@ -3940,6 +4056,21 @@ export type Database = {
           longitude: number
           percentage: number
           visits: number
+        }[]
+      }
+      get_content_stats: {
+        Args: {
+          _end_date: string
+          _limit?: number
+          _site_id: string
+          _start_date: string
+        }
+        Returns: {
+          content_name: string
+          content_piece: string
+          ctr: number
+          impressions: number
+          interactions: number
         }[]
       }
       get_country_stats: {
@@ -4174,6 +4305,20 @@ export type Database = {
           retained: number
         }[]
       }
+      get_row_evolution: {
+        Args: {
+          _dimension: string
+          _end_date: string
+          _metric?: string
+          _site_id: string
+          _start_date: string
+          _value: string
+        }
+        Returns: {
+          date: string
+          metric_value: number
+        }[]
+      }
       get_scroll_depth_stats: {
         Args: {
           _end_date: string
@@ -4349,6 +4494,10 @@ export type Database = {
           _site_id: string
           _start_date: string
         }
+        Returns: Json
+      }
+      get_visitor_profile: {
+        Args: { _site_id: string; _visitor_id: string }
         Returns: Json
       }
       get_yoy_comparison: {

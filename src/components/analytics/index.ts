@@ -52,3 +52,7 @@ export { SessionPlayer } from "./SessionPlayer";
 export { IntervalSelector, getDefaultInterval } from "./IntervalSelector";
 export type { ChartInterval } from "./IntervalSelector";
 export { CustomPropertiesBreakdown } from "./CustomPropertiesBreakdown";
+export { ContentTrackingStats } from "./ContentTrackingStats";
+export { RowEvolutionDialog } from "./RowEvolutionDialog";
+export { VisitorProfileDialog } from "./VisitorProfileDialog";
+export { BotStats } from "./BotStats";
