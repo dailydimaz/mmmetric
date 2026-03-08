@@ -464,6 +464,12 @@ export default function Settings() {
         {/* White Labeling - customize public dashboard branding */}
         {firstSite && <WhiteLabelingCard siteId={firstSite.id} />}
 
+        {/* Scheduled Reports & Subscriptions */}
+        {firstSite && <SubscriptionsCard siteId={firstSite.id} />}
+
+        {/* Embeddable Dashboards */}
+        {firstSite && <EmbedDashboardCard siteId={firstSite.id} />}
+
         {/* Email Preferences */}
         <EmailPreferences />
 
