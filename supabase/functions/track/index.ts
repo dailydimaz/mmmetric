@@ -461,6 +461,7 @@ serve(async (req) => {
       device_type,
       country: geoCountry,
       city: geoCity,
+      region: geoRegion,
       language: primaryLanguage,
       properties,
       title: (typeof bodyTitle === 'string' && bodyTitle.length <= 500) ? bodyTitle : null,
