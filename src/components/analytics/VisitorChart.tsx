@@ -2,13 +2,15 @@ import { useState, useCallback } from "react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, ReferenceLine } from "recharts";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAnnotations } from "@/hooks/useAnnotations";
-import { TimeSeriesData, DateRange } from "@/hooks/useAnalytics";
+import { useYoyComparison } from "@/hooks/useYoyComparison";
+import { TimeSeriesData, DateRange, AnalyticsFilter } from "@/hooks/useAnalytics";
 import { format, parseISO } from "date-fns";
-import { LineChart, ZoomIn, X } from "lucide-react";
+import { LineChart, ZoomIn, X, CalendarRange } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { IntervalSelector, getDefaultInterval } from "./IntervalSelector";
 import type { ChartInterval } from "./IntervalSelector";
 import { groupTimeSeriesByInterval } from "@/lib/timeSeriesGrouping";
@@ -22,11 +24,22 @@ interface VisitorChartProps {
   dateRange?: DateRange;
   interval?: ChartInterval;
   onIntervalChange?: (interval: ChartInterval) => void;
+  filters?: AnalyticsFilter;
 }
 
-export function VisitorChart({ siteId, data, isLoading, showComparison = true, onDateClick, dateRange = "7d", interval, onIntervalChange }: VisitorChartProps) {
+type CompareMode = "previous" | "yoy";
+
+export function VisitorChart({ siteId, data, isLoading, showComparison = true, onDateClick, dateRange = "7d", interval, onIntervalChange, filters }: VisitorChartProps) {
   const { data: annotations } = useAnnotations(siteId || "");
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [compareMode, setCompareMode] = useState<CompareMode>("previous");
+
+  const { data: yoyData } = useYoyComparison({
+    siteId: siteId || "",
+    dateRange,
+    filters,
+    enabled: !!siteId && showComparison && compareMode === "yoy",
+  });
 
   const handleClick = useCallback((data: any) => {
     if (data && data.activePayload && data.activePayload[0]) {
@@ -68,10 +81,20 @@ export function VisitorChart({ siteId, data, isLoading, showComparison = true, o
   const groupedData = groupTimeSeriesByInterval(data || [], currentInterval);
   
   const displayFormat = currentInterval === "month" ? "MMM yyyy" : currentInterval === "week" ? "MMM d" : "MMM d";
-  const chartData = groupedData.map(d => ({
-    ...d,
-    displayDate: format(parseISO(d.date), displayFormat),
-  }));
+
+  // Merge YoY data if in yoy mode
+  const chartData = groupedData.map(d => {
+    const yoyPoint = compareMode === "yoy" && yoyData
+      ? yoyData.find(y => y.date === d.date)
+      : null;
+    return {
+      ...d,
+      // Override prev data with YoY data when in YoY mode
+      prevPageviews: compareMode === "yoy" ? (yoyPoint?.yoyPageviews || 0) : d.prevPageviews,
+      prevVisitors: compareMode === "yoy" ? (yoyPoint?.yoyVisitors || 0) : d.prevVisitors,
+      displayDate: format(parseISO(d.date), displayFormat),
+    };
+  });
 
   return (
     <motion.div
@@ -117,6 +140,16 @@ export function VisitorChart({ siteId, data, isLoading, showComparison = true, o
             </AnimatePresence>
             {onDateClick && !selectedDate && (
               <span className="text-xs text-muted-foreground">Click chart to filter</span>
+            )}
+            {showComparison && (
+              <ToggleGroup type="single" value={compareMode} onValueChange={(val) => val && setCompareMode(val as CompareMode)} className="bg-muted p-0.5 rounded-md">
+                <ToggleGroupItem value="previous" size="sm" className="h-6 text-[10px] px-2 data-[state=on]:bg-background data-[state=on]:shadow-sm">
+                  Previous
+                </ToggleGroupItem>
+                <ToggleGroupItem value="yoy" size="sm" className="h-6 text-[10px] px-2 data-[state=on]:bg-background data-[state=on]:shadow-sm">
+                  Year-over-Year
+                </ToggleGroupItem>
+              </ToggleGroup>
             )}
             {onIntervalChange && (
               <IntervalSelector
@@ -217,7 +250,7 @@ export function VisitorChart({ siteId, data, isLoading, showComparison = true, o
                   <Area
                     type="monotone"
                     dataKey="prevPageviews"
-                    name="Previous Pageviews"
+                    name={compareMode === "yoy" ? "Last Year Pageviews" : "Previous Pageviews"}
                     stroke="hsl(var(--primary))"
                     strokeDasharray="4 4"
                     fillOpacity={0}
@@ -248,7 +281,7 @@ export function VisitorChart({ siteId, data, isLoading, showComparison = true, o
                   <Area
                     type="monotone"
                     dataKey="prevVisitors"
-                    name="Previous Visitors"
+                    name={compareMode === "yoy" ? "Last Year Visitors" : "Previous Visitors"}
                     stroke="hsl(var(--chart-2))"
                     strokeDasharray="4 4"
                     fillOpacity={0}

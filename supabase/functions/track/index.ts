@@ -246,6 +246,7 @@ serve(async (req) => {
     const location = getLocationFromHeaders(req.headers);
     let geoCountry = location?.country?.toUpperCase() || null;
     let geoCity = location?.city || null;
+    let geoRegion = location?.region || null;
     let geoLatitude = location?.latitude || null;
     let geoLongitude = location?.longitude || null;
 
@@ -277,9 +278,10 @@ serve(async (req) => {
             ip_address: clientIp
           });
 
-          if (!geoError && geoData && geoData.length > 0) {
+        if (!geoError && geoData && geoData.length > 0) {
             geoCountry = geoData[0].country?.toUpperCase() || null;
             geoCity = geoData[0].city || null;
+            // Region from DB if available (not currently in lookup_geoip but preserved from headers)
             if (geoData[0].latitude != null && geoData[0].longitude != null) {
               geoLatitude = Number(geoData[0].latitude);
               geoLongitude = Number(geoData[0].longitude);
@@ -297,6 +299,7 @@ serve(async (req) => {
             if (apiResult && apiResult.country) {
               geoCountry = apiResult.country.toUpperCase();
               geoCity = apiResult.city || null;
+              geoRegion = apiResult.region || null;
               geoLatitude = apiResult.latitude;
               geoLongitude = apiResult.longitude;
               resolved = true;
@@ -458,6 +461,7 @@ serve(async (req) => {
       device_type,
       country: geoCountry,
       city: geoCity,
+      region: geoRegion,
       language: primaryLanguage,
       properties,
       title: (typeof bodyTitle === 'string' && bodyTitle.length <= 500) ? bodyTitle : null,

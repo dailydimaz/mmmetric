@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { MapPin, Building2, Map as MapIcon, Layers } from "lucide-react";
-import { GeoStat, CityStat } from "@/hooks/useAnalytics";
+import { MapPin, Building2, Map as MapIcon, Layers, MapPinned } from "lucide-react";
+import { GeoStat, CityStat, DateRange } from "@/hooks/useAnalytics";
+import { useRegionStats, RegionStat } from "@/hooks/useRegionStats";
 import { GeoMap } from "./GeoMap";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
@@ -19,6 +20,8 @@ interface GeoStatsProps {
   cities: CityStat[] | undefined;
   isLoading: boolean;
   onBreakdown?: (country: string) => void;
+  siteId?: string;
+  dateRange?: DateRange;
 }
 
 // Country code to flag emoji
@@ -43,9 +46,22 @@ function getCountryName(code: string): string {
   return countryNames[code.toUpperCase()] || code;
 }
 
-export function GeoStats({ countries, cities, isLoading, onBreakdown }: GeoStatsProps) {
-  const [activeTab, setActiveTab] = useState<"countries" | "cities">("countries");
+export function GeoStats({ countries, cities, isLoading, onBreakdown, siteId, dateRange }: GeoStatsProps) {
+  const [activeTab, setActiveTab] = useState<"countries" | "regions" | "cities">("countries");
   const [viewMode, setViewMode] = useState<"list" | "map">("list");
+  const [regionCountry, setRegionCountry] = useState<string | undefined>(undefined);
+
+  const { data: regions, isLoading: regionsLoading } = useRegionStats({
+    siteId: siteId || "",
+    dateRange: dateRange || "7d",
+    country: regionCountry,
+  });
+
+  const handleCountryClick = (country: string) => {
+    // Switch to regions tab filtered by this country
+    setRegionCountry(country);
+    setActiveTab("regions");
+  };
 
   return (
     <Card className="h-full">
@@ -58,12 +74,6 @@ export function GeoStats({ countries, cities, isLoading, onBreakdown }: GeoStats
         </div>
 
         <div className="flex items-center gap-2">
-          {onBreakdown && activeTab === "countries" && (
-            <span className="text-xs text-muted-foreground flex items-center gap-1">
-              <Layers className="h-3 w-3" />
-            </span>
-          )}
-
           <ToggleGroup type="single" value={viewMode} onValueChange={(val) => val && setViewMode(val as "list" | "map")} className="bg-muted p-1 rounded-lg mr-2">
             <ToggleGroupItem value="list" size="sm" className="h-7 w-7 p-0 data-[state=on]:bg-background data-[state=on]:shadow-sm">
               <Layers className="h-3 w-3" />
@@ -73,9 +83,17 @@ export function GeoStats({ countries, cities, isLoading, onBreakdown }: GeoStats
             </ToggleGroupItem>
           </ToggleGroup>
 
-          <ToggleGroup type="single" value={activeTab} onValueChange={(val) => val && setActiveTab(val as "countries" | "cities")} className="bg-muted p-1 rounded-lg">
+          <ToggleGroup type="single" value={activeTab} onValueChange={(val) => {
+            if (val) {
+              setActiveTab(val as "countries" | "regions" | "cities");
+              if (val === "countries") setRegionCountry(undefined);
+            }
+          }} className="bg-muted p-1 rounded-lg">
             <ToggleGroupItem value="countries" size="sm" className="h-7 text-xs data-[state=on]:bg-background data-[state=on]:shadow-sm">
               Countries
+            </ToggleGroupItem>
+            <ToggleGroupItem value="regions" size="sm" className="h-7 text-xs data-[state=on]:bg-background data-[state=on]:shadow-sm">
+              Regions
             </ToggleGroupItem>
             <ToggleGroupItem value="cities" size="sm" className="h-7 text-xs data-[state=on]:bg-background data-[state=on]:shadow-sm">
               Cities
@@ -104,7 +122,7 @@ export function GeoStats({ countries, cities, isLoading, onBreakdown }: GeoStats
                 data={countries}
                 cities={cities}
                 isLoading={isLoading}
-                onCountryClick={onBreakdown}
+                onCountryClick={onBreakdown || handleCountryClick}
               />
             </div>
           ) : activeTab === "countries" ? (
@@ -122,8 +140,8 @@ export function GeoStats({ countries, cities, isLoading, onBreakdown }: GeoStats
                     {countries.slice(0, 8).map((country, index) => (
                       <TableRow
                         key={index}
-                        className={`hover:bg-muted/50 border-b border-border last:border-0 ${onBreakdown ? 'cursor-pointer' : ''}`}
-                        onClick={() => onBreakdown?.(country.country)}
+                        className="hover:bg-muted/50 border-b border-border last:border-0 cursor-pointer"
+                        onClick={() => handleCountryClick(country.country)}
                       >
                         <TableCell className="w-full flex items-center gap-3 py-3 pl-4">
                           <span className="text-xl">{getCountryFlag(country.country)}</span>
@@ -148,6 +166,72 @@ export function GeoStats({ countries, cities, isLoading, onBreakdown }: GeoStats
                 <p className="text-sm">No country data yet</p>
               </div>
             )
+          ) : activeTab === "regions" ? (
+            <>
+              {regionCountry && (
+                <div className="px-4 pt-3 flex items-center gap-2">
+                  <span className="text-lg">{getCountryFlag(regionCountry)}</span>
+                  <span className="text-sm font-medium text-muted-foreground">{getCountryName(regionCountry)}</span>
+                  <button
+                    onClick={() => { setRegionCountry(undefined); setActiveTab("countries"); }}
+                    className="text-xs text-primary hover:underline ml-auto"
+                  >
+                    ← All countries
+                  </button>
+                </div>
+              )}
+              {regionsLoading ? (
+                <div className="p-4 space-y-4">
+                  {[...Array(5)].map((_, i) => (
+                    <div key={i} className="flex justify-between items-center">
+                      <Skeleton className="h-4 w-32" />
+                      <Skeleton className="h-4 w-12" />
+                    </div>
+                  ))}
+                </div>
+              ) : regions && regions.length > 0 ? (
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="bg-muted/50 hover:bg-muted/50">
+                        <TableHead className="w-full pl-4">Region</TableHead>
+                        <TableHead className="text-right">Visits</TableHead>
+                        <TableHead className="text-right pr-4">%</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {regions.slice(0, 10).map((region, index) => (
+                        <TableRow key={index} className="hover:bg-muted/50 border-b border-border last:border-0">
+                          <TableCell className="w-full flex items-center gap-3 py-3 pl-4">
+                            <div className="p-1 rounded bg-muted text-muted-foreground">
+                              <MapPinned className="h-3 w-3" />
+                            </div>
+                            <div className="relative flex-1 h-1.5 bg-muted rounded-full overflow-hidden max-w-[100px] md:max-w-[150px]">
+                              <div
+                                className="absolute inset-y-0 left-0 bg-primary rounded-full"
+                                style={{ width: `${region.percentage}%` }}
+                              />
+                            </div>
+                            <div className="flex flex-col min-w-0">
+                              <span className="font-medium text-sm truncate max-w-[120px]">{region.region}</span>
+                              <span className="text-xs text-muted-foreground">{getCountryName(region.country)}</span>
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-right font-medium py-3">{region.visits}</TableCell>
+                          <TableCell className="text-right font-mono text-xs text-muted-foreground w-16 py-3 pr-4">{region.percentage.toFixed(0)}%</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-12 text-muted-foreground/40">
+                  <MapPinned className="h-10 w-10 mb-2 opacity-20" />
+                  <p className="text-sm">No region data yet</p>
+                  <p className="text-xs mt-1">Region tracking is captured from visitor headers</p>
+                </div>
+              )}
+            </>
           ) : (
             cities && cities.length > 0 ? (
               <div className="overflow-x-auto">

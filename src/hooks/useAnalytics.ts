@@ -6,6 +6,7 @@ export type DateRange = "today" | "7d" | "30d" | "90d";
 
 export interface AnalyticsFilter {
   country?: string;
+  region?: string;
   browser?: string;
   url?: string;
   os?: string;
@@ -54,6 +55,7 @@ function filtersToJsonb(filters?: AnalyticsFilter): Record<string, string> | nul
 
   const result: Record<string, string> = {};
   if (filters.country) result.country = filters.country;
+  if (filters.region) result.region = filters.region;
   if (filters.browser) result.browser = filters.browser;
   if (filters.os) result.os = filters.os;
   if (filters.device) result.device = filters.device;
