@@ -215,7 +215,7 @@
             lastPath = window.location.pathname;
             startTime = Date.now();
             engaged = false;
-            track('pageview');
+            if (autoTrack) track('pageview');
         }
     };
 
