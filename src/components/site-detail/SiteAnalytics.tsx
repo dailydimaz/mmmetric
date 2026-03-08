@@ -240,7 +240,7 @@ export function SiteAnalytics({
                     </div>
                 )}
 
-                {(shouldShow('visitors') || shouldShow('pageviews') || shouldShow('bounce_rate') || shouldShow('avg_duration')) && (
+                {(shouldShow('visitors') || shouldShow('pageviews') || shouldShow('bounce_rate') || shouldShow('avg_duration') || shouldShow('views_per_visit')) && (
                     <StatsCards
                         stats={stats}
                         isLoading={statsLoading}
