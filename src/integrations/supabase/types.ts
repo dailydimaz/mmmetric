@@ -479,6 +479,53 @@ export type Database = {
         }
         Relationships: []
       }
+      audit_log: {
+        Row: {
+          action: string
+          created_at: string
+          details: Json | null
+          entity_id: string | null
+          entity_type: string
+          id: string
+          ip_address: string | null
+          site_id: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          details?: Json | null
+          entity_id?: string | null
+          entity_type: string
+          id?: string
+          ip_address?: string | null
+          site_id?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          details?: Json | null
+          entity_id?: string | null
+          entity_type?: string
+          id?: string
+          ip_address?: string | null
+          site_id?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "audit_log_site_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: false
+            referencedRelation: "sites"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       backup_codes: {
         Row: {
           code_hash: string
@@ -722,6 +769,66 @@ export type Database = {
             foreignKeyName: "discord_integrations_site_id_fkey"
             columns: ["site_id"]
             isOneToOne: true
+            referencedRelation: "sites"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      embedded_dashboard_tokens: {
+        Row: {
+          allowed_domains: string[] | null
+          created_at: string
+          dashboard_id: string | null
+          expires_at: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          settings: Json | null
+          site_id: string
+          token_hash: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          allowed_domains?: string[] | null
+          created_at?: string
+          dashboard_id?: string | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          settings?: Json | null
+          site_id: string
+          token_hash: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          allowed_domains?: string[] | null
+          created_at?: string
+          dashboard_id?: string | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          settings?: Json | null
+          site_id?: string
+          token_hash?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "embedded_dashboard_tokens_dashboard_id_fkey"
+            columns: ["dashboard_id"]
+            isOneToOne: false
+            referencedRelation: "custom_dashboards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "embedded_dashboard_tokens_site_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: false
             referencedRelation: "sites"
             referencedColumns: ["id"]
           },
@@ -3168,6 +3275,217 @@ export type Database = {
         }
         Relationships: []
       }
+      report_collections: {
+        Row: {
+          color: string | null
+          created_at: string
+          description: string | null
+          icon: string | null
+          id: string
+          name: string
+          parent_id: string | null
+          position: number | null
+          site_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          name: string
+          parent_id?: string | null
+          position?: number | null
+          site_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          name?: string
+          parent_id?: string | null
+          position?: number | null
+          site_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "report_collections_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "report_collections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "report_collections_site_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: false
+            referencedRelation: "sites"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      report_subscriptions: {
+        Row: {
+          channel: string
+          channel_config: Json | null
+          created_at: string
+          dashboard_id: string | null
+          day_of_month: number | null
+          day_of_week: number | null
+          frequency: Database["public"]["Enums"]["subscription_frequency"]
+          hour_of_day: number | null
+          id: string
+          is_enabled: boolean | null
+          last_sent_at: string | null
+          name: string
+          next_send_at: string | null
+          report_id: string | null
+          site_id: string
+          timezone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          channel?: string
+          channel_config?: Json | null
+          created_at?: string
+          dashboard_id?: string | null
+          day_of_month?: number | null
+          day_of_week?: number | null
+          frequency?: Database["public"]["Enums"]["subscription_frequency"]
+          hour_of_day?: number | null
+          id?: string
+          is_enabled?: boolean | null
+          last_sent_at?: string | null
+          name: string
+          next_send_at?: string | null
+          report_id?: string | null
+          site_id: string
+          timezone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          channel?: string
+          channel_config?: Json | null
+          created_at?: string
+          dashboard_id?: string | null
+          day_of_month?: number | null
+          day_of_week?: number | null
+          frequency?: Database["public"]["Enums"]["subscription_frequency"]
+          hour_of_day?: number | null
+          id?: string
+          is_enabled?: boolean | null
+          last_sent_at?: string | null
+          name?: string
+          next_send_at?: string | null
+          report_id?: string | null
+          site_id?: string
+          timezone?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "report_subscriptions_dashboard_id_fkey"
+            columns: ["dashboard_id"]
+            isOneToOne: false
+            referencedRelation: "custom_dashboards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "report_subscriptions_report_id_fkey"
+            columns: ["report_id"]
+            isOneToOne: false
+            referencedRelation: "saved_reports"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "report_subscriptions_site_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: false
+            referencedRelation: "sites"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      saved_reports: {
+        Row: {
+          cached_at: string | null
+          cached_result: Json | null
+          collection_id: string | null
+          created_at: string
+          description: string | null
+          id: string
+          is_pinned: boolean | null
+          last_run_at: string | null
+          name: string
+          query_config: Json
+          site_id: string
+          updated_at: string
+          user_id: string
+          visualization_config: Json
+          visualization_type: string
+        }
+        Insert: {
+          cached_at?: string | null
+          cached_result?: Json | null
+          collection_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_pinned?: boolean | null
+          last_run_at?: string | null
+          name: string
+          query_config?: Json
+          site_id: string
+          updated_at?: string
+          user_id: string
+          visualization_config?: Json
+          visualization_type?: string
+        }
+        Update: {
+          cached_at?: string | null
+          cached_result?: Json | null
+          collection_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_pinned?: boolean | null
+          last_run_at?: string | null
+          name?: string
+          query_config?: Json
+          site_id?: string
+          updated_at?: string
+          user_id?: string
+          visualization_config?: Json
+          visualization_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saved_reports_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "report_collections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "saved_reports_site_id_fkey"
+            columns: ["site_id"]
+            isOneToOne: false
+            referencedRelation: "sites"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       segments: {
         Row: {
           created_at: string
@@ -4001,6 +4319,20 @@ export type Database = {
       create_future_partitions: { Args: never; Returns: undefined }
       delete_expired_data: { Args: never; Returns: undefined }
       delete_expired_events: { Args: never; Returns: number }
+      execute_analytics_query: {
+        Args: {
+          p_dimensions: string[]
+          p_end_date: string
+          p_filters?: Json
+          p_limit?: number
+          p_metrics: string[]
+          p_order_by?: string
+          p_order_dir?: string
+          p_site_id: string
+          p_start_date: string
+        }
+        Returns: Json
+      }
       gdpr_delete_visitor: {
         Args: { _site_id: string; _visitor_id: string }
         Returns: number
@@ -4017,6 +4349,10 @@ export type Database = {
           _site_id: string
           _start_date: string
         }
+        Returns: Json
+      }
+      get_audit_log: {
+        Args: { p_limit?: number; p_offset?: number; p_site_id?: string }
         Returns: Json
       }
       get_bot_stats: {
@@ -4525,6 +4861,16 @@ export type Database = {
         Args: { _profile_user_id: string }
         Returns: boolean
       }
+      log_audit_action: {
+        Args: {
+          p_action: string
+          p_details?: Json
+          p_entity_id?: string
+          p_entity_type: string
+          p_site_id?: string
+        }
+        Returns: undefined
+      }
       lookup_geoip: {
         Args: { ip_address: string }
         Returns: {
@@ -4559,6 +4905,7 @@ export type Database = {
         | "shopify"
         | "google_search_console"
       log_import_status: "pending" | "processing" | "completed" | "failed"
+      subscription_frequency: "daily" | "weekly" | "monthly"
       tag_type:
         | "custom_html"
         | "google_analytics"
@@ -4703,6 +5050,7 @@ export const Constants = {
         "google_search_console",
       ],
       log_import_status: ["pending", "processing", "completed", "failed"],
+      subscription_frequency: ["daily", "weekly", "monthly"],
       tag_type: [
         "custom_html",
         "google_analytics",
