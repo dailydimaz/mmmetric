@@ -42,14 +42,14 @@ import { cn } from "@/lib/utils";
 const getNavItems = (siteId: string | null, billingEnabled: boolean) => {
   const items = [
     { icon: LayoutDashboard, label: "nav.overview", href: "/dashboard" },
-    { icon: MousePointerClick, label: "Analytics", href: siteId ? `/dashboard/sites/${siteId}` : "/dashboard", siteSpecific: true },
-    { icon: Route, label: "Journeys", href: siteId ? `/dashboard/sites/${siteId}/journeys` : "/dashboard", siteSpecific: true },
-    { icon: GitBranch, label: "Funnels", href: siteId ? `/dashboard/sites/${siteId}/funnels` : "/dashboard", siteSpecific: true },
-    { icon: Users, label: "Retention", href: siteId ? `/dashboard/sites/${siteId}/retention` : "/dashboard", siteSpecific: true },
-    { icon: Lightbulb, label: "Insights", href: siteId ? `/dashboard/sites/${siteId}/insights` : "/dashboard", siteSpecific: true },
-    { icon: Target, label: "Attribution", href: siteId ? `/dashboard/sites/${siteId}/attribution` : "/dashboard", siteSpecific: true },
-    { icon: FlaskConical, label: "A/B Tests", href: siteId ? `/dashboard/sites/${siteId}/experiments` : "/dashboard", siteSpecific: true },
-    { icon: Activity, label: "Sessions", href: siteId ? `/dashboard/sites/${siteId}/sessions` : "/dashboard", siteSpecific: true },
+    { icon: MousePointerClick, label: "nav.analytics", href: siteId ? `/dashboard/sites/${siteId}` : "/dashboard", siteSpecific: true },
+    { icon: Route, label: "nav.journeys", href: siteId ? `/dashboard/sites/${siteId}/journeys` : "/dashboard", siteSpecific: true },
+    { icon: GitBranch, label: "nav.funnels", href: siteId ? `/dashboard/sites/${siteId}/funnels` : "/dashboard", siteSpecific: true },
+    { icon: Users, label: "nav.retention", href: siteId ? `/dashboard/sites/${siteId}/retention` : "/dashboard", siteSpecific: true },
+    { icon: Lightbulb, label: "nav.insights", href: siteId ? `/dashboard/sites/${siteId}/insights` : "/dashboard", siteSpecific: true },
+    { icon: Target, label: "nav.attribution", href: siteId ? `/dashboard/sites/${siteId}/attribution` : "/dashboard", siteSpecific: true },
+    { icon: FlaskConical, label: "nav.abTests", href: siteId ? `/dashboard/sites/${siteId}/experiments` : "/dashboard", siteSpecific: true },
+    { icon: Activity, label: "nav.sessions", href: siteId ? `/dashboard/sites/${siteId}/sessions` : "/dashboard", siteSpecific: true },
   ];
 
   // Add cloud-only items
