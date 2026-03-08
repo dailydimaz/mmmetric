@@ -8,8 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useEmbeddedDashboards } from "@/hooks/useEmbeddedDashboards";
-import { useCustomDashboards } from "@/hooks/useCustomDashboards";
-import { Plus, Code, Copy, Trash2, ExternalLink, Loader2, Check } from "lucide-react";
+import { Plus, Code, Copy, Trash2, Loader2, Check } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 
