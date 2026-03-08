@@ -18,7 +18,7 @@ interface EmbedDashboardCardProps {
 
 export function EmbedDashboardCard({ siteId }: EmbedDashboardCardProps) {
   const { tokens, isLoading, createToken, deleteToken, toggleToken } = useEmbeddedDashboards(siteId);
-  const { dashboards } = useCustomDashboards(siteId);
+  
 
   const [showCreate, setShowCreate] = useState(false);
   const [newToken, setNewToken] = useState<string | null>(null);

@@ -6,7 +6,7 @@ import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { useSqlQuery } from "@/hooks/useSqlQuery";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft, Play, Clock, Database, FileCode, Loader2, History } from "lucide-react";

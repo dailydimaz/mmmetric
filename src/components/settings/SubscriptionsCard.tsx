@@ -21,7 +21,7 @@ interface SubscriptionsCardProps {
 export function SubscriptionsCard({ siteId }: SubscriptionsCardProps) {
   const { subscriptions, isLoading, createSubscription, updateSubscription, deleteSubscription } = useReportSubscriptions(siteId);
   const { reports } = useSavedReports(siteId);
-  const { dashboards } = useCustomDashboards(siteId);
+  
 
   const [showCreate, setShowCreate] = useState(false);
   const [form, setForm] = useState({

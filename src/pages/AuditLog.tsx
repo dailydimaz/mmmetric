@@ -1,10 +1,9 @@
-import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useSites } from "@/hooks/useSites";
 import { DashboardLayout } from "@/components/dashboard/DashboardLayout";
 import { useAuditLog } from "@/hooks/useAuditLog";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
