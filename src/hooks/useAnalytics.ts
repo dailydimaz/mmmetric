@@ -6,6 +6,7 @@ export type DateRange = "today" | "7d" | "30d" | "90d";
 
 export interface AnalyticsFilter {
   country?: string;
+  region?: string;
   browser?: string;
   url?: string;
   os?: string;
