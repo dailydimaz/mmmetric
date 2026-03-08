@@ -99,6 +99,8 @@ interface SiteAnalyticsProps {
     // UX State
     showComparison: boolean;
     visibleWidgets: Set<string> | null;
+    chartInterval?: ChartInterval;
+    onChartIntervalChange?: (interval: ChartInterval) => void;
 
     // Handlers
     onBreakdown: (dimension: any, value: string) => void;
