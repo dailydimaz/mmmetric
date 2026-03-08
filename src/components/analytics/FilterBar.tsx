@@ -48,6 +48,7 @@ const FILTER_OPTIONS: { key: keyof AnalyticsFilter; label: string; placeholder: 
     { key: "os", label: "OS", placeholder: "e.g. Windows, MacOS" },
     { key: "device", label: "Device", placeholder: "e.g. Desktop, Mobile" },
     { key: "url", label: "URL Path", placeholder: "e.g. /blog, /pricing" },
+    { key: "tag", label: "Tag", placeholder: "e.g. marketing, blog" },
 ];
 
 export function FilterBar({ filters, onFilterChange, siteId }: FilterBarProps) {
