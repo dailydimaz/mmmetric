@@ -21,6 +21,7 @@ import {
   Route,
   Target,
   FlaskConical,
+  Activity,
 } from "lucide-react";
 import {
   DropdownMenu,
