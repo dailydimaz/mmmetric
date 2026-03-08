@@ -165,41 +165,4 @@ serve(async (req) => {
     }
 });
 
-// Helper functions
-async function generateVisitorId(ip: string, ua: string): Promise<string> {
-    const dailySalt = Deno.env.get('DAILY_SALT_SECRET');
-    if (!dailySalt) {
-      throw new Error('DAILY_SALT_SECRET is not configured');
-    }
-    const today = new Date().toISOString().slice(0, 10);
-    const str = `${ip}-${ua}-${dailySalt}-${today}`;
-    const encoder = new TextEncoder();
-    const data = encoder.encode(str);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.slice(0, 8).map(b => b.toString(16).padStart(2, '0')).join('');
-}
-
-function parseBrowser(ua: string): string {
-    if (ua.includes('Firefox/')) return 'Firefox';
-    if (ua.includes('Edg/')) return 'Edge';
-    if (ua.includes('Chrome/')) return 'Chrome';
-    if (ua.includes('Safari/') && !ua.includes('Chrome')) return 'Safari';
-    if (ua.includes('Opera') || ua.includes('OPR/')) return 'Opera';
-    return 'Unknown';
-}
-
-function parseOS(ua: string): string {
-    if (ua.includes('Windows')) return 'Windows';
-    if (ua.includes('Mac OS X') || ua.includes('Macintosh')) return 'macOS';
-    if (ua.includes('Linux') && !ua.includes('Android')) return 'Linux';
-    if (ua.includes('Android')) return 'Android';
-    if (ua.includes('iPhone') || ua.includes('iPad')) return 'iOS';
-    return 'Unknown';
-}
-
-function parseDevice(ua: string): string {
-    if (ua.includes('Tablet') || ua.includes('iPad')) return 'tablet';
-    if (ua.includes('Mobile') || ua.includes('Android')) return 'mobile';
-    return 'desktop';
-}
+// Helper functions now imported from _shared/parsing.ts
