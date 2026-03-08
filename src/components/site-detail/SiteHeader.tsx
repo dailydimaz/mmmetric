@@ -139,6 +139,18 @@ export function SiteHeader({
                     </>
                 ) : (
                     <>
+                        <Button variant="ghost" size="sm" onClick={() => navigate(`/dashboard/sites/${site.id}/query-builder`)} title="Query Builder">
+                            <Search className="h-4 w-4 mr-1" />
+                            <span className="hidden xl:inline">Query</span>
+                        </Button>
+                        <Button variant="ghost" size="sm" onClick={() => navigate(`/dashboard/sites/${site.id}/reports`)} title="Reports">
+                            <FileText className="h-4 w-4 mr-1" />
+                            <span className="hidden xl:inline">Reports</span>
+                        </Button>
+                        <Button variant="ghost" size="sm" onClick={() => navigate(`/dashboard/sites/${site.id}/sql`)} title="SQL Editor">
+                            <Database className="h-4 w-4 mr-1" />
+                            <span className="hidden xl:inline">SQL</span>
+                        </Button>
                         <Button variant="ghost" size="sm" onClick={onToggleCustomizer}>
                             Customize
                         </Button>
