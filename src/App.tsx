@@ -131,14 +131,16 @@ const AppRoutes = () => {
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <CommandMenu />
-          <AppRoutes />
-        </BrowserRouter>
-      </TooltipProvider>
+      <I18nProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <CommandMenu />
+            <AppRoutes />
+          </BrowserRouter>
+        </TooltipProvider>
+      </I18nProvider>
     </ThemeProvider>
   </QueryClientProvider>
 );
