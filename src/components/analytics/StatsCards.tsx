@@ -1,4 +1,4 @@
-import { Eye, Users, Clock, MousePointerClick, TrendingUp, TrendingDown } from "lucide-react";
+import { Eye, Users, Clock, MousePointerClick, TrendingUp, TrendingDown, Layers } from "lucide-react";
 import { motion } from "framer-motion";
 import { StatsData } from "@/hooks/useAnalytics";
 import { Card } from "@/components/ui/card";
@@ -170,6 +170,17 @@ export function StatsCards({ stats, isLoading, visibleMetrics, showComparison = 
           value={stats?.avgSessionDuration ? `${Math.round(stats.avgSessionDuration)}s` : "—"}
           desc="Time spent on site"
           icon={<Clock className="h-5 w-5" />}
+          isLoading={isLoading}
+          showComparison={showComparison}
+          index={cardIndex++}
+        />
+      )}
+      {show('views_per_visit') && (
+        <StatCard
+          title="Views / Visit"
+          value={stats?.viewsPerVisit ? stats.viewsPerVisit.toFixed(2) : "—"}
+          desc="Pages per session"
+          icon={<Layers className="h-5 w-5" />}
           isLoading={isLoading}
           showComparison={showComparison}
           index={cardIndex++}

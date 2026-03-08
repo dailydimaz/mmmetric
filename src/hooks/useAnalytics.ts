@@ -71,6 +71,7 @@ export interface StatsData {
   bounceRate: number;
   pageviewsChange: number;
   visitorsChange: number;
+  viewsPerVisit: number;
 }
 
 export interface TimeSeriesData {
@@ -178,13 +179,17 @@ export function useAnalyticsStats({ siteId, dateRange, filters }: AnalyticsParam
         avg_session_duration: 0,
       };
 
+      const totalPv = Number(result.total_pageviews) || 0;
+      const uniqueVis = Number(result.unique_visitors) || 0;
+
       return {
-        totalPageviews: Number(result.total_pageviews) || 0,
-        uniqueVisitors: Number(result.unique_visitors) || 0,
+        totalPageviews: totalPv,
+        uniqueVisitors: uniqueVis,
         avgSessionDuration: Number(result.avg_session_duration) || 0,
         bounceRate: Number(result.bounce_rate) || 0,
         pageviewsChange: Number(result.pageviews_change) || 0,
         visitorsChange: Number(result.visitors_change) || 0,
+        viewsPerVisit: uniqueVis > 0 ? Math.round((totalPv / uniqueVis) * 100) / 100 : 0,
       };
     },
     enabled: !!siteId,

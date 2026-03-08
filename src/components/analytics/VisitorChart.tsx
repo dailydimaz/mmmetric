@@ -2,13 +2,16 @@ import { useState, useCallback } from "react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, ReferenceLine } from "recharts";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAnnotations } from "@/hooks/useAnnotations";
-import { TimeSeriesData } from "@/hooks/useAnalytics";
+import { TimeSeriesData, DateRange } from "@/hooks/useAnalytics";
 import { format, parseISO } from "date-fns";
 import { LineChart, ZoomIn, X } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { IntervalSelector, getDefaultInterval } from "./IntervalSelector";
+import type { ChartInterval } from "./IntervalSelector";
+import { groupTimeSeriesByInterval } from "@/lib/timeSeriesGrouping";
 
 interface VisitorChartProps {
   siteId?: string;
@@ -16,9 +19,12 @@ interface VisitorChartProps {
   isLoading: boolean;
   showComparison?: boolean;
   onDateClick?: (date: string) => void;
+  dateRange?: DateRange;
+  interval?: ChartInterval;
+  onIntervalChange?: (interval: ChartInterval) => void;
 }
 
-export function VisitorChart({ siteId, data, isLoading, showComparison = true, onDateClick }: VisitorChartProps) {
+export function VisitorChart({ siteId, data, isLoading, showComparison = true, onDateClick, dateRange = "7d", interval, onIntervalChange }: VisitorChartProps) {
   const { data: annotations } = useAnnotations(siteId || "");
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
@@ -58,10 +64,14 @@ export function VisitorChart({ siteId, data, isLoading, showComparison = true, o
     );
   }
 
-  const chartData = data?.map(d => ({
+  const currentInterval = interval || getDefaultInterval(dateRange);
+  const groupedData = groupTimeSeriesByInterval(data || [], currentInterval);
+  
+  const displayFormat = currentInterval === "month" ? "MMM yyyy" : currentInterval === "week" ? "MMM d" : "MMM d";
+  const chartData = groupedData.map(d => ({
     ...d,
-    displayDate: format(parseISO(d.date), "MMM d"),
-  })) || [];
+    displayDate: format(parseISO(d.date), displayFormat),
+  }));
 
   return (
     <motion.div
@@ -107,6 +117,13 @@ export function VisitorChart({ siteId, data, isLoading, showComparison = true, o
             </AnimatePresence>
             {onDateClick && !selectedDate && (
               <span className="text-xs text-muted-foreground">Click chart to filter</span>
+            )}
+            {onIntervalChange && (
+              <IntervalSelector
+                value={currentInterval}
+                onChange={onIntervalChange}
+                dateRange={dateRange}
+              />
             )}
           </div>
         </CardHeader>

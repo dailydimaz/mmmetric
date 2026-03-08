@@ -49,8 +49,10 @@ import {
     SessionRecordingsList,
     InsightsCard,
     BenchmarkCard,
+    CustomPropertiesBreakdown,
 } from "@/components/analytics";
 import { isSelfHosted } from "@/lib/billing";
+import type { ChartInterval } from "@/components/analytics/IntervalSelector";
 import {
     AnalyticsFilter,
     DateRange,
@@ -98,6 +100,8 @@ interface SiteAnalyticsProps {
     // UX State
     showComparison: boolean;
     visibleWidgets: Set<string> | null;
+    chartInterval?: ChartInterval;
+    onChartIntervalChange?: (interval: ChartInterval) => void;
 
     // Handlers
     onBreakdown: (dimension: any, value: string) => void;
@@ -127,6 +131,8 @@ export function SiteAnalytics({
     utmLoading,
     showComparison,
     visibleWidgets,
+    chartInterval,
+    onChartIntervalChange,
     onBreakdown,
     onCreateGoal
 }: SiteAnalyticsProps) {
@@ -160,7 +166,7 @@ export function SiteAnalytics({
         }
 
         // Core widgets shown by default
-        const coreWidgets = ['visitors', 'pageviews', 'bounce_rate', 'avg_duration', 'visitor_chart', 'top_pages', 'geo_stats', 'language_stats', 'device_stats', 'retention'];
+        const coreWidgets = ['visitors', 'pageviews', 'bounce_rate', 'avg_duration', 'views_per_visit', 'visitor_chart', 'top_pages', 'geo_stats', 'language_stats', 'device_stats', 'retention'];
         if (coreWidgets.includes(widgetKey)) return true;
 
         return showAdvanced;
@@ -240,7 +246,7 @@ export function SiteAnalytics({
                     </div>
                 )}
 
-                {(shouldShow('visitors') || shouldShow('pageviews') || shouldShow('bounce_rate') || shouldShow('avg_duration')) && (
+                {(shouldShow('visitors') || shouldShow('pageviews') || shouldShow('bounce_rate') || shouldShow('avg_duration') || shouldShow('views_per_visit')) && (
                     <StatsCards
                         stats={stats}
                         isLoading={statsLoading}
@@ -271,7 +277,7 @@ export function SiteAnalytics({
                 )}
 
                 {shouldShow('visitor_chart') && (
-                    <VisitorChart siteId={site.id} data={timeSeries} isLoading={timeSeriesLoading} showComparison={showComparison} />
+                    <VisitorChart siteId={site.id} data={timeSeries} isLoading={timeSeriesLoading} showComparison={showComparison} dateRange={dateRange} interval={chartInterval} onIntervalChange={onChartIntervalChange} />
                 )}
 
                 {shouldShow('forecast') && (
@@ -388,6 +394,7 @@ export function SiteAnalytics({
 
                         {shouldShow('funnels') && <FunnelList siteId={site.id} />}
                         {shouldShow('forms') && <FormStats siteId={site.id} dateRange={dateRange} />}
+                        {shouldShow('custom_properties') && <CustomPropertiesBreakdown siteId={site.id} dateRange={dateRange} />}
                     </TabsContent>
 
                     {/* Tech Tab */}

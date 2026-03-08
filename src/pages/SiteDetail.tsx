@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Loader2 } from "lucide-react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -34,11 +34,14 @@ import {
   DateRange,
   AnalyticsFilter
 } from "@/hooks/useAnalytics";
+import { getDefaultInterval } from "@/components/analytics";
+import type { ChartInterval } from "@/components/analytics";
 
 // New Components
 import { SiteHeader } from "@/components/site-detail/SiteHeader";
 import { SiteSettingsPanel } from "@/components/site-detail/SiteSettingsPanel";
 import { SiteAnalytics } from "@/components/site-detail/SiteAnalytics";
+import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 
 export default function SiteDetail() {
   const { siteId } = useParams<{ siteId: string }>();
@@ -55,6 +58,8 @@ export default function SiteDetail() {
     }
     return "7d";
   });
+
+  const [chartInterval, setChartInterval] = useState<ChartInterval>(() => getDefaultInterval("7d"));
 
   const [filters, setFilters] = useState<AnalyticsFilter>(() => {
     const newFilters: AnalyticsFilter = {};
@@ -108,6 +113,15 @@ export default function SiteDetail() {
   const [showCustomizer, setShowCustomizer] = useState(false);
   const [breakdown, setBreakdown] = useState<{ dimension: BreakdownDimension; value: string } | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+
+  const handleDateRangeShortcut = useCallback((range: string) => {
+    if (["today", "7d", "30d", "90d"].includes(range)) {
+      setDateRange(range as DateRange);
+      setChartInterval(getDefaultInterval(range as DateRange));
+    }
+  }, []);
+
+  useKeyboardShortcuts({ onDateRangeChange: handleDateRangeShortcut });
 
   const site = sites.find((s) => s.id === siteId);
 
@@ -282,6 +296,8 @@ export default function SiteDetail() {
           utmLoading={utmLoading}
           showComparison={showComparison}
           visibleWidgets={visibleWidgets}
+          chartInterval={chartInterval}
+          onChartIntervalChange={setChartInterval}
           onBreakdown={(dim, val) => setBreakdown({ dimension: dim, value: val })}
           onCreateGoal={() => setShowGoalSetup(true)}
         />

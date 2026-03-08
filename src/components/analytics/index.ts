@@ -49,3 +49,6 @@ export { ForecastChart } from "./ForecastChart";
 export { AnomalyDetectionStats } from "./AnomalyDetectionStats";
 export { SessionRecordingsList } from "./SessionRecordingsList";
 export { SessionPlayer } from "./SessionPlayer";
+export { IntervalSelector, getDefaultInterval } from "./IntervalSelector";
+export type { ChartInterval } from "./IntervalSelector";
+export { CustomPropertiesBreakdown } from "./CustomPropertiesBreakdown";

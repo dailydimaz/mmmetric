@@ -53,6 +53,7 @@ const mockStats = {
     avgSessionDuration: 145,
     pageviewsChange: 12.5,
     visitorsChange: 8.2,
+    viewsPerVisit: 1.59,
 };
 
 const mockTopPages = [
