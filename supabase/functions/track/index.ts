@@ -465,6 +465,32 @@ serve(async (req) => {
       tag: (typeof bodyTag === 'string' && bodyTag.length <= 100) ? bodyTag : null,
     };
 
+    // Handle identify events - upsert session_data
+    if (event_name === 'identify') {
+      try {
+        const identifyData: Record<string, unknown> = {
+          site_id: site.id,
+          session_id: session_id,
+          visitor_id: visitor_id,
+          updated_at: new Date().toISOString(),
+        };
+        if (properties.custom_id && typeof properties.custom_id === 'string') {
+          identifyData.custom_id = properties.custom_id.substring(0, 200);
+        }
+        if (properties.data && typeof properties.data === 'object') {
+          identifyData.data = properties.data;
+        }
+
+        await supabase
+          .from('session_data')
+          .upsert(identifyData as any, { onConflict: 'site_id,session_id' });
+      } catch (e) {
+        console.warn('Identify upsert failed:', e);
+      }
+
+      // Still insert the identify event into events table
+    }
+
     // Branch based on event type
     if (event_name === 'heatmap_click') {
       // Handle batch clicks from tracker
