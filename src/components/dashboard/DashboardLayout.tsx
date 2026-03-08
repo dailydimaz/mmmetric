@@ -181,7 +181,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           {navItems.map((item) => {
             // Use exact match for Overview and Analytics (base site page), prefix match for others
             const isExactMatchRoute = item.href === "/dashboard" ||
-              (item.label === "Analytics" && item.href.startsWith("/dashboard/sites/"));
+              (item.label === "nav.analytics" && item.href.startsWith("/dashboard/sites/"));
             const isActive = isExactMatchRoute
               ? location.pathname === item.href
               : location.pathname === item.href || location.pathname.startsWith(`${item.href}/`);
