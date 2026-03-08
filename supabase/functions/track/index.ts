@@ -508,9 +508,7 @@ serve(async (req) => {
       }
     }
 
-    // Insert the event into both tables (dual-write for migration)
-    // The original events table for backwards compatibility
-    // The partitioned table for high-performance queries
+    // Insert the event into the partitioned table (single-write, legacy dual-write removed)
     const eventData = {
       site_id: site.id,
       event_name,
@@ -609,12 +607,9 @@ serve(async (req) => {
       if (expError) console.error('Experiment assignment insert failed', expError);
     }
 
-    // Insert into original events table (for pageviews, custom events, and experiment assignments too)
-    // Use Promise.allSettled to ensure both writes complete before returning
-    // This prevents data loss in Edge Functions if the runtime kills un-awaited promises
+    // Insert into partitioned events table only
     // deno-lint-ignore no-explicit-any
     const promises: Promise<any>[] = [
-      Promise.resolve(supabase.from('events').insert(eventData)),
       Promise.resolve(supabase.from('events_partitioned').insert(eventData))
     ];
 
@@ -638,31 +633,20 @@ serve(async (req) => {
 
     const results = await Promise.allSettled(promises);
 
-    const legacyResult = results[0];
-    const partitionedResult = results[1];
+    const partitionedResult = results[0];
 
-    // Check legacy result (primary)
     let insertError = null;
-    if (legacyResult.status === 'fulfilled') {
-      if (legacyResult.value.error) {
-        insertError = legacyResult.value.error;
-      }
-    } else {
-      insertError = legacyResult.reason;
-    }
-
-    // Log partitioned result failure if any (but don't fail request)
     if (partitionedResult.status === 'fulfilled') {
       if (partitionedResult.value.error) {
-        console.warn('Failed to insert into partitioned table:', partitionedResult.value.error.code);
+        insertError = partitionedResult.value.error;
       }
     } else {
-      console.warn('Partitioned table insert exception:', partitionedResult.reason);
+      insertError = partitionedResult.reason;
     }
 
     // Log city upsert result if applicable
     if (hasCityUpsert) {
-      const cityResult = results[2];
+      const cityResult = results[1];
       if (cityResult.status === 'fulfilled') {
         if (cityResult.value.error) {
           console.warn('City coordinates upsert failed:', cityResult.value.error.code);
@@ -673,7 +657,6 @@ serve(async (req) => {
     }
 
     if (insertError) {
-      // Log generic error message only - no error codes or hints in production logs
       console.error('Event insert failed');
       return new Response(JSON.stringify({ error: 'Failed to record event' }), {
         status: 500,

@@ -119,7 +119,7 @@ serve(async (req) => {
             .eq('tracking_id', trackingId)
             .maybeSingle();
 
-        if (site) {
+    if (site) {
             const eventInsert = {
                 site_id: site.id,
                 event_name,
@@ -135,10 +135,9 @@ serve(async (req) => {
                 properties: { type: 'pixel' }
             };
 
-            // Dual-write to both tables
+            // Single-write to partitioned table only (legacy dual-write removed)
             // deno-lint-ignore no-explicit-any
             const promises: Promise<any>[] = [
-                Promise.resolve(supabase.from('events').insert(eventInsert)),
                 Promise.resolve(supabase.from('events_partitioned').insert(eventInsert))
             ];
 
