@@ -130,7 +130,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-[220px]">
-              <DropdownMenuLabel className="text-xs text-muted-foreground">Switch Site</DropdownMenuLabel>
+              <DropdownMenuLabel className="text-xs text-muted-foreground">{t('nav.switchSite')}</DropdownMenuLabel>
               <div className="max-h-[200px] overflow-y-auto custom-scrollbar">
                 {sites.map((site) => (
                   <DropdownMenuItem
