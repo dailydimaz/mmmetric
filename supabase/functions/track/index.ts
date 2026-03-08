@@ -176,7 +176,7 @@ serve(async (req) => {
       });
     }
 
-    const { site_id, url, referrer, event_name = 'pageview', properties = {}, skip_origin_check = false, language: bodyLanguage } = body;
+    const { site_id, url, referrer, event_name = 'pageview', properties = {}, skip_origin_check = false, language: bodyLanguage, title: bodyTitle, hostname: bodyHostname, tag: bodyTag } = body;
 
     // Validate required fields
     if (!site_id) {
