@@ -299,6 +299,7 @@ serve(async (req) => {
             if (apiResult && apiResult.country) {
               geoCountry = apiResult.country.toUpperCase();
               geoCity = apiResult.city || null;
+              geoRegion = apiResult.region || null;
               geoLatitude = apiResult.latitude;
               geoLongitude = apiResult.longitude;
               resolved = true;
