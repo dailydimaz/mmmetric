@@ -49,6 +49,7 @@ import Changelog from "./pages/Changelog";
 import MobileSDKs from "./pages/MobileSDKs";
 import DocsCLI from "./pages/DocsCLI";
 import { ThemeProvider } from "./components/ThemeProvider";
+import { I18nProvider } from "./lib/i18n";
 import { CommandMenu } from "./components/dashboard/CommandMenu";
 
 
