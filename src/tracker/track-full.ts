@@ -1,6 +1,8 @@
 // @ts-nocheck — tracker scripts run outside React/TS context
 /**
- * mmmetric Analytics - Lightweight Tracking Script
+ * mmmetric Analytics - FULL Tracking Script
+ * Config: data-auto-track, data-domains, data-do-not-track, data-exclude-search,
+ *         data-exclude-hash, data-before-send, data-tag
  */
 (function () {
     'use strict';
@@ -9,6 +11,15 @@
     const script = document.currentScript || document.querySelector('script[data-site]');
     const siteId = script?.getAttribute('data-site');
     const crossDomains = (script?.getAttribute('data-cross-domain') || '').split(',').map(d => d.trim()).filter(Boolean);
+
+    // Config flags
+    const autoTrack = script?.getAttribute('data-auto-track') !== 'false';
+    const allowedDomains = (script?.getAttribute('data-domains') || '').split(',').map(d => d.trim()).filter(Boolean);
+    const respectDnt = script?.getAttribute('data-do-not-track') === 'true';
+    const excludeSearch = script?.getAttribute('data-exclude-search') === 'true';
+    const excludeHash = script?.getAttribute('data-exclude-hash') === 'true';
+    const beforeSendFn = script?.getAttribute('data-before-send');
+    const globalTag = script?.getAttribute('data-tag') || null;
 
     // API URL derivation
     let apiUrl = script?.getAttribute('data-api');
@@ -25,6 +36,12 @@
     }
 
     if (!siteId || !apiUrl) return;
+
+    // DNT check
+    if (respectDnt && navigator.doNotTrack === '1') return;
+
+    // Domain allowlist check
+    if (allowedDomains.length && !allowedDomains.some(d => location.hostname === d || location.hostname.endsWith('.' + d))) return;
 
     // Session
     let sessionId = null;
