@@ -112,6 +112,11 @@ const AppRoutes = () => {
           <Route path="/dashboard/sites/:siteId/experiments" element={<Experiments />} />
           <Route path="/dashboard/sites/:siteId/recordings" element={<SessionRecordings />} />
           <Route path="/dashboard/sites/:siteId/sessions" element={<Sessions />} />
+          <Route path="/dashboard/sites/:siteId/query-builder" element={<QueryBuilder />} />
+          <Route path="/dashboard/sites/:siteId/reports" element={<Reports />} />
+          <Route path="/dashboard/sites/:siteId/sql" element={<SqlEditor />} />
+          <Route path="/dashboard/sites/:siteId/audit-log" element={<AuditLog />} />
+          <Route path="/dashboard/audit-log" element={<AuditLog />} />
           <Route path="/dashboard/settings" element={<Settings />} />
           <Route path="/tools/campaign-builder" element={<CampaignBuilder />} />
           <Route path="/tools/page-overlay" element={<PageOverlay />} />
