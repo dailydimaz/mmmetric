@@ -15,7 +15,7 @@ const tiers: { id: TrackingTier; name: string; size: string; icon: React.Element
     {
         id: 'lite',
         name: 'Lite',
-        size: '< 1.5 KB',
+        size: '< 1 KB',
         icon: Zap,
         description: 'Ultra-lightweight for maximum performance',
         features: [
