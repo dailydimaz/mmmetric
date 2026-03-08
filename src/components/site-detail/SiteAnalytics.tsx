@@ -394,6 +394,7 @@ export function SiteAnalytics({
 
                         {shouldShow('funnels') && <FunnelList siteId={site.id} />}
                         {shouldShow('forms') && <FormStats siteId={site.id} dateRange={dateRange} />}
+                        {shouldShow('custom_properties') && <CustomPropertiesBreakdown siteId={site.id} dateRange={dateRange} />}
                     </TabsContent>
 
                     {/* Tech Tab */}
