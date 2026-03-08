@@ -1,4 +1,4 @@
-import { Eye, Users, Clock, MousePointerClick, TrendingUp, TrendingDown } from "lucide-react";
+import { Eye, Users, Clock, MousePointerClick, TrendingUp, TrendingDown, Layers } from "lucide-react";
 import { motion } from "framer-motion";
 import { StatsData } from "@/hooks/useAnalytics";
 import { Card } from "@/components/ui/card";
