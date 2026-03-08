@@ -756,6 +756,7 @@ export type Database = {
           os: string | null
           properties: Json | null
           referrer: string | null
+          region: string | null
           session_id: string | null
           site_id: string
           tag: string | null
@@ -776,6 +777,7 @@ export type Database = {
           os?: string | null
           properties?: Json | null
           referrer?: string | null
+          region?: string | null
           session_id?: string | null
           site_id: string
           tag?: string | null
@@ -796,6 +798,7 @@ export type Database = {
           os?: string | null
           properties?: Json | null
           referrer?: string | null
+          region?: string | null
           session_id?: string | null
           site_id?: string
           tag?: string | null
@@ -819,6 +822,7 @@ export type Database = {
           os: string | null
           properties: Json | null
           referrer: string | null
+          region: string | null
           session_id: string | null
           site_id: string
           tag: string | null
@@ -839,6 +843,7 @@ export type Database = {
           os?: string | null
           properties?: Json | null
           referrer?: string | null
+          region?: string | null
           session_id?: string | null
           site_id: string
           tag?: string | null
@@ -859,6 +864,7 @@ export type Database = {
           os?: string | null
           properties?: Json | null
           referrer?: string | null
+          region?: string | null
           session_id?: string | null
           site_id?: string
           tag?: string | null
@@ -882,6 +888,7 @@ export type Database = {
           os: string | null
           properties: Json | null
           referrer: string | null
+          region: string | null
           session_id: string | null
           site_id: string
           tag: string | null
@@ -902,6 +909,7 @@ export type Database = {
           os?: string | null
           properties?: Json | null
           referrer?: string | null
+          region?: string | null
           session_id?: string | null
           site_id: string
           tag?: string | null
@@ -922,6 +930,7 @@ export type Database = {
           os?: string | null
           properties?: Json | null
           referrer?: string | null
+          region?: string | null
           session_id?: string | null
           site_id?: string
           tag?: string | null
@@ -945,6 +954,7 @@ export type Database = {
           os: string | null
           properties: Json | null
           referrer: string | null
+          region: string | null
           session_id: string | null
           site_id: string
           tag: string | null
@@ -965,6 +975,7 @@ export type Database = {
           os?: string | null
           properties?: Json | null
           referrer?: string | null
+          region?: string | null
           session_id?: string | null
           site_id: string
           tag?: string | null
@@ -985,6 +996,7 @@ export type Database = {
           os?: string | null
           properties?: Json | null
           referrer?: string | null
+          region?: string | null
           session_id?: string | null
           site_id?: string
           tag?: string | null
@@ -1008,6 +1020,7 @@ export type Database = {
           os: string | null
           properties: Json | null
           referrer: string | null
+          region: string | null
           session_id: string | null
           site_id: string
           tag: string | null
@@ -1028,6 +1041,7 @@ export type Database = {
           os?: string | null
           properties?: Json | null
           referrer?: string | null
+          region?: string | null
           session_id?: string | null
           site_id: string
           tag?: string | null
@@ -1048,6 +1062,7 @@ export type Database = {
           os?: string | null
           properties?: Json | null
           referrer?: string | null
+          region?: string | null
           session_id?: string | null
           site_id?: string
           tag?: string | null
@@ -1071,6 +1086,7 @@ export type Database = {
           os: string | null
           properties: Json | null
           referrer: string | null
+          region: string | null
           session_id: string | null
           site_id: string
           tag: string | null
@@ -1091,6 +1107,7 @@ export type Database = {
           os?: string | null
           properties?: Json | null
           referrer?: string | null
+          region?: string | null
           session_id?: string | null
           site_id: string
           tag?: string | null
@@ -1111,6 +1128,7 @@ export type Database = {
           os?: string | null
           properties?: Json | null
           referrer?: string | null
+          region?: string | null
           session_id?: string | null
           site_id?: string
           tag?: string | null
@@ -1134,6 +1152,7 @@ export type Database = {
           os: string | null
           properties: Json | null
           referrer: string | null
+          region: string | null
           session_id: string | null
           site_id: string
           tag: string | null
@@ -1154,6 +1173,7 @@ export type Database = {
           os?: string | null
           properties?: Json | null
           referrer?: string | null
+          region?: string | null
           session_id?: string | null
           site_id: string
           tag?: string | null
@@ -1174,6 +1194,7 @@ export type Database = {
           os?: string | null
           properties?: Json | null
           referrer?: string | null
+          region?: string | null
           session_id?: string | null
           site_id?: string
           tag?: string | null
@@ -1197,6 +1218,7 @@ export type Database = {
           os: string | null
           properties: Json | null
           referrer: string | null
+          region: string | null
           session_id: string | null
           site_id: string
           tag: string | null
@@ -1217,6 +1239,7 @@ export type Database = {
           os?: string | null
           properties?: Json | null
           referrer?: string | null
+          region?: string | null
           session_id?: string | null
           site_id: string
           tag?: string | null
@@ -1237,6 +1260,7 @@ export type Database = {
           os?: string | null
           properties?: Json | null
           referrer?: string | null
+          region?: string | null
           session_id?: string | null
           site_id?: string
           tag?: string | null
@@ -1260,6 +1284,7 @@ export type Database = {
           os: string | null
           properties: Json | null
           referrer: string | null
+          region: string | null
           session_id: string | null
           site_id: string
           tag: string | null
@@ -1280,6 +1305,7 @@ export type Database = {
           os?: string | null
           properties?: Json | null
           referrer?: string | null
+          region?: string | null
           session_id?: string | null
           site_id: string
           tag?: string | null
@@ -1300,6 +1326,7 @@ export type Database = {
           os?: string | null
           properties?: Json | null
           referrer?: string | null
+          region?: string | null
           session_id?: string | null
           site_id?: string
           tag?: string | null
@@ -1323,6 +1350,7 @@ export type Database = {
           os: string | null
           properties: Json | null
           referrer: string | null
+          region: string | null
           session_id: string | null
           site_id: string
           tag: string | null
@@ -1343,6 +1371,7 @@ export type Database = {
           os?: string | null
           properties?: Json | null
           referrer?: string | null
+          region?: string | null
           session_id?: string | null
           site_id: string
           tag?: string | null
@@ -1363,6 +1392,7 @@ export type Database = {
           os?: string | null
           properties?: Json | null
           referrer?: string | null
+          region?: string | null
           session_id?: string | null
           site_id?: string
           tag?: string | null
@@ -1386,6 +1416,7 @@ export type Database = {
           os: string | null
           properties: Json | null
           referrer: string | null
+          region: string | null
           session_id: string | null
           site_id: string
           tag: string | null
@@ -1406,6 +1437,7 @@ export type Database = {
           os?: string | null
           properties?: Json | null
           referrer?: string | null
+          region?: string | null
           session_id?: string | null
           site_id: string
           tag?: string | null
@@ -1426,6 +1458,7 @@ export type Database = {
           os?: string | null
           properties?: Json | null
           referrer?: string | null
+          region?: string | null
           session_id?: string | null
           site_id?: string
           tag?: string | null
@@ -1449,6 +1482,7 @@ export type Database = {
           os: string | null
           properties: Json | null
           referrer: string | null
+          region: string | null
           session_id: string | null
           site_id: string
           tag: string | null
@@ -1469,6 +1503,7 @@ export type Database = {
           os?: string | null
           properties?: Json | null
           referrer?: string | null
+          region?: string | null
           session_id?: string | null
           site_id: string
           tag?: string | null
@@ -1489,6 +1524,7 @@ export type Database = {
           os?: string | null
           properties?: Json | null
           referrer?: string | null
+          region?: string | null
           session_id?: string | null
           site_id?: string
           tag?: string | null
@@ -1512,6 +1548,7 @@ export type Database = {
           os: string | null
           properties: Json | null
           referrer: string | null
+          region: string | null
           session_id: string | null
           site_id: string
           tag: string | null
@@ -1532,6 +1569,7 @@ export type Database = {
           os?: string | null
           properties?: Json | null
           referrer?: string | null
+          region?: string | null
           session_id?: string | null
           site_id: string
           tag?: string | null
@@ -1552,6 +1590,7 @@ export type Database = {
           os?: string | null
           properties?: Json | null
           referrer?: string | null
+          region?: string | null
           session_id?: string | null
           site_id?: string
           tag?: string | null
@@ -1575,6 +1614,7 @@ export type Database = {
           os: string | null
           properties: Json | null
           referrer: string | null
+          region: string | null
           session_id: string | null
           site_id: string
           tag: string | null
@@ -1595,6 +1635,7 @@ export type Database = {
           os?: string | null
           properties?: Json | null
           referrer?: string | null
+          region?: string | null
           session_id?: string | null
           site_id: string
           tag?: string | null
@@ -1615,6 +1656,7 @@ export type Database = {
           os?: string | null
           properties?: Json | null
           referrer?: string | null
+          region?: string | null
           session_id?: string | null
           site_id?: string
           tag?: string | null
@@ -1638,6 +1680,7 @@ export type Database = {
           os: string | null
           properties: Json | null
           referrer: string | null
+          region: string | null
           session_id: string | null
           site_id: string
           tag: string | null
@@ -1658,6 +1701,7 @@ export type Database = {
           os?: string | null
           properties?: Json | null
           referrer?: string | null
+          region?: string | null
           session_id?: string | null
           site_id: string
           tag?: string | null
@@ -1678,6 +1722,7 @@ export type Database = {
           os?: string | null
           properties?: Json | null
           referrer?: string | null
+          region?: string | null
           session_id?: string | null
           site_id?: string
           tag?: string | null
@@ -1701,6 +1746,7 @@ export type Database = {
           os: string | null
           properties: Json | null
           referrer: string | null
+          region: string | null
           session_id: string | null
           site_id: string
           tag: string | null
@@ -1721,6 +1767,7 @@ export type Database = {
           os?: string | null
           properties?: Json | null
           referrer?: string | null
+          region?: string | null
           session_id?: string | null
           site_id: string
           tag?: string | null
@@ -1741,6 +1788,7 @@ export type Database = {
           os?: string | null
           properties?: Json | null
           referrer?: string | null
+          region?: string | null
           session_id?: string | null
           site_id?: string
           tag?: string | null
@@ -1764,6 +1812,7 @@ export type Database = {
           os: string | null
           properties: Json | null
           referrer: string | null
+          region: string | null
           session_id: string | null
           site_id: string
           tag: string | null
@@ -1784,6 +1833,7 @@ export type Database = {
           os?: string | null
           properties?: Json | null
           referrer?: string | null
+          region?: string | null
           session_id?: string | null
           site_id: string
           tag?: string | null
@@ -1804,6 +1854,7 @@ export type Database = {
           os?: string | null
           properties?: Json | null
           referrer?: string | null
+          region?: string | null
           session_id?: string | null
           site_id?: string
           tag?: string | null
@@ -1827,6 +1878,7 @@ export type Database = {
           os: string | null
           properties: Json | null
           referrer: string | null
+          region: string | null
           session_id: string | null
           site_id: string
           tag: string | null
@@ -1847,6 +1899,7 @@ export type Database = {
           os?: string | null
           properties?: Json | null
           referrer?: string | null
+          region?: string | null
           session_id?: string | null
           site_id: string
           tag?: string | null
@@ -1867,6 +1920,7 @@ export type Database = {
           os?: string | null
           properties?: Json | null
           referrer?: string | null
+          region?: string | null
           session_id?: string | null
           site_id?: string
           tag?: string | null
@@ -1890,6 +1944,7 @@ export type Database = {
           os: string | null
           properties: Json | null
           referrer: string | null
+          region: string | null
           session_id: string | null
           site_id: string
           tag: string | null
@@ -1910,6 +1965,7 @@ export type Database = {
           os?: string | null
           properties?: Json | null
           referrer?: string | null
+          region?: string | null
           session_id?: string | null
           site_id: string
           tag?: string | null
@@ -1930,6 +1986,7 @@ export type Database = {
           os?: string | null
           properties?: Json | null
           referrer?: string | null
+          region?: string | null
           session_id?: string | null
           site_id?: string
           tag?: string | null
@@ -1953,6 +2010,7 @@ export type Database = {
           os: string | null
           properties: Json | null
           referrer: string | null
+          region: string | null
           session_id: string | null
           site_id: string
           tag: string | null
@@ -1973,6 +2031,7 @@ export type Database = {
           os?: string | null
           properties?: Json | null
           referrer?: string | null
+          region?: string | null
           session_id?: string | null
           site_id: string
           tag?: string | null
@@ -1993,6 +2052,7 @@ export type Database = {
           os?: string | null
           properties?: Json | null
           referrer?: string | null
+          region?: string | null
           session_id?: string | null
           site_id?: string
           tag?: string | null
@@ -2016,6 +2076,7 @@ export type Database = {
           os: string | null
           properties: Json | null
           referrer: string | null
+          region: string | null
           session_id: string | null
           site_id: string
           tag: string | null
@@ -2036,6 +2097,7 @@ export type Database = {
           os?: string | null
           properties?: Json | null
           referrer?: string | null
+          region?: string | null
           session_id?: string | null
           site_id: string
           tag?: string | null
@@ -2056,6 +2118,7 @@ export type Database = {
           os?: string | null
           properties?: Json | null
           referrer?: string | null
+          region?: string | null
           session_id?: string | null
           site_id?: string
           tag?: string | null
@@ -2079,6 +2142,7 @@ export type Database = {
           os: string | null
           properties: Json | null
           referrer: string | null
+          region: string | null
           session_id: string | null
           site_id: string
           tag: string | null
@@ -2099,6 +2163,7 @@ export type Database = {
           os?: string | null
           properties?: Json | null
           referrer?: string | null
+          region?: string | null
           session_id?: string | null
           site_id: string
           tag?: string | null
@@ -2119,6 +2184,7 @@ export type Database = {
           os?: string | null
           properties?: Json | null
           referrer?: string | null
+          region?: string | null
           session_id?: string | null
           site_id?: string
           tag?: string | null
@@ -4080,6 +4146,22 @@ export type Database = {
           visits: number
         }[]
       }
+      get_region_stats: {
+        Args: {
+          _country?: string
+          _end_date: string
+          _filters?: Json
+          _limit?: number
+          _site_id: string
+          _start_date: string
+        }
+        Returns: {
+          country: string
+          percentage: number
+          region: string
+          visits: number
+        }[]
+      }
       get_retention_cohorts: {
         Args: { _end_date: string; _site_id: string; _start_date: string }
         Returns: Json
@@ -4268,6 +4350,21 @@ export type Database = {
           _start_date: string
         }
         Returns: Json
+      }
+      get_yoy_comparison: {
+        Args: {
+          _end_date: string
+          _filters?: Json
+          _site_id: string
+          _start_date: string
+        }
+        Returns: {
+          date: string
+          pageviews: number
+          visitors: number
+          yoy_pageviews: number
+          yoy_visitors: number
+        }[]
       }
       has_team_role: {
         Args: { _min_role: string; _site_id: string }
