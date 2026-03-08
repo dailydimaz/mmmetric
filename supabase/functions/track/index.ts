@@ -2,6 +2,7 @@ import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { getLocationFromHeaders, getCachedGeo, setCachedGeo, isPrivateIp, lookupGeoApiFallback } from "../_shared/detect.ts";
+import { parseUserAgent, generateVisitorId, isBot } from "../_shared/parsing.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -99,71 +100,7 @@ function validateJsonStructure(obj: unknown, depth = 0): void {
     }
   }
 }
-
-// Parse user agent to extract browser, OS, and device type
-function parseUserAgent(ua: string): { browser: string; os: string; device_type: string } {
-  let browser = 'Unknown';
-  let os = 'Unknown';
-  let device_type = 'desktop';
-
-  // Detect browser
-  if (ua.includes('Firefox/')) browser = 'Firefox';
-  else if (ua.includes('Edg/')) browser = 'Edge';
-  else if (ua.includes('Chrome/')) browser = 'Chrome';
-  else if (ua.includes('Safari/') && !ua.includes('Chrome')) browser = 'Safari';
-  else if (ua.includes('Opera') || ua.includes('OPR/')) browser = 'Opera';
-
-  // Detect OS
-  if (ua.includes('Windows')) os = 'Windows';
-  else if (ua.includes('Mac OS X') || ua.includes('Macintosh')) os = 'macOS';
-  else if (ua.includes('Linux') && !ua.includes('Android')) os = 'Linux';
-  else if (ua.includes('Android')) os = 'Android';
-  else if (ua.includes('iPhone') || ua.includes('iPad')) os = 'iOS';
-
-  // Detect device type (Fixed precedence: Tablet check before Mobile)
-  if (ua.includes('Tablet') || ua.includes('iPad')) {
-    device_type = 'tablet';
-  } else if (ua.includes('Mobile') || ua.includes('Android')) {
-    device_type = 'mobile';
-  }
-
-  return { browser, os, device_type };
-}
-
-// Bot detection patterns
-const BOT_PATTERNS = [
-  /bot/i, /crawler/i, /spider/i, /scraper/i,
-  /googlebot/i, /bingbot/i, /yandex/i, /baidu/i,
-  /facebookexternalhit/i, /twitterbot/i, /linkedinbot/i,
-  /slackbot/i, /discordbot/i, /whatsapp/i,
-  /semrush/i, /ahrefs/i, /mj12bot/i,
-  /headlesschrome/i, /phantomjs/i, /puppeteer/i
-];
-
-function isBot(userAgent: string): boolean {
-  if (!userAgent) return false;
-  return BOT_PATTERNS.some(pattern => pattern.test(userAgent));
-}
-
-// Generate a cryptographic hash for visitor fingerprinting using SHA-256
-// Rotates daily for privacy compliance (24h retention)
-async function generateVisitorId(ip: string, ua: string): Promise<string> {
-  // Use a rotating salt based on the current date (UTC)
-  const dateSalt = new Date().toISOString().slice(0, 10); // "YYYY-MM-DD"
-  const secretSalt = Deno.env.get('DAILY_SALT_SECRET');
-  if (!secretSalt) {
-    console.error('DAILY_SALT_SECRET is not configured');
-    throw new Error('Server configuration error: missing required secret');
-  }
-
-  const str = `${ip}-${ua}-${dateSalt}-${secretSalt}`;
-  const encoder = new TextEncoder();
-  const data = encoder.encode(str);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  // Use first 16 hex characters for a unique 64-bit identifier
-  return hashArray.slice(0, 8).map(b => b.toString(16).padStart(2, '0')).join('');
-}
+// parseUserAgent, isBot, generateVisitorId now imported from _shared/parsing.ts
 
 // Generate a session ID hash from client provided ID + visitor ID to prevent spoofing
 async function generateSecureSessionId(clientSessionId: string, visitorId: string): Promise<string> {
@@ -508,9 +445,7 @@ serve(async (req) => {
       }
     }
 
-    // Insert the event into both tables (dual-write for migration)
-    // The original events table for backwards compatibility
-    // The partitioned table for high-performance queries
+    // Insert the event into the partitioned table (single-write, legacy dual-write removed)
     const eventData = {
       site_id: site.id,
       event_name,
@@ -609,12 +544,9 @@ serve(async (req) => {
       if (expError) console.error('Experiment assignment insert failed', expError);
     }
 
-    // Insert into original events table (for pageviews, custom events, and experiment assignments too)
-    // Use Promise.allSettled to ensure both writes complete before returning
-    // This prevents data loss in Edge Functions if the runtime kills un-awaited promises
+    // Insert into partitioned events table only
     // deno-lint-ignore no-explicit-any
     const promises: Promise<any>[] = [
-      Promise.resolve(supabase.from('events').insert(eventData)),
       Promise.resolve(supabase.from('events_partitioned').insert(eventData))
     ];
 
@@ -638,31 +570,20 @@ serve(async (req) => {
 
     const results = await Promise.allSettled(promises);
 
-    const legacyResult = results[0];
-    const partitionedResult = results[1];
+    const partitionedResult = results[0];
 
-    // Check legacy result (primary)
     let insertError = null;
-    if (legacyResult.status === 'fulfilled') {
-      if (legacyResult.value.error) {
-        insertError = legacyResult.value.error;
-      }
-    } else {
-      insertError = legacyResult.reason;
-    }
-
-    // Log partitioned result failure if any (but don't fail request)
     if (partitionedResult.status === 'fulfilled') {
       if (partitionedResult.value.error) {
-        console.warn('Failed to insert into partitioned table:', partitionedResult.value.error.code);
+        insertError = partitionedResult.value.error;
       }
     } else {
-      console.warn('Partitioned table insert exception:', partitionedResult.reason);
+      insertError = partitionedResult.reason;
     }
 
     // Log city upsert result if applicable
     if (hasCityUpsert) {
-      const cityResult = results[2];
+      const cityResult = results[1];
       if (cityResult.status === 'fulfilled') {
         if (cityResult.value.error) {
           console.warn('City coordinates upsert failed:', cityResult.value.error.code);
@@ -673,8 +594,20 @@ serve(async (req) => {
     }
 
     if (insertError) {
-      // Log generic error message only - no error codes or hints in production logs
       console.error('Event insert failed');
+      // Dead-letter: log failed event for later recovery
+      try {
+        await supabase.from('failed_events').insert({
+          site_id: site.id,
+          event_name,
+          payload: eventData,
+          error_code: insertError?.code || 'unknown',
+          error_message: insertError?.message || String(insertError),
+          source: 'track',
+        });
+      } catch {
+        // Silent fail — dead-letter is best-effort
+      }
       return new Response(JSON.stringify({ error: 'Failed to record event' }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

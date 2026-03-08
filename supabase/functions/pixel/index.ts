@@ -2,6 +2,7 @@ import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { getLocationFromHeaders, getCachedGeo, setCachedGeo, isPrivateIp, lookupGeoApiFallback } from "../_shared/detect.ts";
+import { parseBrowser, parseOS, parseDevice, generateVisitorId } from "../_shared/parsing.ts";
 
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
@@ -119,7 +120,7 @@ serve(async (req) => {
             .eq('tracking_id', trackingId)
             .maybeSingle();
 
-        if (site) {
+    if (site) {
             const eventInsert = {
                 site_id: site.id,
                 event_name,
@@ -135,10 +136,9 @@ serve(async (req) => {
                 properties: { type: 'pixel' }
             };
 
-            // Dual-write to both tables
+            // Single-write to partitioned table only (legacy dual-write removed)
             // deno-lint-ignore no-explicit-any
             const promises: Promise<any>[] = [
-                Promise.resolve(supabase.from('events').insert(eventInsert)),
                 Promise.resolve(supabase.from('events_partitioned').insert(eventInsert))
             ];
 
@@ -165,41 +165,4 @@ serve(async (req) => {
     }
 });
 
-// Helper functions
-async function generateVisitorId(ip: string, ua: string): Promise<string> {
-    const dailySalt = Deno.env.get('DAILY_SALT_SECRET');
-    if (!dailySalt) {
-      throw new Error('DAILY_SALT_SECRET is not configured');
-    }
-    const today = new Date().toISOString().slice(0, 10);
-    const str = `${ip}-${ua}-${dailySalt}-${today}`;
-    const encoder = new TextEncoder();
-    const data = encoder.encode(str);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.slice(0, 8).map(b => b.toString(16).padStart(2, '0')).join('');
-}
-
-function parseBrowser(ua: string): string {
-    if (ua.includes('Firefox/')) return 'Firefox';
-    if (ua.includes('Edg/')) return 'Edge';
-    if (ua.includes('Chrome/')) return 'Chrome';
-    if (ua.includes('Safari/') && !ua.includes('Chrome')) return 'Safari';
-    if (ua.includes('Opera') || ua.includes('OPR/')) return 'Opera';
-    return 'Unknown';
-}
-
-function parseOS(ua: string): string {
-    if (ua.includes('Windows')) return 'Windows';
-    if (ua.includes('Mac OS X') || ua.includes('Macintosh')) return 'macOS';
-    if (ua.includes('Linux') && !ua.includes('Android')) return 'Linux';
-    if (ua.includes('Android')) return 'Android';
-    if (ua.includes('iPhone') || ua.includes('iPad')) return 'iOS';
-    return 'Unknown';
-}
-
-function parseDevice(ua: string): string {
-    if (ua.includes('Tablet') || ua.includes('iPad')) return 'tablet';
-    if (ua.includes('Mobile') || ua.includes('Android')) return 'mobile';
-    return 'desktop';
-}
+// Helper functions now imported from _shared/parsing.ts
