@@ -595,6 +595,19 @@ serve(async (req) => {
 
     if (insertError) {
       console.error('Event insert failed');
+      // Dead-letter: log failed event for later recovery
+      try {
+        await supabase.from('failed_events').insert({
+          site_id: site.id,
+          event_name,
+          payload: eventData,
+          error_code: insertError?.code || 'unknown',
+          error_message: insertError?.message || String(insertError),
+          source: 'track',
+        });
+      } catch {
+        // Silent fail — dead-letter is best-effort
+      }
       return new Response(JSON.stringify({ error: 'Failed to record event' }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
