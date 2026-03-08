@@ -81,10 +81,20 @@ export function VisitorChart({ siteId, data, isLoading, showComparison = true, o
   const groupedData = groupTimeSeriesByInterval(data || [], currentInterval);
   
   const displayFormat = currentInterval === "month" ? "MMM yyyy" : currentInterval === "week" ? "MMM d" : "MMM d";
-  const chartData = groupedData.map(d => ({
-    ...d,
-    displayDate: format(parseISO(d.date), displayFormat),
-  }));
+
+  // Merge YoY data if in yoy mode
+  const chartData = groupedData.map(d => {
+    const yoyPoint = compareMode === "yoy" && yoyData
+      ? yoyData.find(y => y.date === d.date)
+      : null;
+    return {
+      ...d,
+      // Override prev data with YoY data when in YoY mode
+      prevPageviews: compareMode === "yoy" ? (yoyPoint?.yoyPageviews || 0) : d.prevPageviews,
+      prevVisitors: compareMode === "yoy" ? (yoyPoint?.yoyVisitors || 0) : d.prevVisitors,
+      displayDate: format(parseISO(d.date), displayFormat),
+    };
+  });
 
   return (
     <motion.div
