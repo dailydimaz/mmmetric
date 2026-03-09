@@ -127,7 +127,7 @@ function PropertyBreakdown({ events, propertyKey }: { events: Event[]; propertyK
 
 export default function EventExplorer() {
   const { siteId } = useParams<{ siteId: string }>();
-  const [dateRange, setDateRange] = useState({ start: subDays(new Date(), 7), end: new Date() });
+  const [dateRange] = useState({ start: subDays(new Date(), 7), end: new Date() });
   const [searchQuery, setSearchQuery] = useState("");
   const [eventFilter, setEventFilter] = useState("all");
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
@@ -167,15 +167,10 @@ export default function EventExplorer() {
               Browse and analyze all tracked events
             </p>
           </div>
-          <div className="flex items-center gap-2">
-            <DateRangePicker
-              value={dateRange}
-              onChange={setDateRange}
-            />
-            <Button variant="outline" size="icon" onClick={() => refetch()}>
-              <RefreshCw className="h-4 w-4" />
-            </Button>
-          </div>
+          <Button variant="outline" size="sm" onClick={() => refetch()} className="gap-2">
+            <RefreshCw className="h-4 w-4" />
+            Refresh
+          </Button>
         </div>
 
         {/* Event Type Cards */}
@@ -198,11 +193,11 @@ export default function EventExplorer() {
             >
               <CardContent className="p-4 text-center">
                 {stat.event_name === "pageview" ? (
-                  <Globe className="h-5 w-5 mx-auto mb-2 text-blue-500" />
+                  <Globe className="h-5 w-5 mx-auto mb-2 text-primary" />
                 ) : (
-                  <MousePointer className="h-5 w-5 mx-auto mb-2 text-emerald-500" />
+                  <MousePointer className="h-5 w-5 mx-auto mb-2 text-secondary-foreground" />
                 )}
-                <p className="text-xl font-bold">{stat.count.toLocaleString()}</p>
+                <p className="text-xl font-bold">{stat.event_count.toLocaleString()}</p>
                 <p className="text-xs text-muted-foreground truncate">{stat.event_name}</p>
               </CardContent>
             </Card>

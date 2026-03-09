@@ -7,7 +7,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { VisitorProfileDialog } from "@/components/analytics/VisitorProfileDialog";
@@ -16,15 +15,12 @@ import { format, formatDistanceToNow, subDays } from "date-fns";
 import {
   Users,
   Search,
-  Filter,
   Eye,
   Clock,
   Globe,
   Monitor,
   MapPin,
-  Calendar,
   Activity,
-  ArrowUpRight,
   ChevronRight,
   RefreshCw,
   Smartphone,
