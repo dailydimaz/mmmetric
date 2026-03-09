@@ -33,6 +33,9 @@ import QueryBuilder from "./pages/QueryBuilder";
 import Reports from "./pages/Reports";
 import AuditLog from "./pages/AuditLog";
 import SqlEditor from "./pages/SqlEditor";
+import LiveEvents from "./pages/LiveEvents";
+import EventExplorer from "./pages/EventExplorer";
+import UserProfiles from "./pages/UserProfiles";
 
 import NotFound from "./pages/NotFound";
 import CompareGA from "./pages/CompareGA";
