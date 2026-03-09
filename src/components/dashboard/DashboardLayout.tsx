@@ -22,6 +22,9 @@ import {
   Target,
   FlaskConical,
   Activity,
+  Radio,
+  BarChart3,
+  UserCircle,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -43,6 +46,9 @@ const getNavItems = (siteId: string | null, billingEnabled: boolean) => {
   const items = [
     { icon: LayoutDashboard, label: "nav.overview", href: "/dashboard" },
     { icon: MousePointerClick, label: "nav.analytics", href: siteId ? `/dashboard/sites/${siteId}` : "/dashboard", siteSpecific: true },
+    { icon: Radio, label: "nav.live", href: siteId ? `/dashboard/sites/${siteId}/live` : "/dashboard", siteSpecific: true },
+    { icon: BarChart3, label: "nav.events", href: siteId ? `/dashboard/sites/${siteId}/events` : "/dashboard", siteSpecific: true },
+    { icon: UserCircle, label: "nav.users", href: siteId ? `/dashboard/sites/${siteId}/users` : "/dashboard", siteSpecific: true },
     { icon: Route, label: "nav.journeys", href: siteId ? `/dashboard/sites/${siteId}/journeys` : "/dashboard", siteSpecific: true },
     { icon: GitBranch, label: "nav.funnels", href: siteId ? `/dashboard/sites/${siteId}/funnels` : "/dashboard", siteSpecific: true },
     { icon: Users, label: "nav.retention", href: siteId ? `/dashboard/sites/${siteId}/retention` : "/dashboard", siteSpecific: true },
