@@ -10,7 +10,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { DateRangePicker } from "@/components/analytics/DateRangePicker";
 import { supabase } from "@/integrations/supabase/client";
 import { format, subDays } from "date-fns";
 import {
@@ -21,10 +20,8 @@ import {
   MousePointer,
   BarChart3,
   ChevronRight,
-  Calendar,
   Download,
   RefreshCw,
-  ArrowUpDown,
 } from "lucide-react";
 
 interface Event {
@@ -45,8 +42,7 @@ interface Event {
 
 interface EventStats {
   event_name: string;
-  count: number;
-  unique_visitors: number;
+  event_count: number;
 }
 
 function useEventExplorer(siteId: string, dateRange: { start: Date; end: Date }, eventFilter: string) {
@@ -84,7 +80,7 @@ function useEventStats(siteId: string, dateRange: { start: Date; end: Date }) {
         _end_date: dateRange.end.toISOString(),
       });
       if (error) throw error;
-      return data as EventStats[];
+      return (data || []) as unknown as EventStats[];
     },
     enabled: !!siteId,
   });
