@@ -22,6 +22,9 @@ import {
   Target,
   FlaskConical,
   Activity,
+  Radio,
+  BarChart3,
+  UserCircle,
 } from "lucide-react";
 import {
   DropdownMenu,
